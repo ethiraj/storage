@@ -46,6 +46,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+// This comment is a test change to verify GitLab CODEOWNERS rules
+// Hopefully you aren't seeing this in master, but if you are, it can be deleted.
+
 @Repository
 public class CloudStorageImpl implements ICloudStorage {
 
