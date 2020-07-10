@@ -1,7 +1,7 @@
 # If any changes occur in the provider sections, automatically add the
 # corresponding contributor group as a required approver to the MR
 
-provider/storage-aws/    @osdu-roles/platform/aws-contributors
+provider/storage-aws/    @osdu/platform/roles/aws-contributors
 provider/storage-azure/  @osdu/platform/roles/azure-contributors
 provider/storage-gcp/    @osdu/platform/roles/gcp-contributors
 provider/storage-ibm/    @osdu/platform/roles/ibm-contributors
