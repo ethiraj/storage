@@ -1,12 +1,12 @@
 # If any changes occur in the provider sections, automatically add the
 # corresponding contributor group as a required approver to the MR
 
-provider/storage-aws/    @osdu/platform/roles/aws-contributors @babeal
+provider/storage-aws/    @osdu-roles/platform/roles/aws-contributors @babeal
 provider/storage-azure/  @osdu/platform/roles/azure-contributors
 provider/storage-gcp/    @osdu/platform/roles/gcp-contributors
 provider/storage-ibm/    @osdu/platform/roles/ibm-contributors
 
-testing/storage-test-aws/    @osdu/platform/roles/aws-contributors
+testing/storage-test-aws/    @osdu-roles/platform/roles/aws-contributors
 testing/storage-test-azure/  @osdu/platform/roles/azure-contributors
 testing/storage-test-gcp/    @osdu/platform/roles/gcp-contributors
 testing/storage-test-ibm/    @osdu/platform/roles/ibm-contributors
