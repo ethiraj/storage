@@ -15,6 +15,7 @@
 package org.opengroup.osdu.storage.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 
 import javax.validation.ValidationException;
@@ -92,7 +93,8 @@ public class GlobalExceptionMapperTest {
 		JsonProcessingException exception = Mockito.mock(JsonProcessingException.class);
 		ResponseEntity response = this.sut.handleJsonProcessingException(exception);
 
-		assertEquals(HttpStatus.SC_UNPROCESSABLE_ENTITY, response.getStatusCodeValue());
+		assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusCodeValue());
+		assertNotNull(response.getBody());
 		assertEquals(AppError.class, response.getBody().getClass());
 		assertEquals("Failed to process JSON.", ((AppError)response.getBody()).getReason());
 	}
@@ -102,7 +104,8 @@ public class GlobalExceptionMapperTest {
 		UnrecognizedPropertyException exception = Mockito.mock(UnrecognizedPropertyException.class);
 		ResponseEntity response = this.sut.handleUnrecognizedPropertyException(exception);
 
-		assertEquals(HttpStatus.SC_UNPROCESSABLE_ENTITY, response.getStatusCodeValue());
+		assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusCodeValue());
+		assertNotNull(response.getBody());
 		assertEquals(AppError.class, response.getBody().getClass());
 		assertEquals("Unrecognized property.", ((AppError)response.getBody()).getReason());
 	}
