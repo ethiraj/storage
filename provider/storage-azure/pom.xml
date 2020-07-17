@@ -17,28 +17,40 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent> 
-    <artifactId>os-storage</artifactId>  
-    <groupId>org.opengroup.osdu</groupId>  
+  <parent>
+    <artifactId>os-storage</artifactId>
+    <groupId>org.opengroup.osdu</groupId>
     <version>0.0.5-SNAPSHOT</version>
     <relativePath>../../</relativePath>
-  </parent>  
-  <modelVersion>4.0.0</modelVersion>  
-  <artifactId>storage-azure</artifactId>  
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>storage-azure</artifactId>
   <description>Storage service on Azure</description>
-  <packaging>jar</packaging>  
-  <properties> 
+  <packaging>jar</packaging>
+  <properties>
     <azure.version>2.1.7</azure.version>
     <azure.appservice.resourcegroup></azure.appservice.resourcegroup>
     <azure.appservice.plan></azure.appservice.plan>
     <azure.appservice.appname></azure.appservice.appname>
     <azure.appservice.subscription></azure.appservice.subscription>
   </properties>
-  <dependencies> 
-    <dependency> 
-      <groupId>com.microsoft.azure</groupId>  
-      <artifactId>azure-active-directory-spring-boot-starter</artifactId>  
-      <version>${azure.version}</version> 
+  <dependencies>
+    <dependency>
+      <groupId>com.microsoft.azure</groupId>
+      <artifactId>azure-active-directory-spring-boot-starter</artifactId>
+      <version>${azure.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-jose</artifactId>
     </dependency>
     <dependency>
       <groupId>com.microsoft.azure</groupId>
@@ -59,9 +71,9 @@
       <artifactId>storage-core</artifactId>
       <version>0.0.5-SNAPSHOT</version>
     </dependency>
-    <dependency> 
-      <groupId>org.projectlombok</groupId>  
-      <artifactId>lombok</artifactId> 
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -109,27 +121,27 @@
       <url>https://community.opengroup.org/api/v4/projects/44/packages/maven</url>
     </snapshotRepository>
   </distributionManagement>
-  <build> 
-    <plugins> 
-      <plugin> 
-        <groupId>org.springframework.boot</groupId>  
-        <artifactId>spring-boot-maven-plugin</artifactId>  
-        <executions> 
-          <execution> 
-            <goals> 
-              <goal>repackage</goal> 
-            </goals>  
-            <configuration> 
-              <classifier>spring-boot</classifier>  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+            <configuration>
+              <classifier>spring-boot</classifier>
               <mainClass>org.opengroup.osdu.storage.provider.azure.StorageApplication</mainClass>
-            </configuration> 
-          </execution> 
-        </executions> 
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
-        <groupId>com.microsoft.azure</groupId>  
-        <artifactId>azure-webapp-maven-plugin</artifactId>  
-        <version>1.7.0</version>  
+        <groupId>com.microsoft.azure</groupId>
+        <artifactId>azure-webapp-maven-plugin</artifactId>
+        <version>1.7.0</version>
         <configuration>
           <schemaVersion>V2</schemaVersion>
           <authentication>
@@ -158,5 +170,5 @@
         </configuration>
       </plugin>
     </plugins>
-  </build> 
+  </build>
 </project>
