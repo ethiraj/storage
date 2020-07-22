@@ -20,8 +20,7 @@ variables:
   IBM_INT_TEST_SUBDIR: testing/storage-test-ibm
 
 include:
-  - project: "osdu/platform/system/storage"
-    file: "postman-tests/standard-setup.yml"
+  - "postman-tests/standard-setup.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "build/maven.yml"
@@ -44,8 +43,7 @@ include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/azure.yml"
 
-  - project: "osdu/platform/system/storage"
-    file: "postman-tests/postman.yml"
+  - "postman-tests/postman.yml"
 
 # disable the eslint scanner
 # I think this is being generated from the presence of an HTML file, but there
