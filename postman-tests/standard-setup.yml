@@ -1,0 +1,76 @@
+stages:
+  - review
+  - build
+  - containerize
+  - scan
+  - deploy
+  - integration
+  - attribution
+  - postman-test
+  - publish
+
+# --------------------------------------------------------------------------------
+# Trusted Branch Logic (applicable to all projects)
+
+
+# This top-level workflow determines if a pipeline should be generated at all
+# for the supplied triggering conditions.
+workflow:
+  rules:
+    # For branches that are prefixed with "trusted-", we expect they will be
+    # triggered as a child job (aka a 'pipeline' source) as part of a merge
+    # request. For all other cases, such as normal branch updates, suppress the
+    # pipeline to avoid duplicate work.
+    - if: $CI_COMMIT_REF_NAME =~ /^trusted-/ && $CI_PIPELINE_SOURCE != 'pipeline'
+      when: never
+
+    # If the merge request has specifically asked not to generate a pipeline,
+    # then don't. Note: Only detached pipelines have CI_MERGE_REQUEST_LABELS
+    # defined, so this shouldn't suppress normal pipelines.
+    - if: $CI_MERGE_REQUEST_LABELS =~ /no-detached-pipeline/
+      when: never
+
+    # In all other cases, run the pipeline normally
+    - when: always
+
+# ----------------------------------------
+
+# This job runs as the first step in a "trusted-" pipeline execution. It makes
+# sure that the branch being tested is sitting at the exact same SHA as the
+# non-trusted one that it is executing for. If the branches are out of sync, we
+# fail the pipeline hard and early.
+trusted-merge-branch-verification:
+  stage: review
+  image: $CI_REGISTRY/osdu/platform/trusted-mr-container
+  tags: ['osdu-small']
+  script:
+    - merge-branch-verification.sh
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^trusted-/ && $CI_PIPELINE_SOURCE == 'pipeline'
+
+# ----------------------------------------
+
+# This runs during detached pipelines (on merge requests) for non-trusted
+# branches. It will trigger a corresponding "trusted-" pipeline, if such trust
+# has been established by a Committer.
+trigger-trusted-tests:
+  stage: review
+  image: $CI_REGISTRY/osdu/platform/trusted-mr-container
+  tags: ['osdu-small']
+  script:
+    - trigger-trusted-tests.js
+  rules:
+    - if: $CI_COMMIT_REF_NAME !~ /^trusted-/ && $CI_MERGE_REQUEST_ID
+      when: always
+    - when: never
+
+# ----------------------------------------
+
+# This template can be used for any jobs that are triggering on merge
+# requests. It is the inverse logic from the trigger-trusted-tests job, so that
+# it will suppress execution any time the trigger would have run
+.skipForTriggeringMergeRequests:
+  rules:
+    - if: $CI_COMMIT_REF_NAME !~ /^trusted-/ && $CI_MERGE_REQUEST_ID
+      when: never
+    - when: on_success
