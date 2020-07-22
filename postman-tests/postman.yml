@@ -18,8 +18,8 @@
 GCP-postman-tests:
   extends: .newman
   variables:
-    ENVIRONMENT: "testing/Postman Collection/00_CICD_Setup_Environment/gcp.OSDU R3 PROD v1.0.postman_environment.json"
-    COLLECTION_JSON: "testing/Postman Collection/12_CICD_Setup_StorageAPI/Storage API CI-CD v1.11.postman_collection.json"
+    ENVIRONMENT: "/builds/osdu/platform/system/storage/postman_test/testing/Postman Collection/00_CICD_Setup_Environment/gcp.OSDU R3 PROD v1.0.postman_environment.json"
+    COLLECTION_JSON: "/builds/osdu/platform/system/storage/postman_test/testing/Postman Collection/12_CICD_Setup_StorageAPI/Storage API CI-CD v1.11.postman_collection.json"
     HTML_REPORT_NAME: "gcp.Storage API CI-CD v1_11_report_extra.html"
     JUNIT_REPORT_NAME: "gcp.Storage API CI-CD v1_11_report_junit.xml"
 
