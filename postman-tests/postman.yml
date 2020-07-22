@@ -9,7 +9,8 @@
     - mkdir postman_test
     - cd postman_test
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@community.opengroup.org/osdu/platform/testing.git
-
+    - ls
+    - pwd
   script:
     - newman --version
     - newman run "$COLLECTION_JSON" -e "$ENVIRONMENT" -d "$GCP_TEST_COLLECTION_CONFIG" --reporters cli
