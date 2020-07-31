@@ -24,7 +24,8 @@ import org.opengroup.osdu.storage.provider.interfaces.IMessageBus;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
+//import com.microsoft.azure.eventgrid.EventGridClient;
+//import com.microsoft.azure.eventgrid.TopicCredentials;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import java.util.Map;
 public class MessageBusImpl implements IMessageBus {
     @Autowired
     private TopicClient topicClient;
+
 
     @Autowired
     private JaxRsDpsLog logger;
@@ -79,4 +81,51 @@ public class MessageBusImpl implements IMessageBus {
             }
         }
     }
+
+    public void publishMessages(DpsHeaders headers, PubSubInfo... messages) {
+        final int BATCH_SIZE = 50;
+        Gson gson = new Gson();
+
+        for (int i = 0; i < messages.length; i += BATCH_SIZE) {
+            Message message = new Message();
+            Map<String, Object> properties = new HashMap<>();
+
+            // properties
+            properties.put(DpsHeaders.ACCOUNT_ID, headers.getPartitionIdWithFallbackToAccountId());
+            properties.put(DpsHeaders.DATA_PARTITION_ID, headers.getPartitionIdWithFallbackToAccountId());
+            headers.addCorrelationIdIfMissing();
+            properties.put(DpsHeaders.CORRELATION_ID, headers.getCorrelationId());
+            message.setProperties(properties);
+
+            // data
+            PubSubInfo[] batch = Arrays.copyOfRange(messages, i, Math.min(messages.length, i + BATCH_SIZE));
+
+            // add all to body {"message": {"data":[], "id":...}}
+            JsonObject jo = new JsonObject();
+            jo.add("data", gson.toJsonTree(batch));
+            jo.addProperty(DpsHeaders.ACCOUNT_ID, headers.getPartitionIdWithFallbackToAccountId());
+            jo.addProperty(DpsHeaders.DATA_PARTITION_ID, headers.getPartitionIdWithFallbackToAccountId());
+            jo.addProperty(DpsHeaders.CORRELATION_ID, headers.getCorrelationId());
+            JsonObject jomsg = new JsonObject();
+            jomsg.add("message", jo);
+
+            message.setBody(jomsg.toString().getBytes(StandardCharsets.UTF_8));
+            message.setContentType("application/json");
+  /*          EventGridClient client = new EventGridClientImpl(topicCredentials);
+            String eventGridEndpoint = String.format("https://%s/", new URI(System.getenv("EVENTGRID_TOPIC_ENDPOINT")).getHost());
+
+            client.publishEvents(eventGridEndpoint, eventsList);
+*/
+
+            try {
+                logger.info("Storage publishes message " + headers.getCorrelationId());
+                topicClient.send(message);
+            }
+            catch (Exception e)
+            {
+                logger.error(e.getMessage(), e);
+            }
+        }
+    }
+
 }

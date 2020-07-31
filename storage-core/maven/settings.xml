@@ -8,7 +8,7 @@
             <username>os-core</username>
             <!-- Treat this auth token like a password. Do not share it with anyone, including Microsoft support. -->
             <!-- The generated token expires on or before 11/14/2019 -->
-            <password>${VSTS_FEED_TOKEN}</password>
+            <password>egbpi3dolvduueruwm465xlmmtjdjricf6jkedpr3znaxglqqfaa</password>
         </server>
     </servers>
 </settings>
