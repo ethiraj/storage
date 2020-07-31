@@ -15,10 +15,13 @@
 package org.opengroup.osdu.storage.provider.azure;
 
 import com.azure.data.cosmos.CosmosClientException;
+import com.azure.data.cosmos.internal.Utils;
+import com.azure.data.cosmos.internal.query.QueryItem;
 import com.microsoft.azure.spring.data.cosmosdb.core.query.DocumentDbPageRequest;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.storage.RecordState;
 import org.opengroup.osdu.core.common.model.storage.DatastoreQueryResult;
+import org.opengroup.osdu.storage.provider.azure.util.QueryItemMixIn;
 import org.opengroup.osdu.storage.provider.interfaces.IQueryRepository;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -37,6 +41,10 @@ public class QueryRepositoryImpl implements IQueryRepository {
 
     @Autowired
     private CosmosDBSchema dbSchema;
+
+    QueryRepositoryImpl() {
+        Utils.getSimpleObjectMapper().addMixIn(QueryItem.class, QueryItemMixIn.class);
+    }
 
     @Override
     public DatastoreQueryResult getAllKinds(Integer limit, String cursor)
@@ -60,9 +68,8 @@ public class QueryRepositoryImpl implements IQueryRepository {
 
         try {
             if (paginated) {
-                // sorting doesn't work with pagination at the moment due to this:
-                // https://github.com/microsoft/spring-data-cosmosdb/issues/423
-                final Page<SchemaDoc> docPage = dbSchema.findAll(DocumentDbPageRequest.of(0, numRecords, cursor));
+                final Page<SchemaDoc> docPage =
+                        dbSchema.findAll(DocumentDbPageRequest.of(0, numRecords, cursor, sort));
                 Pageable pageable = docPage.getPageable();
                 String continuation = ((DocumentDbPageRequest) pageable).getRequestContinuation();
                 dqr.setCursor(continuation);

@@ -19,6 +19,7 @@ import static java.util.Collections.singletonList;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opengroup.osdu.core.common.entitlements.IEntitlementsAndCacheService;
 import org.opengroup.osdu.core.common.model.indexer.OperationType;
 import org.opengroup.osdu.storage.provider.interfaces.IMessageBus;
 import org.apache.http.HttpStatus;
@@ -57,10 +58,20 @@ public class RecordServiceImpl implements RecordService {
 	@Autowired
 	private StorageAuditLogger auditLogger;
 
+	@Autowired
+	private IEntitlementsAndCacheService entitlementsAndCacheService;
+
 	@Override
 	public void purgeRecord(String recordId) {
 
-		RecordMetadata recordMetadata = this.getRecordMetadata(recordId);
+		RecordMetadata recordMetadata = this.getRecordMetadata(recordId, true);
+		boolean hasOwnerAccess = this.entitlementsAndCacheService.hasOwnerAccess(this.headers, recordMetadata.getAcl().getOwners());
+
+		if (!hasOwnerAccess) {
+			this.auditLogger.purgeRecordFail(singletonList(recordId));
+			throw new AppException(HttpStatus.SC_FORBIDDEN, "Access denied",
+					"The user is not authorized to purge the record");
+		}
 
 		try {
 			this.recordRepository.delete(recordId);
@@ -81,13 +92,13 @@ public class RecordServiceImpl implements RecordService {
 
 		this.auditLogger.purgeRecordSuccess(singletonList(recordId));
 		this.pubSubClient.publishMessage(this.headers,
-				new PubSubInfo(recordId, recordMetadata.getKind(), OperationType.purge));
+				new PubSubInfo(recordId, recordMetadata.getKind(), OperationType.delete));
 	}
 
 	@Override
 	public void deleteRecord(String recordId, String user) {
 
-		RecordMetadata recordMetadata = this.getRecordMetadata(recordId);
+		RecordMetadata recordMetadata = this.getRecordMetadata(recordId, false);
 
 		this.validateAccess(recordMetadata);
 
@@ -105,7 +116,7 @@ public class RecordServiceImpl implements RecordService {
 		this.pubSubClient.publishMessage(this.headers, pubSubInfo);
 	}
 
-	private RecordMetadata getRecordMetadata(String recordId) {
+	private RecordMetadata getRecordMetadata(String recordId, boolean isPurgeRequest) {
 
 		String tenantName = tenant.getName();
 		if (!Record.isRecordIdValid(recordId, tenantName)) {
@@ -115,11 +126,13 @@ public class RecordServiceImpl implements RecordService {
 		}
 
 		RecordMetadata record = this.recordRepository.get(recordId);
-
-		if (record == null || record.getStatus() != RecordState.active) {
-			String msg = String.format("Record with id '%s' does not exist", recordId);
-			throw new AppException(HttpStatus.SC_NOT_FOUND, "Record not found", msg);
-		}
+            String msg = String.format("Record with id '%s' does not exist", recordId);
+            if ((record == null || record.getStatus() != RecordState.active)&& !isPurgeRequest) {
+				throw new AppException(HttpStatus.SC_NOT_FOUND, "Record not found", msg);
+			}
+            if (record == null && isPurgeRequest) {
+                throw new AppException(HttpStatus.SC_NOT_FOUND, "Record not found", msg);
+            }
 
 		return record;
 	}
