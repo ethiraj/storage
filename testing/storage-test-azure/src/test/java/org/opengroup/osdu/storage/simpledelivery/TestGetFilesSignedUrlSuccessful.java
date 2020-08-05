@@ -29,7 +29,7 @@ import org.opengroup.osdu.storage.util.*;
 import org.opengroup.osdu.storage.util.LegalTagUtils;
 import static org.junit.Assert.assertEquals;
 import static org.opengroup.osdu.storage.util.LegalTagUtils.createRandomName;
-
+@Ignore
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestGetFilesSignedUrlSuccessful {
 

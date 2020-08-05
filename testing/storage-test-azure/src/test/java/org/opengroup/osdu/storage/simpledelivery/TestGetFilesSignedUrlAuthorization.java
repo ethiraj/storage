@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.opengroup.osdu.storage.util.*;
 
 import java.util.Map;
-
+@Ignore
 public class TestGetFilesSignedUrlAuthorization {
 
     private static AzureTestUtils azureTestUtils = new AzureTestUtils();

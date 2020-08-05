@@ -18,7 +18,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import org.junit.*;
 import org.opengroup.osdu.storage.util.*;
 import static org.junit.Assert.assertEquals;
-
+@Ignore
 public class TestGetFilesSignedUrlNegative {
 
     private static AzureTestUtils azureTestUtils = new AzureTestUtils();
