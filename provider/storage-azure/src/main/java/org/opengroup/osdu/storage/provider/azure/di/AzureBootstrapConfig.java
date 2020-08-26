@@ -14,6 +14,9 @@
 
 package org.opengroup.osdu.storage.provider.azure.di;
 
+import com.azure.cosmos.ConnectionMode;
+import com.azure.cosmos.ConnectionPolicy;
+import com.azure.cosmos.internal.AsyncDocumentClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -57,4 +60,16 @@ public class AzureBootstrapConfig {
         return serviceBusTopic;
     }
 
+    @Bean
+    public AsyncDocumentClient asyncDocumentClient(final @Named("COSMOS_ENDPOINT") String endpoint, final @Named("COSMOS_KEY") String key) {
+
+        ConnectionPolicy connectionPolicy = new ConnectionPolicy();
+        connectionPolicy.setConnectionMode(ConnectionMode.DIRECT);
+
+        return new AsyncDocumentClient.Builder()
+                .withServiceEndpoint(endpoint)
+                .withMasterKeyOrResourceToken(key)
+                .withConnectionPolicy(connectionPolicy)
+                .build();
+    }
 }
