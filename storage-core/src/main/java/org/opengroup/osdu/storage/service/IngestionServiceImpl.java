@@ -132,19 +132,21 @@ public class IngestionServiceImpl implements IngestionService {
 	private void validateRecordsWithSchema(List<Record> inputRecords) {
 
 		System.out.println("=========Validating the schemas========");
-		try {
+
 			String tenantName = tenant.getName();
 			for (Record record : inputRecords) {
-				String kind = record.getKind();
-				String schema = getSchema(kind);
-.
-				this.validateRecordWithSchema(schema, record);
-			}
-		} catch (Exception e) {
-			String msg = "The record with id  does not follow the schema";
+				try {
+					String kind = record.getKind();
+					String schema = getSchema(kind);
 
-			throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid kind", msg);
-		}
+					this.validateRecordWithSchema(schema, record);
+
+				} catch (Exception e) {
+					String msg = "The record with id" + record.getId() + "does not follow the schema";
+
+					throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid kind", msg);
+				}
+			}
 	}
 
 	private String  getSchema(String kind) throws IOException {
@@ -153,8 +155,16 @@ public class IngestionServiceImpl implements IngestionService {
 			URL url = new URL("http://localhost:8083/api/schema-service/v1/schema/" + kind);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-			String token = System.getProperty("TOKEN", System.getenv("TOKEN"));
+			//String token = System.getProperty("TOKEN", System.getenv("TOKEN"));
 
+			String sp_id = "00476b2d-2f6a-4dd9-a186-19d2b03cc1b0";
+			String sp_secret = "4A{AmawKNkuY(?+vy#hUXmQ0e$PBV34-7";
+			String tenant_id = "72f988bf-86f1-41af-91ab-2d7cd011db47";
+			String app_resource_id = "api://c7287283-4858-7b56-93fa-c5e9ba717582";
+
+			String token = AzureServicePrincipal.getIdToken(sp_id, sp_secret, tenant_id, app_resource_id);
+
+			System.out.println("token: " + token);
 			conn.setRequestProperty(HttpHeaders.AUTHORIZATION,"Bearer " + token);
 
 			conn.setRequestProperty(HttpHeaders.CONTENT_TYPE,"application/json");
