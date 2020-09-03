@@ -135,16 +135,20 @@ public class IngestionServiceImpl implements IngestionService {
 
 			String tenantName = tenant.getName();
 			for (Record record : inputRecords) {
+				String kind = record.getKind();
+				String schema = "";
 				try {
-					String kind = record.getKind();
-					String schema = getSchema(kind);
-
+					schema = getSchema(kind);
+				} catch (Exception ex) {
+					String message = "error retrieving schema of kind: " + kind;
+					throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid kind", message);
+				}
+				try {
 					this.validateRecordWithSchema(schema, record);
-
 				} catch (Exception e) {
-					String msg = "The record with id" + record.getId() + "does not follow the schema";
+					String msg = "The record with id" + record.getId() + " does not follow the schema";
 
-					throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid kind", msg);
+					throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid record", msg);
 				}
 			}
 	}
@@ -178,21 +182,16 @@ public class IngestionServiceImpl implements IngestionService {
 			}
 
 			in.close();
-			//System.out.println("Response code is : " + conn.getResponseCode());
+
 			if (conn.getResponseCode() != 200) {
 				String msg = "schema" + kind + "Notfound" + conn.getResponseCode();
 
 				throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid kind", msg);
 			}
-			// printing result from response
-			//System.out.println("Response:-" + response.toString());
-
-
 			return response.toString();
 		} catch (Exception e) {
-			String msg = "The record with id  does not follow the schema";
-
-			throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid kind", msg);
+			String message = "error retrieving schema of kind: " + kind;
+			throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid kind", message);
 		}
 
 	}
