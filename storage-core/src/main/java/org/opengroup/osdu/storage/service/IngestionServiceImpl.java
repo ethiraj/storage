@@ -14,8 +14,19 @@
 
 package org.opengroup.osdu.storage.service;
 
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
+import jdk.nashorn.internal.parser.JSONParser;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.everit.json.schema.Schema;
+import org.everit.json.schema.ValidationException;
+import org.everit.json.schema.loader.SchemaLoader;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.opengroup.osdu.core.common.entitlements.IEntitlementsAndCacheService;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.Legal;
@@ -34,6 +45,12 @@ import org.opengroup.osdu.storage.provider.interfaces.IRecordsMetadataRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -69,7 +86,7 @@ public class IngestionServiceImpl implements IngestionService {
 
 	@Override
 	public TransferInfo createUpdateRecords(boolean skipDupes, List<Record> inputRecords, String user) {
-		this.validateKindFormat(inputRecords);
+		this.validateRecordsWithSchema(inputRecords);
 		this.validateRecordIds(inputRecords);
 		this.validateAcl(inputRecords);
 
@@ -109,6 +126,96 @@ public class IngestionServiceImpl implements IngestionService {
 
 				throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid kind", msg);
 			}
+		}
+	}
+
+	private void validateRecordsWithSchema(List<Record> inputRecords) {
+
+		System.out.println("=========Validating the schemas========");
+		try {
+			String tenantName = tenant.getName();
+			for (Record record : inputRecords) {
+				String kind = record.getKind();
+				String schema = getSchema(kind);
+.
+				this.validateRecordWithSchema(schema, record);
+			}
+		} catch (Exception e) {
+			String msg = "The record with id  does not follow the schema";
+
+			throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid kind", msg);
+		}
+	}
+
+	private String  getSchema(String kind) throws IOException {
+
+		try {
+			URL url = new URL("http://localhost:8083/api/schema-service/v1/schema/" + kind);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+			String token = System.getProperty("TOKEN", System.getenv("TOKEN"));
+
+			conn.setRequestProperty(HttpHeaders.AUTHORIZATION,"Bearer " + token);
+
+			conn.setRequestProperty(HttpHeaders.CONTENT_TYPE,"application/json");
+			conn.setRequestProperty("Data-Partition-Id","opendes");
+			conn.setRequestMethod("GET");
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			String output;
+
+			StringBuffer response = new StringBuffer();
+			while ((output = in.readLine()) != null) {
+				response.append(output);
+			}
+
+			in.close();
+			//System.out.println("Response code is : " + conn.getResponseCode());
+			if (conn.getResponseCode() != 200) {
+				String msg = "schema" + kind + "Notfound" + conn.getResponseCode();
+
+				throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid kind", msg);
+			}
+			// printing result from response
+			//System.out.println("Response:-" + response.toString());
+
+
+			return response.toString();
+		} catch (Exception e) {
+			String msg = "The record with id  does not follow the schema";
+
+			throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid kind", msg);
+		}
+
+	}
+
+	private void validateRecordWithSchema(String schema, Record record)
+	{
+		// logic to validate that the record is actually following the schema
+
+		JSONObject recordData = new JSONObject(record.getData());
+		JSONObject schemaDef = new JSONObject(schema);
+
+		String message = "Schema: " + schemaDef.toString() + "Obj: " + recordData.toString();
+		System.out.println(message);
+
+
+			if (!compareWithSchema(schemaDef ,recordData )) {
+				throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid kind", message);
+			}
+
+	}
+
+	private boolean compareWithSchema(JSONObject schema, JSONObject obj) {
+
+		Set<String> keysOfSchema = schema.keySet();
+		Set<String> keysOfObject = obj.keySet();
+
+		if (!keysOfObject.equals(keysOfSchema)) {
+			return false;
+		}
+		else {
+			return true;
 		}
 	}
 
