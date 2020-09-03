@@ -152,11 +152,9 @@ public class IngestionServiceImpl implements IngestionService {
 	private String  getSchema(String kind) throws IOException {
 
 		try {
-			URL url = new URL("http://localhost:8083/api/schema-service/v1/schema/" + kind);
+			String host = System.getProperty("SCHEMA_URL", System.getenv("SCHEMA_URL"));
+			URL url = new URL(host + kind);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-			//String token = System.getProperty("TOKEN", System.getenv("TOKEN"));
-
 			String sp_id = "00476b2d-2f6a-4dd9-a186-19d2b03cc1b0";
 			String sp_secret = "4A{AmawKNkuY(?+vy#hUXmQ0e$PBV34-7";
 			String tenant_id = "72f988bf-86f1-41af-91ab-2d7cd011db47";
