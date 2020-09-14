@@ -1,4 +1,4 @@
-// Copyright © Amazon Web Services
+// Copyright © 2020 Amazon Web Services
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import java.util.List;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(classes={StorageApplication.class})
+@SpringBootTest(classes = {StorageApplication.class})
 public class QueryRepositoryTest {
 
     @InjectMocks
@@ -93,9 +93,8 @@ public class QueryRepositoryTest {
         QueryPageResult<SchemaDoc> expectedQueryPageResult = new QueryPageResult<>(cursor, expectedSchemaDocList);
 
         Mockito.when(dpsHeaders.getPartitionId()).thenReturn(dataPartitionId);
-        Mockito.when(dpsHeaders.getUserEmail()).thenReturn(user);
         Mockito.when(queryHelper.queryByGSI(Mockito.eq(SchemaDoc.class),
-                Mockito.anyObject(), Mockito.eq("User"), Mockito.eq(user), Mockito.anyInt(), Mockito.eq(cursor)))
+                Mockito.anyObject(), Mockito.anyInt(), Mockito.eq(cursor)))
                 .thenReturn(expectedQueryPageResult);
 
         // Act
@@ -127,14 +126,14 @@ public class QueryRepositoryTest {
         RecordMetadataDoc recordMetadataKey = new RecordMetadataDoc();
         recordMetadataKey.setKind(kind);
 
-        Mockito.when(queryHelper.queryPage(Mockito.eq(RecordMetadataDoc.class),  Mockito.anyObject(), Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.eq(cursor)))
+        Mockito.when(queryHelper.queryPage(Mockito.eq(RecordMetadataDoc.class), Mockito.anyObject(), Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.eq(cursor)))
                 .thenReturn(expectedQueryPageResult);
 
         // Act
         DatastoreQueryResult datastoreQueryResult = repo.getAllRecordIdsFromKind(kind, 50, cursor);
 
         // Assert
-        Mockito.verify(queryHelper, Mockito.times(1)).queryPage(Mockito.eq(RecordMetadataDoc.class),  Mockito.anyObject(), Mockito.anyString(),
+        Mockito.verify(queryHelper, Mockito.times(1)).queryPage(Mockito.eq(RecordMetadataDoc.class), Mockito.anyObject(), Mockito.anyString(),
                 Mockito.anyString(), Mockito.anyInt(), Mockito.eq(cursor));
         Assert.assertEquals(expectedDatastoreQueryResult, datastoreQueryResult);
     }
