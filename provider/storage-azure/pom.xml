@@ -102,6 +102,11 @@
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.microsoft.azure</groupId>
+      <artifactId>azure-eventgrid</artifactId>
+      <version>1.0.0</version>
+    </dependency>
   </dependencies>
 
   <repositories>
