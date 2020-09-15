@@ -20,6 +20,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.opengroup.osdu</groupId>
+    <artifactId>os-storage-testing</artifactId>
+    <version>0.0.5-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
     <groupId>org.opengroup.osdu.storage</groupId>
     <artifactId>storage-test-azure</artifactId>
     <version>0.0.2-SNAPSHOT</version>
@@ -95,25 +102,8 @@
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>${gitlab-server}</id>
-            <url>https://community.opengroup.org/api/v4/groups/17/-/packages/maven</url>
-        </repository>
-    </repositories>
 
-    <distributionManagement>
-        <repository>
-            <id>${gitlab-server}</id>
-            <url>https://community.opengroup.org/api/v4/projects/44/packages/maven</url>
-        </repository>
-        <snapshotRepository>
-            <id>${gitlab-server}</id>
-            <url>https://community.opengroup.org/api/v4/projects/44/packages/maven</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <build>
+  <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
