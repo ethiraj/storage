@@ -45,9 +45,7 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 | `AUTHORIZE_API_KEY` | `********` | The API key clients will need to use when calling the entitlements | yes | -- |
 | `LEGALTAG_API` | ex `https://foo-legal.azurewebsites.net` | Legal API endpoint | no | output of infrastructure deployment |
 | `azure.application-insights.instrumentation-key` | `********` | API Key for App Insights | yes | output of infrastructure deployment |
-| `azure.activedirectory.client-id` | `********` | AAD client application ID | yes | output of infrastructure deployment |
 | `azure.activedirectory.AppIdUri` | `api://${azure.activedirectory.client-id}` | URI for AAD Application | no | -- |
-| `azure.activedirectory.session-stateless` | `true` | Flag run in stateless mode (needed by AAD dependency) | no | -- |
 | `cosmosdb_account` | ex `devintosdur2cosmosacct` | Cosmos account name | no | output of infrastructure deployment |
 | `cosmosdb_key` | `********` | Key for CosmosDB | yes | output of infrastructure deployments |
 | `cosmosdb_database` | ex `dev-osdu-r2-db` | Cosmos database for storage documents | no | output of infrastructure deployment |
@@ -60,7 +58,22 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 | `AZURE_TENANT_ID` | `********` | AD tenant to authenticate users from | yes | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-tenant-id` |
 | `AZURE_CLIENT_SECRET` | `********` | Secret for `$AZURE_CLIENT_ID` | yes | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-password` |
 | `search_service_endpoint` | `https://search.azurewebsites.net/api/search/v2/query` | API endpoint for the search query endpoint | no | output of infrastructure deployment + path to the query endpoint |
+
+In Order to run service with AAD authentication add below environment variables, which will enable Authentication in storage service using AAD filter.
+
+| name | value | description | sensitive? | source |
+| ---  | ---   | ---         | ---        | ---    |
+| `azure_istioauth_enabled` | `false` | Flag to Disable AAD auth | no | -- |
+| `azure_activedirectory_session_stateless` | `true` | Flag run in stateless mode (needed by AAD dependency) | no | -- |
+| `azure_activedirectory_client_id` | `********` | AAD client application ID | yes | output of infrastructure deployment |
+
+In Order to run service without authentication add below environment variables, which will disable authentication in storage service.
+
+ name | value | description | sensitive? | source |
+| ---  | ---   | ---         | ---        | ---    |
 | `azure_istioauth_enabled` | `true` | Flag to Disable AAD auth | no | -- |
+
+
 
 **Required to run integration tests**
 
