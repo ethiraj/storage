@@ -15,6 +15,7 @@
 package org.opengroup.osdu.storage.util;
 
 import com.google.common.base.Strings;
+import org.opengroup.osdu.azure.util.AzureServicePrincipal;
 
 public class AzureTestUtils extends TestUtils {
 
@@ -25,7 +26,7 @@ public class AzureTestUtils extends TestUtils {
 			String sp_secret = System.getProperty("TESTER_SERVICEPRINCIPAL_SECRET", System.getenv("TESTER_SERVICEPRINCIPAL_SECRET"));
 			String tenant_id = System.getProperty("AZURE_AD_TENANT_ID", System.getenv("AZURE_AD_TENANT_ID"));
 			String app_resource_id = System.getProperty("AZURE_AD_APP_RESOURCE_ID", System.getenv("AZURE_AD_APP_RESOURCE_ID"));
-			token = AzureServicePrincipal.getIdToken(sp_id, sp_secret, tenant_id, app_resource_id);
+			token = new AzureServicePrincipal().getIdToken(sp_id, sp_secret, tenant_id, app_resource_id);
 		}
 		return "Bearer " + token;
 	}
@@ -37,7 +38,7 @@ public class AzureTestUtils extends TestUtils {
 			String sp_secret = System.getProperty("NO_DATA_ACCESS_TESTER_SERVICEPRINCIPAL_SECRET", System.getenv("NO_DATA_ACCESS_TESTER_SERVICEPRINCIPAL_SECRET"));
 			String tenant_id = System.getProperty("AZURE_AD_TENANT_ID", System.getenv("AZURE_AD_TENANT_ID"));
 			String app_resource_id = System.getProperty("AZURE_AD_APP_RESOURCE_ID", System.getenv("AZURE_AD_APP_RESOURCE_ID"));
-			noDataAccesstoken = AzureServicePrincipal.getIdToken(sp_id, sp_secret, tenant_id, app_resource_id);
+			noDataAccesstoken = new AzureServicePrincipal().getIdToken(sp_id, sp_secret, tenant_id, app_resource_id);
 		}
 		return "Bearer " + noDataAccesstoken;
 	}
