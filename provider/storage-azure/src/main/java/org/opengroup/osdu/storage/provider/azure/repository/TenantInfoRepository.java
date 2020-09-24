@@ -1,15 +1,13 @@
 package org.opengroup.osdu.storage.provider.azure.repository;
 
+import org.opengroup.osdu.azure.multitenancy.TenantInfoDoc;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.storage.provider.azure.di.AzureBootstrapConfig;
 import org.opengroup.osdu.storage.provider.azure.di.CosmosContainerConfig;
-import org.opengroup.osdu.storage.provider.azure.di.TenantInfoDoc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 

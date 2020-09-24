@@ -92,9 +92,10 @@ public class CloudStorageImpl implements ICloudStorage {
      * @param records the records to validate
      */
     private void validateRecordAcls(RecordProcessing... records) {
-        Set<String> validGroups = tenantRepo.findById(headers.getPartitionId())
+        String[] groups = tenantRepo.findById(headers.getPartitionId())
                 .orElseThrow(() -> new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Unknown Tenant", "Tenant was not found"))
-                .getGroups()
+                .getGroups();
+        Set<String> validGroups = Arrays.asList(groups)
                 .stream()
                 .map(group -> group.toLowerCase())
                 .collect(Collectors.toSet());
