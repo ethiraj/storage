@@ -21,6 +21,7 @@ import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpStatus;
 
+import org.opengroup.osdu.azure.blobstorage.IBlobContainerClientFactory;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
@@ -32,6 +33,7 @@ import org.opengroup.osdu.storage.provider.interfaces.IRecordsMetadataRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.inject.Named;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -63,10 +65,15 @@ public class CloudStorageImpl implements ICloudStorage {
     private IRecordsMetadataRepository recordRepository;
 
     @Autowired
-    private BlobContainerClient blobContainerClient;
+    private IBlobContainerClientFactory blobContainerClientFactory;
 
     @Autowired
     private TenantInfoRepository tenantRepo;
+
+    @Autowired
+    @Named("STORAGE_CONTAINER_NAME")
+    private String containerName;
+
 
     @Override
     public void write(RecordProcessing... recordsProcessing) {
@@ -74,7 +81,7 @@ public class CloudStorageImpl implements ICloudStorage {
 
         List<Callable<Boolean>> tasks = new ArrayList<>();
         for (RecordProcessing rp : recordsProcessing) {
-            tasks.add(() -> this.writeBlobThread(rp, blobContainerClient));
+            tasks.add(() -> this.writeBlobThread(rp, blobContainerClientFactory.getClient(headers.getPartitionId(), containerName)));
         }
 
         try {
@@ -181,7 +188,7 @@ public class CloudStorageImpl implements ICloudStorage {
 
         validateOwnerAccessToRecord(record);
         String path = this.buildPath(record);
-        BlockBlobClient blockBlobClient = blobContainerClient.getBlobClient(path).getBlockBlobClient();
+        BlockBlobClient blockBlobClient = blobContainerClientFactory.getClient(headers.getPartitionId(), containerName).getBlobClient(path).getBlockBlobClient();
         blockBlobClient.delete();
     }
 
@@ -189,7 +196,7 @@ public class CloudStorageImpl implements ICloudStorage {
     public void deleteVersion(RecordMetadata record, Long version) {
         validateOwnerAccessToRecord(record);
         String path = this.buildPath(record, version.toString());
-        BlockBlobClient blockBlobClient = blobContainerClient.getBlobClient(path).getBlockBlobClient();
+        BlockBlobClient blockBlobClient = blobContainerClientFactory.getClient(headers.getPartitionId(), containerName).getBlobClient(path).getBlockBlobClient();
         blockBlobClient.delete();
     }
 
@@ -253,7 +260,7 @@ public class CloudStorageImpl implements ICloudStorage {
         String content = "";
         validateViewerAccessToRecord(record);
         String path = this.buildPath(record, version.toString());
-        BlockBlobClient blockBlobClient = blobContainerClient.getBlobClient(path).getBlockBlobClient();
+        BlockBlobClient blockBlobClient = blobContainerClientFactory.getClient(headers.getPartitionId(), containerName).getBlobClient(path).getBlockBlobClient();
         try (ByteArrayOutputStream downloadStream = new ByteArrayOutputStream()) {
             blockBlobClient.download(downloadStream);
             content = downloadStream.toString(StandardCharsets.UTF_8.name());
@@ -279,7 +286,7 @@ public class CloudStorageImpl implements ICloudStorage {
                 continue;
             }
             String path = objects.get(recordId);
-            tasks.add(() -> this.readBlobThread(recordId, path, map, blobContainerClient));
+            tasks.add(() -> this.readBlobThread(recordId, path, map, blobContainerClientFactory.getClient(headers.getPartitionId(), containerName)));
         }
 
         try {
