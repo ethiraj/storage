@@ -27,7 +27,7 @@ import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.*;
 import org.opengroup.osdu.core.common.util.Crc32c;
-import org.opengroup.osdu.storage.provider.azure.repository.TenantInfoRepository;
+import org.opengroup.osdu.storage.provider.azure.repository.GroupsInfoRepository;
 import org.opengroup.osdu.storage.provider.interfaces.ICloudStorage;
 import org.opengroup.osdu.storage.provider.interfaces.IRecordsMetadataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +68,7 @@ public class CloudStorageImpl implements ICloudStorage {
     private IBlobContainerClientFactory blobContainerClientFactory;
 
     @Autowired
-    private TenantInfoRepository tenantRepo;
+    private GroupsInfoRepository groupsInfoRepository;
 
     @Autowired
     @Named("STORAGE_CONTAINER_NAME")
@@ -99,7 +99,7 @@ public class CloudStorageImpl implements ICloudStorage {
      * @param records the records to validate
      */
     private void validateRecordAcls(RecordProcessing... records) {
-        String[] groups = tenantRepo.findById(headers.getPartitionId())
+        String[] groups = groupsInfoRepository.findById(headers.getPartitionId())
                 .orElseThrow(() -> new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Unknown Tenant", "Tenant was not found"))
                 .getGroups();
         Set<String> validGroups = Arrays.asList(groups)
