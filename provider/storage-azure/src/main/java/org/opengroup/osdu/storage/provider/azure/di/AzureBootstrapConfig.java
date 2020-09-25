@@ -24,7 +24,7 @@ import javax.inject.Named;
 @Component
 public class AzureBootstrapConfig {
 
-    @Value("${servicebus_topic_name}")
+    @Value("${azure.servicebus.topic-name}")
     private String serviceBusTopic;
 
     @Bean
