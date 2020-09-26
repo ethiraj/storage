@@ -16,7 +16,6 @@ package org.opengroup.osdu.storage.provider.azure.repository;
 
 import com.azure.cosmos.FeedOptions;
 import com.azure.cosmos.SqlQuerySpec;
-
 import org.opengroup.osdu.storage.provider.azure.generator.FindQuerySpecGenerator;
 import org.opengroup.osdu.storage.provider.azure.query.CosmosStorePageRequest;
 import org.opengroup.osdu.storage.provider.azure.query.CosmosStoreQuery;
@@ -29,7 +28,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 
 public class SimpleCosmosStoreRepository<T> implements CosmosStoreRepository<T> {
@@ -76,27 +77,12 @@ public class SimpleCosmosStoreRepository<T> implements CosmosStoreRepository<T> 
         return this.operation.queryItems(dataPartitionId, cosmosDBName, collection, query, options, this.getDomainClass());
     }
 
-    public List<T> findAllItemsAsync(String dataPartitionId, String cosmosDBName, String collection, short pageSize, int pageNum) {
-        return  this.operation.findAllItemsAsync(dataPartitionId, cosmosDBName, collection, this.getDomainClass(), pageSize, pageNum);
+    public Page<T> findAllItemsPage(String dataPartitionId, String cosmosDBName, String collection, int pageSize, String continuationToken) {
+        return this.operation.findAllItemsPage(dataPartitionId, cosmosDBName, collection, this.getDomainClass(), pageSize, continuationToken);
     }
 
-    @Deprecated
-    public Page<T> findAllItemsAsyncPage(String dataPartitionId, String cosmosDBName, String collection, short pageSize, int pageNum) {
-        return this.operation.findAllItemsAsyncPage(dataPartitionId, cosmosDBName, collection, this.getDomainClass(), pageSize, pageNum);
-    }
-
-    @Deprecated
-    public List<T> queryItemsAsync(String dataPartitionId, String cosmosDBName, String collection, SqlQuerySpec query, short pageSize, int pageNum) {
-        return this.operation.queryItemsAsync(dataPartitionId, cosmosDBName, collection, query, this.getDomainClass(), pageSize, pageNum);
-    }
-
-    @Deprecated
-    public Page<T> queryItemsAsyncPage(String dataPartitionId, String cosmosDBName, String collection, SqlQuerySpec query, short pageSize, int pageNum) {
-        return this.operation.queryItemsAsyncPage(dataPartitionId, cosmosDBName, collection, query, this.getDomainClass(), pageSize, pageNum);
-    }
-
-    public Page<T> queryItemsAsyncPage(String dataPartitionId, String cosmosDBName, String collection, SqlQuerySpec query, int pageSize, String coninuationToken) {
-        return this.operation.queryItemsAsyncPage(dataPartitionId, cosmosDBName, collection, query, this.getDomainClass(), pageSize, coninuationToken);
+    public Page<T> queryItemsPage(String dataPartitionId, String cosmosDBName, String collection, SqlQuerySpec query, int pageSize, String coninuationToken) {
+        return this.operation.queryItemsPage(dataPartitionId, cosmosDBName, collection, query, this.getDomainClass(), pageSize, coninuationToken);
     }
 
     public void upsertItem(String dataPartitionId, String cosmosDBName, String collection, @NonNull T item) {
@@ -286,15 +272,11 @@ public class SimpleCosmosStoreRepository<T> implements CosmosStoreRepository<T> 
     public Page<T> paginationQuery(Pageable pageable, SqlQuerySpec query, Class<T> domainClass, String dataPartitionId, String cosmosDBName, String collectionName) {
         Assert.isTrue(pageable.getPageSize() > 0, "pageable should have page size larger than 0");
         Assert.hasText(collectionName, "collection should not be null, empty or only whitespaces");
-        FeedOptions feedOptions = new FeedOptions();
         String continuationToken = null;
         if (pageable instanceof CosmosStorePageRequest) {
             continuationToken = ((CosmosStorePageRequest)pageable).getRequestContinuation();
         }
-        // feedOptions.maxItemCount(pageable.getPageSize());
-        // feedOptions.setEnableCrossPartitionQuery(true);
-        // int pageNum = pageable.getPageNumber();
         int pageSize = pageable.getPageSize();
-        return this.queryItemsAsyncPage(dataPartitionId, cosmosDBName, collectionName, query, pageSize, continuationToken);
+        return this.queryItemsPage(dataPartitionId, cosmosDBName, collectionName, query, pageSize, continuationToken);
     }
 }

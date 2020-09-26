@@ -4,6 +4,7 @@ import com.azure.cosmos.FeedOptions;
 import com.azure.cosmos.SqlQuerySpec;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -35,23 +36,11 @@ public interface CosmosStoreRepository<T> extends PagingAndSortingRepository<T> 
     List<T> queryItems(String dataPartitionId, String cosmosDBName, String collection, SqlQuerySpec
             query, FeedOptions options);
 
-    @Deprecated
-    List<T> findAllItemsAsync(String dataPartitionId, String cosmosDBName, String collection, short pageSize,
-                              int pageNum);
-
-    @Deprecated
-    List<T> queryItemsAsync(String dataPartitionId, String cosmosDBName, String collection, SqlQuerySpec query,
-                            short pageSize, int pageNum);
-
     void upsertItem(String dataPartitionId, String cosmosDBName, String collection, T item);
 
     void createItem(String dataPartitionId, String cosmosDBName, String collection, T item);
 
-    @Deprecated
-    Page<T> findAllItemsAsyncPage(String dataPartitionId, String cosmosDBName, String collection, short pageSize,
-                                  int pageNum);
-    @Deprecated
-    Page<T> queryItemsAsyncPage(String dataPartitionId, String cosmosDBName, String collection, SqlQuerySpec query,
-                                short pageSize, int pageNum);
+    public Page<T> findAllItemsPage(String dataPartitionId, String cosmosDBName, String collection, int pageSize, String continuationToken);
 
+    public Page<T> queryItemsPage(String dataPartitionId, String cosmosDBName, String collection, SqlQuerySpec query, int pageSize, String coninuationToken);
 }

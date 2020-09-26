@@ -105,18 +105,4 @@ public class AzureBootstrapConfig {
 
         return secretValue;
     }
-
-    @Bean
-    public AsyncDocumentClient asyncDocumentClient(final @Named("COSMOS_ENDPOINT") String endpoint, final @Named("COSMOS_KEY") String key) {
-
-        ConnectionPolicy connectionPolicy = new ConnectionPolicy();
-        connectionPolicy.setConnectionMode(ConnectionMode.DIRECT);
-
-        return new AsyncDocumentClient.Builder()
-                .withServiceEndpoint(endpoint)
-                .withMasterKeyOrResourceToken(key)
-                .withConnectionPolicy(connectionPolicy)
-                .build();
-    }
-
 }
