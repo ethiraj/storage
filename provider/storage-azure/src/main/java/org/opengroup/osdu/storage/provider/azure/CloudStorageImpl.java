@@ -81,7 +81,10 @@ public class CloudStorageImpl implements ICloudStorage {
 
         List<Callable<Boolean>> tasks = new ArrayList<>();
         for (RecordProcessing rp : recordsProcessing) {
-            tasks.add(() -> this.writeBlobThread(rp, blobContainerClientFactory.getClient(headers.getPartitionId(), containerName)));
+            //have to pass partitionId separately because of multithreading scenario. 'headers' object is request scoped (autowired) and
+            //children threads lose their context down the stream, we get a bean creation exception
+            String partitionId = headers.getPartitionId();
+            tasks.add(() -> this.writeBlobThread(rp, blobContainerClientFactory.getClient(partitionId, containerName)));
         }
 
         try {
@@ -188,6 +191,7 @@ public class CloudStorageImpl implements ICloudStorage {
 
         validateOwnerAccessToRecord(record);
         String path = this.buildPath(record);
+        //NOTE: pass partitionId separately if this function is multithreaded
         BlockBlobClient blockBlobClient = blobContainerClientFactory.getClient(headers.getPartitionId(), containerName).getBlobClient(path).getBlockBlobClient();
         blockBlobClient.delete();
     }
@@ -196,6 +200,7 @@ public class CloudStorageImpl implements ICloudStorage {
     public void deleteVersion(RecordMetadata record, Long version) {
         validateOwnerAccessToRecord(record);
         String path = this.buildPath(record, version.toString());
+        //NOTE: pass partitionId separately if this function is multithreaded
         BlockBlobClient blockBlobClient = blobContainerClientFactory.getClient(headers.getPartitionId(), containerName).getBlobClient(path).getBlockBlobClient();
         blockBlobClient.delete();
     }
@@ -286,7 +291,10 @@ public class CloudStorageImpl implements ICloudStorage {
                 continue;
             }
             String path = objects.get(recordId);
-            tasks.add(() -> this.readBlobThread(recordId, path, map, blobContainerClientFactory.getClient(headers.getPartitionId(), containerName)));
+            //have to pass partitionId separately because of multithreading scenario. 'headers' object is request scoped (autowired) and
+            //children threads lose their context down the stream, we get a bean creation exception
+            String partitionId = headers.getPartitionId();
+            tasks.add(() -> this.readBlobThread(recordId, path, map, blobContainerClientFactory.getClient(partitionId, containerName)));
         }
 
         try {
