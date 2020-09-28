@@ -15,6 +15,7 @@
 package org.opengroup.osdu.storage.service;
 
 import org.opengroup.osdu.core.common.model.indexer.OperationType;
+import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.storage.logging.StorageAuditLogger;
 import org.opengroup.osdu.core.common.model.storage.PubSubInfo;
 import org.opengroup.osdu.core.common.model.storage.Schema;
@@ -26,7 +27,6 @@ import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.util.Crc32c;
-import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -64,7 +64,7 @@ public class SchemaServiceImpl implements SchemaService {
 	private ICache<String, Schema> cache;
 
 	@Autowired
-	private TenantInfo tenant;
+	private ITenantFactory tenantFactory;
 
 	@Autowired
 	private IMessageBus pubSubClient;
@@ -233,7 +233,7 @@ public class SchemaServiceImpl implements SchemaService {
 	}
 
 	private void validateKindFromTenant(String kind) {
-	    String tenantName = this.tenant.getName();
+	    String tenantName = this.tenantFactory.getTenantInfo(headers.getPartitionId()).getName();
 
 		if (!KindValidator.isKindFromTenantValid(kind, tenantName)) {
 			String msg = String.format("The kind '%s' does not belong to the account '%s'", kind, tenantName);
