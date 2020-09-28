@@ -41,18 +41,18 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 | ---  | ---   | ---         | ---        | ---    |
 | `LOG_PREFIX` | `storage` | Logging prefix | no | - |
 | `server.servlet.contextPath` | `/api/storage/v2/` | Servlet context path | no | - |
-| `AUTHORIZE_API` | ex `https://foo-entitlements.azurewebsites.net` | Entitlements API endpoint | no | output of infrastructure deployment |
+| `AUTHORIZE_API` | ex `https://foo-entitlements.azurewebsites.net/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment |
 | `AUTHORIZE_API_KEY` | `********` | The API key clients will need to use when calling the entitlements | yes | -- |
-| `LEGALTAG_API` | ex `https://foo-legal.azurewebsites.net` | Legal API endpoint | no | output of infrastructure deployment |
-| `azure.application-insights.instrumentation-key` | `********` | API Key for App Insights | yes | output of infrastructure deployment |
+| `LEGALTAG_API` | ex `https://foo-legal.azurewebsites.net/api/legal/v1` | Legal API endpoint | no | output of infrastructure deployment |
+| `PARTITION_API` | ex `https//foo-partition.azurewebsites.net/api/partition/v1` | Partition API endpoint | no | output of infrastructure deployment |
 | `azure.activedirectory.client-id` | `********` | AAD client application ID | yes | output of infrastructure deployment |
 | `azure.activedirectory.AppIdUri` | `api://${azure.activedirectory.client-id}` | URI for AAD Application | no | -- |
 | `azure.activedirectory.session-stateless` | `true` | Flag run in stateless mode (needed by AAD dependency) | no | -- |
 | `cosmosdb_database` | ex `dev-osdu-r2-db` | Cosmos database for storage documents | no | output of infrastructure deployment |
 | `azure.storage.enable-https` | `true` | Used by spring boot starter library | no | - |
 | `servicebus_topic_name` | `recordstopic` | Topic for async messaging | no | output of infrastructure deployment |
+| `azure.application-insights.instrumentation-key` | `********` | API Key for App Insights | yes | output of infrastructure deployment |
 | `KEYVAULT_URI` | ex `https://foo-keyvault.vault.azure.net/` | URI of KeyVault that holds application secrets | no | output of infrastructure deployment |
-| `azure_istioauth_enabled` | `true` | Flag to Disable AAD auth | no | -- |
 
 **Required to run integration tests**
 
