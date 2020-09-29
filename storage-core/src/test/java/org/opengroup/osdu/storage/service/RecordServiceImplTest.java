@@ -92,7 +92,6 @@ public class RecordServiceImplTest {
 
         when(this.tenant.getName()).thenReturn(TENANT_NAME);
         when(this.headers.getPartitionIdWithFallbackToAccountId()).thenReturn(TENANT_NAME);
-        when(this.headers.getPartitionId()).thenReturn(TENANT_NAME);
         when(this.tenantFactory.exists(TENANT_NAME)).thenReturn(true);
         when(this.tenantFactory.getTenantInfo(TENANT_NAME)).thenReturn(this.tenant);
     }

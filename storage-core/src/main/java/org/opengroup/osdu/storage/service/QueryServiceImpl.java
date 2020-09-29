@@ -22,7 +22,7 @@ import java.util.List;
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
-import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +49,7 @@ public class QueryServiceImpl implements QueryService {
 	private ICloudStorage cloudStorage;
 
 	@Autowired
-	private ITenantFactory tenantFactory;
+	private TenantInfo tenant;
 
 	@Autowired
 	private StorageAuditLogger auditLogger;
@@ -129,7 +129,7 @@ public class QueryServiceImpl implements QueryService {
 
 	private RecordMetadata getRecordFromRepository(String recordId) {
 
-		String tenantName = tenantFactory.getTenantInfo(dpsHeaders.getPartitionId()).getName();
+		String tenantName = tenant.getName();
 		if (!Record.isRecordIdValid(recordId, tenantName)) {
 			String msg = String
 					.format("The record '%s' does not belong to account '%s'", recordId, tenantName)

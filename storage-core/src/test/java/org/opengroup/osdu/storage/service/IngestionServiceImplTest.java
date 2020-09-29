@@ -131,7 +131,6 @@ public class IngestionServiceImplTest {
 
         when(this.tenant.getName()).thenReturn(TENANT);
         when(this.headers.getPartitionIdWithFallbackToAccountId()).thenReturn(TENANT);
-        when(this.headers.getPartitionId()).thenReturn(TENANT);
         when(this.tenantFactory.exists(TENANT)).thenReturn(true);
         when(this.tenantFactory.getTenantInfo(TENANT)).thenReturn(this.tenant);
         when(this.authService.hasOwnerAccess(any(),any())).thenReturn(true);

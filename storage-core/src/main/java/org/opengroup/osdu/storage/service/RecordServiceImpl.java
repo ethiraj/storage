@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.opengroup.osdu.core.common.entitlements.IEntitlementsAndCacheService;
 import org.opengroup.osdu.core.common.model.indexer.OperationType;
-import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.storage.provider.interfaces.IMessageBus;
 import org.apache.http.HttpStatus;
 
@@ -70,10 +70,11 @@ public class RecordServiceImpl implements RecordService {
     private IPersistenceService persistenceService;
 
     @Autowired
-    private ITenantFactory tenantFactory;
+    private TenantInfo tenant;
 
     @Autowired
-    private DpsHeaders dpsHeaders;
+    private DpsHeaders headers;
+
 
     @Autowired
     private StorageAuditLogger auditLogger;
@@ -84,7 +85,7 @@ public class RecordServiceImpl implements RecordService {
     public void purgeRecord(String recordId) {
 
         RecordMetadata recordMetadata = this.getRecordMetadata(recordId, true);
-        boolean hasOwnerAccess = this.entitlementsAndCacheService.hasOwnerAccess(this.dpsHeaders, recordMetadata.getAcl().getOwners());
+        boolean hasOwnerAccess = this.entitlementsAndCacheService.hasOwnerAccess(this.headers, recordMetadata.getAcl().getOwners());
 
         if (!hasOwnerAccess) {
             this.auditLogger.purgeRecordFail(singletonList(recordId));
@@ -110,7 +111,7 @@ public class RecordServiceImpl implements RecordService {
         }
 
         this.auditLogger.purgeRecordSuccess(singletonList(recordId));
-        this.pubSubClient.publishMessage(this.dpsHeaders,
+        this.pubSubClient.publishMessage(this.headers,
                 new PubSubInfo(recordId, recordMetadata.getKind(), OperationType.delete));
     }
 
@@ -132,7 +133,7 @@ public class RecordServiceImpl implements RecordService {
         this.auditLogger.deleteRecordSuccess(singletonList(recordId));
 
         PubSubInfo pubSubInfo = new PubSubInfo(recordId, recordMetadata.getKind(), OperationType.delete);
-        this.pubSubClient.publishMessage(this.dpsHeaders, pubSubInfo);
+        this.pubSubClient.publishMessage(this.headers, pubSubInfo);
     }
 
     @Override
@@ -165,7 +166,7 @@ public class RecordServiceImpl implements RecordService {
 
             if (metadata != null) {
                 // pre acl check, enforce application data restriction
-                boolean hasOwnerAccess = this.entitlementsAndCacheService.hasOwnerAccess(this.dpsHeaders, metadata.getAcl().getOwners());
+                boolean hasOwnerAccess = this.entitlementsAndCacheService.hasOwnerAccess(this.headers, metadata.getAcl().getOwners());
                 if (!hasOwnerAccess) {
                     unauthorizedRecordIds.add(idWithVersion);
                     ids.remove(idWithVersion);
@@ -200,7 +201,7 @@ public class RecordServiceImpl implements RecordService {
 
     private RecordMetadata getRecordMetadata(String recordId, boolean isPurgeRequest) {
 
-        String tenantName = this.tenantFactory.getTenantInfo(this.dpsHeaders.getPartitionId()).getName();
+        String tenantName = tenant.getName();
         if (!Record.isRecordIdValid(recordId, tenantName)) {
             String msg = String.format("The record '%s' does not belong to account '%s'", recordId, tenantName);
 
@@ -277,7 +278,7 @@ public class RecordServiceImpl implements RecordService {
 
             Set<String> valueSet = new HashSet<>(Arrays.asList(op.getValue()));
             if (path.startsWith("/acl")) {
-                if (!this.entitlementsAndCacheService.isValidAcl(this.dpsHeaders, valueSet)) {
+                if (!this.entitlementsAndCacheService.isValidAcl(this.headers, valueSet)) {
                     throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid ACLs", "Invalid ACLs provided in acl path.");
                 }
             } else {
@@ -288,10 +289,10 @@ public class RecordServiceImpl implements RecordService {
 
     private void validateRecordIds(List<String> recordIds) {
         for (String id : recordIds) {
-            if (!Record.isRecordIdValid(id, this.tenantFactory.getTenantInfo(this.dpsHeaders.getPartitionId()).getName())) {
+            if (!Record.isRecordIdValid(id, this.tenant.getName())) {
                 String msg = String.format(
                         "The record '%s' does not follow the naming convention: the first id component must be '%s'",
-                        id, this.tenantFactory.getTenantInfo(this.dpsHeaders.getPartitionId()).getName());
+                        id, this.tenant.getName());
                 throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid record id", msg);
             }
         }

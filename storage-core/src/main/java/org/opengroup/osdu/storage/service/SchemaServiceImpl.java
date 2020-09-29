@@ -15,7 +15,7 @@
 package org.opengroup.osdu.storage.service;
 
 import org.opengroup.osdu.core.common.model.indexer.OperationType;
-import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.storage.logging.StorageAuditLogger;
 import org.opengroup.osdu.core.common.model.storage.PubSubInfo;
 import org.opengroup.osdu.core.common.model.storage.Schema;
@@ -64,7 +64,7 @@ public class SchemaServiceImpl implements SchemaService {
 	private ICache<String, Schema> cache;
 
 	@Autowired
-	private ITenantFactory tenantFactory;
+	private TenantInfo tenant;
 
 	@Autowired
 	private IMessageBus pubSubClient;
@@ -233,7 +233,7 @@ public class SchemaServiceImpl implements SchemaService {
 	}
 
 	private void validateKindFromTenant(String kind) {
-	    String tenantName = this.tenantFactory.getTenantInfo(headers.getPartitionId()).getName();
+		String tenantName = this.tenant.getName();
 
 		if (!KindValidator.isKindFromTenantValid(kind, tenantName)) {
 			String msg = String.format("The kind '%s' does not belong to the account '%s'", kind, tenantName);

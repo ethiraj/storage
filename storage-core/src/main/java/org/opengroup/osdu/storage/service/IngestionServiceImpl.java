@@ -26,7 +26,7 @@ import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.storage.validation.KindValidator;
 import org.opengroup.osdu.core.common.legal.ILegalService;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
-import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.storage.*;
 import org.opengroup.osdu.storage.logging.StorageAuditLogger;
 import org.opengroup.osdu.storage.provider.interfaces.ICloudStorage;
@@ -59,7 +59,7 @@ public class IngestionServiceImpl implements IngestionService {
 	private DpsHeaders headers;
 
 	@Autowired
-	private ITenantFactory tenantFactory;
+	private TenantInfo tenant;
 
 	@Autowired
     private JaxRsDpsLog logger;
@@ -99,7 +99,7 @@ public class IngestionServiceImpl implements IngestionService {
 	}
 
 	private void validateKindFormat(List<Record> inputRecords) {
-		String tenantName = tenantFactory.getTenantInfo(headers.getPartitionId()).getName();
+		String tenantName = tenant.getName();
 
 		for (Record record : inputRecords) {
 			if (!KindValidator.isKindFromTenantValid(record.getKind(), tenantName)) {
@@ -113,7 +113,7 @@ public class IngestionServiceImpl implements IngestionService {
 	}
 
 	private void validateRecordIds(List<Record> inputRecords) {
-		String tenantName = tenantFactory.getTenantInfo(headers.getPartitionId()).getName();
+		String tenantName = tenant.getName();
 
 		Set<String> ids = new HashSet<>();
 		for (Record record : inputRecords) {
