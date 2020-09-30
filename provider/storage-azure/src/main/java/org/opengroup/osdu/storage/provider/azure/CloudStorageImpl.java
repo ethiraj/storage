@@ -80,11 +80,12 @@ public class CloudStorageImpl implements ICloudStorage {
         validateRecordAcls(recordsProcessing);
 
         List<Callable<Boolean>> tasks = new ArrayList<>();
+        String partitionId = headers.getPartitionId();
+        BlobContainerClient blobContainerClient = blobContainerClientFactory.getClient(partitionId, containerName);
         for (RecordProcessing rp : recordsProcessing) {
             //have to pass partitionId separately because of multithreading scenario. 'headers' object is request scoped (autowired) and
             //children threads lose their context down the stream, we get a bean creation exception
-            String partitionId = headers.getPartitionId();
-            tasks.add(() -> this.writeBlobThread(rp, blobContainerClientFactory.getClient(partitionId, containerName)));
+            tasks.add(() -> this.writeBlobThread(rp, blobContainerClient));
         }
 
         try {
@@ -284,6 +285,8 @@ public class CloudStorageImpl implements ICloudStorage {
         List<String> recordIds = new ArrayList<>(objects.keySet());
         Map<String, RecordMetadata> recordsMetadata = this.recordRepository.get(recordIds);
 
+        String partitionId = headers.getPartitionId();
+        BlobContainerClient blobContainerClient = blobContainerClientFactory.getClient(partitionId, containerName);
         for (String recordId : recordIds) {
             RecordMetadata recordMetadata = recordsMetadata.get(recordId);
             if (!hasViewerAccessToRecord(recordMetadata)) {
@@ -293,8 +296,7 @@ public class CloudStorageImpl implements ICloudStorage {
             String path = objects.get(recordId);
             //have to pass partitionId separately because of multithreading scenario. 'headers' object is request scoped (autowired) and
             //children threads lose their context down the stream, we get a bean creation exception
-            String partitionId = headers.getPartitionId();
-            tasks.add(() -> this.readBlobThread(recordId, path, map, blobContainerClientFactory.getClient(partitionId, containerName)));
+            tasks.add(() -> this.readBlobThread(recordId, path, map, blobContainerClient));
         }
 
         try {
