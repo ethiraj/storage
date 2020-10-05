@@ -85,8 +85,7 @@ spec:
               key: application-appid
         - name: azure_activedirectory_session_stateless
           value: "true"
-        - name: azure_activedirectory_AppIdUri
-          value: "api://$(aad_client_id)"
+
         - name: appinsights_key
           valueFrom:
             secretKeyRef:
@@ -106,5 +105,9 @@ spec:
           value: southcentralus
         - name: search_service_endpoint
           value: http://legal/api/legal/v1
+        - name: partition_service_endpoint
+          value: http://partition/api/partition/v1
         - name: azure_istioauth_enabled
           value: "true"
+        - name: azure_activedirectory_AppIdUri
+          value: "api://$(aad_client_id)"
