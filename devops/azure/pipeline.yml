@@ -12,7 +12,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-
 trigger:
   batch: true
   branches:
@@ -28,7 +27,6 @@ trigger:
       - /provider/storage-gcp
       - /provider/storage-ibm
 
-
 resources:
   repositories:
   - repository: FluxRepo
@@ -37,7 +35,6 @@ resources:
   - repository: TemplateRepo
     type: git
     name: infra-azure-provisioning
-
 
 variables:
   - group: 'Azure - OSDU'
@@ -52,9 +49,7 @@ variables:
   - name: 'MANIFEST_REPO'
     value: $[ resources.repositories['FluxRepo'].name ]
 
-
 stages:
-
   - template: /devops/build-stage.yml@TemplateRepo
     parameters:
       mavenGoal: 'package'
@@ -71,7 +66,6 @@ stages:
       serviceBase: ${{ variables.serviceName }}
       testingRootFolder: 'testing'
       chartPath: ${{ variables.chartPath }}
-
   - template: /devops/deploy-stages.yml@TemplateRepo
     parameters:
       serviceName: ${{ variables.serviceName }}
