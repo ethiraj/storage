@@ -92,11 +92,6 @@ spec:
             secretKeyRef:
               name: central-logging
               key: appinsights
-        - name: cosmosdb_account
-          valueFrom:
-            configMapKeyRef:
-              name: osdu-svc-properties
-              key: ENV_COSMOSDB_HOST
         - name: cosmosdb_database
           value: osdu-db
         - name: servicebus_topic_name
