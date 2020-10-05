@@ -87,25 +87,6 @@ Java version: 1.8.0_212, vendor: AdoptOpenJDK, runtime: /usr/lib/jvm/jdk8u212-b0
 ...
 ```
 
-You may need to configure access to the remote maven repository that holds the OSDU dependencies. This file should live within `~/.m2/settings.xml`:
-```bash
-$ cat ~/.m2/settings.xml
-<?xml version="1.0" encoding="UTF-8"?>
-<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-    <servers>
-        <server>
-            <id>os-core</id>
-            <username>mvn-pat</username>
-            <!-- Treat this auth token like a password. Do not share it with anyone, including Microsoft support. -->
-            <!-- The generated token expires on or before 11/14/2019 -->
-            <password>$PERSONAL_ACCESS_TOKEN_GOES_HERE</password>
-        </server>
-    </servers>
-</settings>
-```
-
 ### Build and run the application
 
 After configuring your environment as specified above, you can follow these steps to build and run the application. These steps should be invoked from the *repository root.*
