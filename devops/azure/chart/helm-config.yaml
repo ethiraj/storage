@@ -2,7 +2,7 @@
 global:
 
   # Service(s) Replica Count
-  replicaCount: 2
+  replicaCount: 1
 
 ################################################################################
 # Specify the Gitlab branch being used for image creation
