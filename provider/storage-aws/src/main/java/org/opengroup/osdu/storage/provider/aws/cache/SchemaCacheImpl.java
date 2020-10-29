@@ -1,4 +1,4 @@
-// Copyright 2017-2019, Schlumberger
+// Copyright © 2020 Amazon Web Services
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,18 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.storage.provider.gcp.cache;
+package org.opengroup.osdu.storage.provider.aws.cache;
 
-import org.opengroup.osdu.core.common.model.storage.Schema;
 import org.opengroup.osdu.core.common.cache.RedisCache;
+import org.opengroup.osdu.core.common.model.storage.Schema;
+import org.opengroup.osdu.storage.cache.SchemaCache;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SchemaCache extends RedisCache<String, Schema> {
+public class SchemaCacheImpl extends RedisCache<String, Schema> implements SchemaCache {
 
-	public SchemaCache(@Value("${REDIS_STORAGE_HOST}") final String REDIS_STORAGE_HOST, @Value("${REDIS_STORAGE_PORT}") final String REDIS_STORAGE_PORT) {
-		super(REDIS_STORAGE_HOST, Integer.parseInt(REDIS_STORAGE_PORT), 60 * 60, String.class,
-				Schema.class);
-	}
+    public SchemaCacheImpl(@Value("${aws.elasticache.cluster.endpoint}") final String REDIS_SCHEMA_HOST, @Value("${aws.elasticache.cluster.port}") final String REDIS_SCHEMA_PORT) {
+        super(REDIS_SCHEMA_HOST, Integer.parseInt(REDIS_SCHEMA_PORT), 60 * 60, String.class,
+                Schema.class);
+    }
+
 }

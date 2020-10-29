@@ -1,4 +1,4 @@
-// Copyright © 2020 Amazon Web Services
+// Copyright 2017-2019, Schlumberger
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,19 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.storage.provider.aws.cache;
+package org.opengroup.osdu.storage.provider.gcp.cache;
 
+import org.opengroup.osdu.core.common.model.entitlements.Groups;
 import org.opengroup.osdu.core.common.cache.RedisCache;
-import org.opengroup.osdu.core.common.model.storage.Schema;
+import org.opengroup.osdu.storage.cache.GroupCache;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SchemaCache extends RedisCache<String, Schema> {
+public class GroupCacheImpl extends RedisCache<String, Groups> implements GroupCache {
 
-    public SchemaCache(@Value("${aws.elasticache.cluster.endpoint}") final String REDIS_SCHEMA_HOST, @Value("${aws.elasticache.cluster.port}") final String REDIS_SCHEMA_PORT) {
-        super(REDIS_SCHEMA_HOST, Integer.parseInt(REDIS_SCHEMA_PORT), 60 * 60, String.class,
-                Schema.class);
-    }
+	public GroupCacheImpl(@Value("${REDIS_GROUP_HOST}") final String REDIS_GROUP_HOST,@Value("${REDIS_GROUP_PORT}") final String REDIS_GROUP_PORT)
+			{
+		super(REDIS_GROUP_HOST, Integer.parseInt(REDIS_GROUP_PORT), 30, String.class,
+				Groups.class);
 
+	}
 }

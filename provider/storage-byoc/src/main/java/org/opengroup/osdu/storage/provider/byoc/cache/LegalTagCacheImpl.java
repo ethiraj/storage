@@ -12,28 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.storage.provider.azure.cache;
+package org.opengroup.osdu.storage.provider.byoc.cache;
 
 import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.cache.MultiTenantCache;
 import org.opengroup.osdu.core.common.cache.VmCache;
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.storage.cache.LegalTagCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("LegalTagCache")
-public class LegalTagCache implements ICache<String, String> {
+public class LegalTagCacheImpl implements LegalTagCache {
 
     @Autowired
-    private ITenantFactory tenantFactory;
-
-    @Autowired
-    private DpsHeaders dpsHeaders;
+    private TenantInfo tenant;
 
     private final MultiTenantCache<String> caches;
 
-    public LegalTagCache() {
+    public LegalTagCacheImpl() {
         this.caches = new MultiTenantCache<>(
                 new VmCache(60*60, 1000));
     }
@@ -59,7 +56,7 @@ public class LegalTagCache implements ICache<String, String> {
     }
 
     private ICache<String, String> partitionCache() {
-        return this.caches.get(String.format("%s:legalTag", this.tenantFactory.getTenantInfo(dpsHeaders.getPartitionId())));
+        return this.caches.get(String.format("%s:legalTag", this.tenant));
     }
 }
 

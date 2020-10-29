@@ -1,4 +1,4 @@
-// Copyright © 2020 Amazon Web Services
+// Copyright 2017-2021, Schlumberger
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.storage.provider.aws.util;
+package org.opengroup.osdu.storage.cache;
 
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.storage.provider.aws.cache.GroupCacheImpl;
+import org.opengroup.osdu.core.common.cache.ICache;
+import org.opengroup.osdu.core.common.model.storage.Schema;
 
-public class CacheHelper {
-    public String getGroupCacheKey(DpsHeaders headers){
-        return GroupCacheImpl.getGroupCacheKey(headers);
-    }
+public interface SchemaCache extends ICache<String, Schema> {
 
-    public String getPartitionGroupsCacheKey (String dataPartitionId) {
-        return GroupCacheImpl.getPartitionGroupsCacheKey(dataPartitionId);
-    }
 }

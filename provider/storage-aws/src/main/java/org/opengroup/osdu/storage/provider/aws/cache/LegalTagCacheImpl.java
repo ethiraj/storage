@@ -19,20 +19,21 @@ import org.opengroup.osdu.core.common.cache.MultiTenantCache;
 import org.opengroup.osdu.core.common.cache.RedisCache;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 
+import org.opengroup.osdu.storage.cache.LegalTagCache;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
 @Component
-public class LegalTagCache implements ICache<String, String> {
+public class LegalTagCacheImpl implements LegalTagCache {
 
     @Inject
     private TenantInfo tenant;
 
     private final MultiTenantCache<String> caches;
 
-    public LegalTagCache(@Value("${aws.elasticache.cluster.endpoint}") final String REDIS_LEGALTAG_HOST, @Value("${aws.elasticache.cluster.port}") final String REDIS_LEGALTAG_PORT) {
+    public LegalTagCacheImpl(@Value("${aws.elasticache.cluster.endpoint}") final String REDIS_LEGALTAG_HOST, @Value("${aws.elasticache.cluster.port}") final String REDIS_LEGALTAG_PORT) {
         this.caches = new MultiTenantCache<>(new RedisCache<>(REDIS_LEGALTAG_HOST,Integer.parseInt(REDIS_LEGALTAG_PORT),
                 60 * 60,
                 String.class,

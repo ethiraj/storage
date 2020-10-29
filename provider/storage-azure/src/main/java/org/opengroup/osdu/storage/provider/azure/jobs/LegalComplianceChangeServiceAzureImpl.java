@@ -14,25 +14,31 @@
 
 package org.opengroup.osdu.storage.provider.azure.jobs;
 
-import org.opengroup.osdu.core.common.model.indexer.OperationType;
-import org.opengroup.osdu.core.common.model.legal.LegalCompliance;
-import org.opengroup.osdu.core.common.model.legal.jobs.*;
-import org.opengroup.osdu.core.common.model.storage.*;
-import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
-import org.opengroup.osdu.storage.logging.StorageAuditLogger;
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.storage.provider.azure.cache.LegalTagCache;
-import org.opengroup.osdu.storage.provider.interfaces.IMessageBus;
-import org.opengroup.osdu.storage.provider.interfaces.IRecordsMetadataRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import static java.util.Collections.singletonList;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.singletonList;
+import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.indexer.OperationType;
+import org.opengroup.osdu.core.common.model.legal.LegalCompliance;
+import org.opengroup.osdu.core.common.model.legal.jobs.ComplianceChangeInfo;
+import org.opengroup.osdu.core.common.model.legal.jobs.ComplianceUpdateStoppedException;
+import org.opengroup.osdu.core.common.model.legal.jobs.ILegalComplianceChangeService;
+import org.opengroup.osdu.core.common.model.legal.jobs.LegalTagChanged;
+import org.opengroup.osdu.core.common.model.legal.jobs.LegalTagChangedCollection;
+import org.opengroup.osdu.core.common.model.storage.PubSubInfo;
+import org.opengroup.osdu.core.common.model.storage.RecordMetadata;
+import org.opengroup.osdu.core.common.model.storage.RecordState;
+import org.opengroup.osdu.storage.cache.LegalTagCache;
+import org.opengroup.osdu.storage.logging.StorageAuditLogger;
+import org.opengroup.osdu.storage.provider.interfaces.IMessageBus;
+import org.opengroup.osdu.storage.provider.interfaces.IRecordsMetadataRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class LegalComplianceChangeServiceAzureImpl implements ILegalComplianceChangeService {

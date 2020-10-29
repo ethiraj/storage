@@ -14,25 +14,25 @@
 
 package org.opengroup.osdu.storage.service;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.http.HttpStatus;
+import org.opengroup.osdu.core.common.legal.ILegalFactory;
+import org.opengroup.osdu.core.common.legal.ILegalProvider;
+import org.opengroup.osdu.core.common.legal.ILegalService;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.model.legal.InvalidTagWithReason;
 import org.opengroup.osdu.core.common.model.legal.InvalidTagsWithReason;
 import org.opengroup.osdu.core.common.model.legal.LegalException;
 import org.opengroup.osdu.core.common.model.legal.LegalTagProperties;
-import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.core.common.model.storage.RecordMetadata;
-import org.opengroup.osdu.core.common.legal.ILegalFactory;
-import org.opengroup.osdu.core.common.legal.ILegalProvider;
-import org.opengroup.osdu.core.common.legal.ILegalService;
+import org.opengroup.osdu.storage.cache.LegalTagCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Service
 public class LegalServiceImpl implements ILegalService {
@@ -43,7 +43,7 @@ public class LegalServiceImpl implements ILegalService {
 	@Autowired
 	private DpsHeaders headers;
 	@Autowired
-	private ICache<String, String> cache;
+	private LegalTagCache cache;
 	@Autowired
 	private ILegalFactory factory;
 
