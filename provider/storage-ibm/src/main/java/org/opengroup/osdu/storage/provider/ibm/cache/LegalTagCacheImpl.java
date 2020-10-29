@@ -22,17 +22,18 @@ import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.cache.MultiTenantCache;
 import org.opengroup.osdu.core.common.cache.VmCache;
+import org.opengroup.osdu.storage.cache.LegalTagCache;
 import org.springframework.stereotype.Component;
 
 @Component("LegalTagCache")
-public class LegalTagCache implements ICache<String, String> {
+public class LegalTagCacheImpl implements LegalTagCache {
 
 	@Inject
     private TenantInfo tenant;
 
     private final MultiTenantCache<String> caches;
 
-    public LegalTagCache() {
+    public LegalTagCacheImpl() {
         this.caches = new MultiTenantCache<>(
                 new VmCache(60*60, 1000));
     }

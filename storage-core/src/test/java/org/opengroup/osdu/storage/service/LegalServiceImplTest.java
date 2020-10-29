@@ -24,13 +24,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.model.legal.*;
 import org.opengroup.osdu.core.common.model.storage.*;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.legal.ILegalFactory;
 import org.opengroup.osdu.core.common.legal.ILegalProvider;
+import org.opengroup.osdu.storage.cache.LegalTagCache;
 
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +48,7 @@ public class LegalServiceImplTest {
     private DpsHeaders headers;
 
     @Mock
-    private ICache<String, String> cache;
+    private LegalTagCache cache;
 
     @Mock
     private ILegalFactory factory;

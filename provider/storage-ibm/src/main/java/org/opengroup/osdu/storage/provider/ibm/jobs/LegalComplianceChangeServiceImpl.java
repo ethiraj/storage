@@ -20,7 +20,7 @@ import org.opengroup.osdu.core.common.model.storage.PubSubInfo;
 import org.opengroup.osdu.core.common.model.storage.RecordMetadata;
 import org.opengroup.osdu.core.common.model.storage.RecordState;
 import org.opengroup.osdu.storage.logging.StorageAuditLogger;
-import org.opengroup.osdu.storage.provider.ibm.cache.LegalTagCache;
+import org.opengroup.osdu.storage.provider.ibm.cache.LegalTagCacheImpl;
 import org.opengroup.osdu.storage.provider.interfaces.IMessageBus;
 import org.opengroup.osdu.storage.provider.interfaces.IRecordsMetadataRepository;
 import org.slf4j.Logger;
@@ -45,7 +45,7 @@ public class LegalComplianceChangeServiceImpl implements ILegalComplianceChangeS
 	private static final Logger logger = LoggerFactory.getLogger(LegalComplianceChangeServiceImpl.class);
 
 	@Inject
-	private LegalTagCache legalTagCache;
+	private LegalTagCacheImpl legalTagCache;
 
 	@Override
     public Map<String, LegalCompliance> updateComplianceOnRecords(LegalTagChangedCollection legalTagsChanged,

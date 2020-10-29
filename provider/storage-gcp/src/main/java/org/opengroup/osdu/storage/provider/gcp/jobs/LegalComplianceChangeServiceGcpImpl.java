@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.opengroup.osdu.core.common.model.legal.jobs.*;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
-import org.opengroup.osdu.storage.provider.gcp.cache.LegalTagCache;
+import org.opengroup.osdu.storage.provider.gcp.cache.LegalTagCacheImpl;
 import org.opengroup.osdu.storage.provider.interfaces.IMessageBus;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +55,7 @@ public class LegalComplianceChangeServiceGcpImpl implements ILegalComplianceChan
     private JaxRsDpsLog logger;
 
     @Autowired
-    private LegalTagCache legalTagCache;
+    private LegalTagCacheImpl legalTagCache;
 
     private long maxRunningTimeMills = 115000;
 

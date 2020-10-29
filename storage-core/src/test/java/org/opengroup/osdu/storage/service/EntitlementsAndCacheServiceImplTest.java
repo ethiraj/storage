@@ -33,6 +33,7 @@ import org.opengroup.osdu.core.common.entitlements.IEntitlementsFactory;
 import org.opengroup.osdu.core.common.entitlements.IEntitlementsService;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.storage.RecordMetadata;
+import org.opengroup.osdu.storage.cache.GroupCache;
 
 import java.util.*;
 
@@ -51,7 +52,7 @@ public class EntitlementsAndCacheServiceImplTest {
     private IEntitlementsFactory entitlementFactory;
 
     @Mock
-    private ICache<String, Groups> cache;
+    private GroupCache cache;
 
     private DpsHeaders headers;
 

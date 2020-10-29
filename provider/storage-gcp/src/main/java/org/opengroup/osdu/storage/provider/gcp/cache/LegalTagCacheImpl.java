@@ -18,12 +18,13 @@ import org.opengroup.osdu.core.common.cache.MultiTenantCache;
 import org.opengroup.osdu.core.common.cache.RedisCache;
 import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.storage.cache.LegalTagCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LegalTagCache implements ICache<String, String> {
+public class LegalTagCacheImpl implements LegalTagCache {
 
 	@Autowired
 	private TenantInfo tenant;
@@ -31,7 +32,7 @@ public class LegalTagCache implements ICache<String, String> {
 	private final MultiTenantCache<String> caches;
 
 
-	public LegalTagCache(@Value("${REDIS_STORAGE_HOST}") final String REDIS_STORAGE_HOST,@Value("${REDIS_STORAGE_PORT}") final String REDIS_STORAGE_PORT) {
+	public LegalTagCacheImpl(@Value("${REDIS_STORAGE_HOST}") final String REDIS_STORAGE_HOST,@Value("${REDIS_STORAGE_PORT}") final String REDIS_STORAGE_PORT) {
 		this.caches = new MultiTenantCache<>(new RedisCache<>(REDIS_STORAGE_HOST,Integer.parseInt(REDIS_STORAGE_PORT),
 				60 * 60,
 				String.class,

@@ -15,14 +15,14 @@
 package org.opengroup.osdu.storage.provider.aws.util;
 
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.storage.provider.aws.cache.GroupCache;
+import org.opengroup.osdu.storage.provider.aws.cache.GroupCacheImpl;
 
 public class CacheHelper {
     public String getGroupCacheKey(DpsHeaders headers){
-        return GroupCache.getGroupCacheKey(headers);
+        return GroupCacheImpl.getGroupCacheKey(headers);
     }
 
     public String getPartitionGroupsCacheKey (String dataPartitionId) {
-        return GroupCache.getPartitionGroupsCacheKey(dataPartitionId);
+        return GroupCacheImpl.getPartitionGroupsCacheKey(dataPartitionId);
     }
 }

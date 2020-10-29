@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.storage.provider.azure.cache;
+package org.opengroup.osdu.storage.provider.byoc.cache;
 
-import org.opengroup.osdu.core.common.model.storage.Schema;
 import org.opengroup.osdu.core.common.cache.VmCache;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.opengroup.osdu.core.common.model.storage.Schema;
+import org.opengroup.osdu.storage.cache.SchemaCache;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnProperty(value = "runtime.env.local", havingValue = "true")
-public class SchemaVmCache extends VmCache<String, Schema> {
-    public SchemaVmCache() {
+public class SchemaCacheImpl extends VmCache<String, Schema>  implements SchemaCache {
+    public SchemaCacheImpl() {
         super(5 * 60, 1000);
     }
 }

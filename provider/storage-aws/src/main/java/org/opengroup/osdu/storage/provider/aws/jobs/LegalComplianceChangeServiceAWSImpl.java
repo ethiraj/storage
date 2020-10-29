@@ -27,7 +27,7 @@ import org.opengroup.osdu.core.common.model.legal.jobs.LegalTagChanged;
 import org.opengroup.osdu.core.common.model.legal.jobs.LegalTagChangedCollection;
 import org.opengroup.osdu.storage.logging.StorageAuditLogger;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.storage.provider.aws.cache.LegalTagCache;
+import org.opengroup.osdu.storage.provider.aws.cache.LegalTagCacheImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +59,7 @@ public class LegalComplianceChangeServiceAWSImpl implements ILegalComplianceChan
     private JaxRsDpsLog logger;
 
     @Autowired
-    private LegalTagCache legalTagCache;
+    private LegalTagCacheImpl legalTagCache;
 
     @Override
     public Map<String, LegalCompliance> updateComplianceOnRecords(LegalTagChangedCollection legalTagsChanged,

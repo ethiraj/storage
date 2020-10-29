@@ -25,6 +25,7 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
 import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.storage.cache.SchemaCache;
 import org.opengroup.osdu.storage.provider.interfaces.IMessageBus;
 import org.opengroup.osdu.storage.provider.interfaces.ISchemaRepository;
 import org.apache.http.HttpStatus;
@@ -40,7 +41,6 @@ import org.opengroup.osdu.core.common.model.storage.PubSubInfo;
 import org.opengroup.osdu.core.common.model.storage.Schema;
 import org.opengroup.osdu.core.common.model.storage.SchemaItem;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.cache.ICache;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -56,7 +56,7 @@ public class SchemaServiceImplTest {
     private ISchemaRepository schemaRepository;
 
     @Mock
-    private ICache<String, Schema> cacheService;
+    private SchemaCache cacheService;
 
     @Mock
     private ITenantFactory tenantFactory;

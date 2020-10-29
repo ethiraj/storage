@@ -39,7 +39,6 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 
 | name | value | description | sensitive? | source |
 | ---  | ---   | ---         | ---        | ---    |
-| `runtime.env.local` | false (change this to `true` when running locally) | Var to check if app is running locally | no | - |
 | `LOG_PREFIX` | `storage` | Logging prefix | no | - |
 | `server.servlet.contextPath` | `/api/storage/v2/` | Servlet context path | no | - |
 | `AUTHORIZE_API` | ex `https://foo-entitlements.azurewebsites.net/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment |
@@ -59,6 +58,9 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 | `AZURE_TENANT_ID` | `********` | AD tenant to authenticate users from | yes | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-tenant-id` |
 | `AZURE_CLIENT_SECRET` | `********` | Secret for `$AZURE_CLIENT_ID` | yes | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-password` |
 | `azure_istioauth_enabled` | `true` | Flag to Disable AAD auth | no | -- |
+| `cache.provider` | `redis` | cache provider [vm, redis], by default 'redis' | no | - |
+| `redis_host` | ex `contoso-tmp-cache.redis.cache.windows.net` | Redis host | no | keyvault secret: `$KEYVAULT_URI/secrets/redis-hostname` |
+| `redis_password` | ex `********` | Redis password | yes | keyvault secret: `$KEYVAULT_URI/secrets/redis-password` |
 
 **Required to run integration tests**
 

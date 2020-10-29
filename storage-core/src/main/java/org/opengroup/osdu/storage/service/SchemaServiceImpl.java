@@ -14,25 +14,30 @@
 
 package org.opengroup.osdu.storage.service;
 
+import static java.util.Collections.singletonList;
+
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import org.apache.http.HttpStatus;
+import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.indexer.OperationType;
-import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-import org.opengroup.osdu.storage.logging.StorageAuditLogger;
 import org.opengroup.osdu.core.common.model.storage.PubSubInfo;
 import org.opengroup.osdu.core.common.model.storage.Schema;
 import org.opengroup.osdu.core.common.model.storage.SchemaItem;
 import org.opengroup.osdu.core.common.model.storage.validation.KindValidator;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.core.common.util.Crc32c;
+import org.opengroup.osdu.storage.cache.SchemaCache;
+import org.opengroup.osdu.storage.logging.StorageAuditLogger;
 import org.opengroup.osdu.storage.provider.interfaces.IMessageBus;
 import org.opengroup.osdu.storage.provider.interfaces.ISchemaRepository;
-import org.apache.http.HttpStatus;
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.cache.ICache;
-import org.opengroup.osdu.core.common.util.Crc32c;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.opengroup.osdu.core.common.model.http.AppException;
-import java.util.*;
-
-import static java.util.Collections.singletonList;
 
 @Service
 public class SchemaServiceImpl implements SchemaService {
@@ -61,7 +66,7 @@ public class SchemaServiceImpl implements SchemaService {
 	private ISchemaRepository schemaRepository;
 
 	@Autowired
-	private ICache<String, Schema> cache;
+	private SchemaCache cache;
 
 	@Autowired
 	private TenantInfo tenant;

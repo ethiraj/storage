@@ -33,7 +33,7 @@ import org.opengroup.osdu.storage.StorageApplication;
 import org.opengroup.osdu.core.common.model.legal.jobs.LegalTagChanged;
 import org.opengroup.osdu.core.common.model.legal.jobs.LegalTagChangedCollection;
 import org.opengroup.osdu.storage.logging.StorageAuditLogger;
-import org.opengroup.osdu.storage.provider.aws.cache.LegalTagCache;
+import org.opengroup.osdu.storage.provider.aws.cache.LegalTagCacheImpl;
 import org.opengroup.osdu.storage.provider.aws.jobs.LegalComplianceChangeServiceAWSImpl;
 import org.opengroup.osdu.storage.provider.interfaces.IMessageBus;
 import org.opengroup.osdu.storage.provider.interfaces.IRecordsMetadataRepository;
@@ -62,7 +62,7 @@ public class LegalComplianceChangeServiceAWSImplTest {
     private StorageAuditLogger auditLogger;
 
     @Mock
-    private LegalTagCache legalTagCache;
+    private LegalTagCacheImpl legalTagCache;
 
     @Test
     public void updateComplianceOnRecordsTest() throws ComplianceUpdateStoppedException {
