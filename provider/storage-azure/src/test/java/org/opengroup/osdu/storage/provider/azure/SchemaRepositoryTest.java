@@ -175,6 +175,7 @@ public class SchemaRepositoryTest {
         Page<SchemaDoc> docPage = schemaRepository.findAll(CosmosStorePageRequest.of(0, 10, "test", sort));
         assertNotNull(docPage);
         assertEquals(this.getSchemaDocRecordsList().size(), docPage.getContent().size());
+        assertEquals(docPage.getTotalElements(),1999);
 
     }
 

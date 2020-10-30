@@ -24,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
@@ -44,7 +45,9 @@ public class RecordMetadataRepositoryTest {
     private static final String PATH_3 = "kind/id/789";
     private static final String CURSOR = "TestCursor";
     private static final String RECOREDMETADATACOLLECTION = "TestCollection";
-
+    private static final String ID1 = "Id1";
+    private static final String ID2 = "Id2";
+    private static final String ID3 = "Id3";
 
     @Mock
     private DpsHeaders dpsHeaders;
@@ -72,6 +75,7 @@ public class RecordMetadataRepositoryTest {
         doNothing().when(repo).upsertItem(anyString(), anyString(), anyString(), anyString(), anyObject());
         List<RecordMetadata> recordMetadata = recordMetadataRepository.createOrUpdate(this.createRecordMetadata());
         assertEquals(recordMetadata.size(), this.createRecordMetadata().size());
+        assertEquals(recordMetadata, this.createRecordMetadata());
     }
     @Test
     public void createOrUpdateTest_shouldThrowExceptionWhenDataIsNull() {
@@ -89,9 +93,9 @@ public class RecordMetadataRepositoryTest {
         when(repo.getOne(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(this.getRecordMetadataDoc());
         when(operation.findItem(anyString(), anyString(), anyString(), anyString(), anyString(), anyObject())).thenReturn(Optional.of(this.getRecordMetadataDoc()));
         when(repo.findItem(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(Optional.of(this.getRecordMetadataDoc()));
-        RecordMetadata data = recordMetadataRepository.get("id1");
+        RecordMetadata data = recordMetadataRepository.get(ID1);
         assertEquals(data.getKind(), KIND);
-        assertEquals(data.getId(), "id1");
+        assertEquals(data.getId(), ID1);
 
     }
 
@@ -130,7 +134,7 @@ public class RecordMetadataRepositoryTest {
         assertNotNull(results);
         assertEquals(results.getKey(), CURSOR);
         assertEquals(results.getValue().size(), this.getRecordMetadataDocList().size());
-
+        assertEquals(results.getValue().get(0).getKind(),KIND);
 
     }
 
@@ -191,7 +195,8 @@ public class RecordMetadataRepositoryTest {
         Map<String, RecordMetadata> list = this.recordMetadataRepository.get(recordsId);
         assertNotNull(list);
         assertEquals(list.size(), recordsId.size());
-
+        List<String> result = new ArrayList(list.keySet().stream().sorted().collect(Collectors.toList()));
+        assertEquals(result,recordsId);
     }
 
     @Test
@@ -241,7 +246,7 @@ public class RecordMetadataRepositoryTest {
     public void deletetest() {
         doNothing().when(repo).deleteItem(anyString(), anyString(), anyString(), anyString(), anyString());
         doNothing().when(operation).deleteItem(anyString(), anyString(), anyString(), anyString(), anyString());
-        recordMetadataRepository.delete("id1");
+        recordMetadataRepository.delete(ID1);
 
     }
     @Test
@@ -261,36 +266,19 @@ public class RecordMetadataRepositoryTest {
         return new PageImpl(this.getRecordMetadataDocList(), pageRequest, 1999L);
 
     }
+    RecordMetadata getRecordMetadata(String id,List<String> path) {
+        RecordMetadata metadata = new RecordMetadata();
+        metadata.setId(id);
+        metadata.setKind(KIND);
+        metadata.setAcl(this.acl);
+        metadata.setGcsVersionPaths(path);
+        return metadata;
+    }
 
     private List<RecordMetadataDoc> getRecordMetadataDocList() {
-        RecordMetadataDoc doc1 = new RecordMetadataDoc();
-        RecordMetadata metadata = new RecordMetadata();
-        metadata.setId("id1");
-        metadata.setKind(KIND);
-        metadata.setAcl(this.acl);
-        metadata.setGcsVersionPaths(Lists.newArrayList(PATH_1));
-
-        doc1.setId("ID1");
-        doc1.setMetadata(metadata);
-
-        RecordMetadataDoc doc2 = new RecordMetadataDoc();
-        RecordMetadata metadata2 = new RecordMetadata();
-        metadata.setId("id2");
-        metadata.setKind(KIND);
-        metadata.setAcl(this.acl);
-        metadata.setGcsVersionPaths(Lists.newArrayList(PATH_2));
-
-        doc2.setId("ID2");
-        doc2.setMetadata(metadata2);
-        RecordMetadataDoc doc3 = new RecordMetadataDoc();
-        RecordMetadata metadata3 = new RecordMetadata();
-        metadata.setId("id2");
-        metadata.setKind(KIND);
-        metadata.setAcl(this.acl);
-        metadata.setGcsVersionPaths(Lists.newArrayList(PATH_3));
-
-        doc2.setId("ID3");
-        doc2.setMetadata(metadata2);
+        RecordMetadataDoc doc1 = new RecordMetadataDoc(ID1,getRecordMetadata(ID1,Lists.newArrayList(PATH_1)));
+        RecordMetadataDoc doc2 = new RecordMetadataDoc(ID2,getRecordMetadata(ID2,Lists.newArrayList(PATH_2)));
+        RecordMetadataDoc doc3 = new RecordMetadataDoc(ID3,getRecordMetadata(ID3,Lists.newArrayList(PATH_3)));
         List<RecordMetadataDoc> recordMetadataDocList = new ArrayList<>();
         recordMetadataDocList.add(doc1);
         recordMetadataDocList.add(doc2);
@@ -301,40 +289,16 @@ public class RecordMetadataRepositoryTest {
 
     private RecordMetadataDoc getRecordMetadataDoc() {
         RecordMetadataDoc doc = new RecordMetadataDoc();
-        RecordMetadata metadata = new RecordMetadata();
-        metadata.setId("id1");
-        metadata.setKind(KIND);
-        metadata.setAcl(this.acl);
-        metadata.setGcsVersionPaths(Lists.newArrayList(PATH_1));
-
-        doc.setId("ID1");
-        doc.setMetadata(metadata);
+        doc.setId(ID1);
+        doc.setMetadata(getRecordMetadata(ID1,Lists.newArrayList(PATH_1)));
         return doc;
     }
 
     private List<RecordMetadata> createRecordMetadata() {
-        RecordMetadata metadata1 = new RecordMetadata();
-        metadata1.setId("id1");
-        metadata1.setKind(KIND);
-        metadata1.setAcl(this.acl);
-        metadata1.setGcsVersionPaths(Lists.newArrayList(PATH_1));
-
-        RecordMetadata metadata2 = new RecordMetadata();
-        metadata2.setId("id2");
-        metadata2.setKind(KIND);
-        metadata2.setAcl(this.acl);
-        metadata2.setGcsVersionPaths(Lists.newArrayList(PATH_2));
-
-        RecordMetadata metadata3 = new RecordMetadata();
-        metadata3.setId("id3");
-        metadata3.setKind(KIND);
-        metadata3.setAcl(this.acl);
-        metadata3.setGcsVersionPaths(Lists.newArrayList(PATH_3));
-
         List<RecordMetadata> recordMetadataList = new ArrayList<>();
-        recordMetadataList.add(metadata1);
-        recordMetadataList.add(metadata2);
-        recordMetadataList.add(metadata3);
+        recordMetadataList.add(getRecordMetadata(ID1,Lists.newArrayList(PATH_1)));
+        recordMetadataList.add(getRecordMetadata(ID2,Lists.newArrayList(PATH_2)));
+        recordMetadataList.add(getRecordMetadata(ID3,Lists.newArrayList(PATH_3)));
 
         return recordMetadataList;
 
