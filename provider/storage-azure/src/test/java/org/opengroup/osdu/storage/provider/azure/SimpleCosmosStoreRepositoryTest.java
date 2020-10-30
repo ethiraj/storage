@@ -47,6 +47,9 @@ public class SimpleCosmosStoreRepositoryTest {
     private static final String ENTITY_MUST_NOT_BE_NULL = "entity must not be null";
     private static final String SORT_MUST_NOT_BE_NULL = "sort of findAll should not be null";
     private static final String ID_LIST_SHOULD_NOT_BE_NULL="Id list should not be null";
+    private static final String ID1 = "Id1";
+    private static final String ID2 = "Id2";
+    private static final String ID3 = "Id3";
     @InjectMocks
     SimpleCosmosStoreRepository repository = new SimpleCosmosStoreRepository(RecordMetadataDoc.class);
 
@@ -296,47 +299,21 @@ public class SimpleCosmosStoreRepositoryTest {
     }
 
     private RecordMetadataDoc getRecordMetadataDoc() {
-        RecordMetadataDoc doc1 = new RecordMetadataDoc();
-        RecordMetadata metadata = new RecordMetadata();
-        metadata.setId("id1");
-        metadata.setKind(KIND);
-        metadata.setAcl(this.acl);
-        metadata.setGcsVersionPaths(Lists.newArrayList(PATH_1));
+        return new RecordMetadataDoc(ID1,getRecordMetadata(ID1,Lists.newArrayList(PATH_1)));
 
-        doc1.setId("ID1");
-        doc1.setMetadata(metadata);
-        return doc1;
     }
-
-    private List<RecordMetadataDoc> getRecordMetadataDocList() {
-        RecordMetadataDoc doc1 = new RecordMetadataDoc();
+    RecordMetadata getRecordMetadata(String id,List<String> path) {
         RecordMetadata metadata = new RecordMetadata();
-        metadata.setId("id1");
+        metadata.setId(id);
         metadata.setKind(KIND);
         metadata.setAcl(this.acl);
-        metadata.setGcsVersionPaths(Lists.newArrayList(PATH_1));
-
-        doc1.setId("ID1");
-        doc1.setMetadata(metadata);
-
-        RecordMetadataDoc doc2 = new RecordMetadataDoc();
-        RecordMetadata metadata2 = new RecordMetadata();
-        metadata.setId("id2");
-        metadata.setKind(KIND);
-        metadata.setAcl(this.acl);
-        metadata.setGcsVersionPaths(Lists.newArrayList(PATH_2));
-
-        doc2.setId("ID2");
-        doc2.setMetadata(metadata2);
-        RecordMetadataDoc doc3 = new RecordMetadataDoc();
-        RecordMetadata metadata3 = new RecordMetadata();
-        metadata.setId("id2");
-        metadata.setKind(KIND);
-        metadata.setAcl(this.acl);
-        metadata.setGcsVersionPaths(Lists.newArrayList(PATH_3));
-
-        doc2.setId("ID3");
-        doc2.setMetadata(metadata2);
+        metadata.setGcsVersionPaths(path);
+        return metadata;
+    }
+    private List<RecordMetadataDoc> getRecordMetadataDocList() {
+        RecordMetadataDoc doc1 = new RecordMetadataDoc(ID1,getRecordMetadata(ID1,Lists.newArrayList(PATH_1)));
+        RecordMetadataDoc doc2 = new RecordMetadataDoc(ID2,getRecordMetadata(ID2,Lists.newArrayList(PATH_2)));
+        RecordMetadataDoc doc3 = new RecordMetadataDoc(ID3,getRecordMetadata(ID3,Lists.newArrayList(PATH_3)));
         List<RecordMetadataDoc> recordMetadataDocList = new ArrayList<>();
         recordMetadataDocList.add(doc1);
         recordMetadataDocList.add(doc2);
