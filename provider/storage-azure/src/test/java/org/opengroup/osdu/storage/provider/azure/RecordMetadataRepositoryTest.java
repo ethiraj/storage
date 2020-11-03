@@ -27,8 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -48,7 +47,7 @@ public class RecordMetadataRepositoryTest {
     private static final String ID1 = "Id1";
     private static final String ID2 = "Id2";
     private static final String ID3 = "Id3";
-
+    private static final String COMPLAINTTAGNAME = "compliant-test-tag";
     @Mock
     private DpsHeaders dpsHeaders;
 
@@ -110,9 +109,8 @@ public class RecordMetadataRepositoryTest {
     }
     @Test
     public void getTest_shouldThrowsException_whenIDIsNull() {
-        String id =null;
              try{
-                 recordMetadataRepository.get(id);
+                 recordMetadataRepository.get((String) null);
              }catch(IllegalArgumentException ex){
                  assertEquals(ex.getMessage(),ID_MUST_NOT_BE_NULL);
              }
@@ -122,7 +120,6 @@ public class RecordMetadataRepositoryTest {
 
     @Test
     public void queryByLegalTagNameTest() {
-        String compliantTagName = "compliant-test-tag";
         Page<RecordMetadataDoc> docPage = Mockito.mock(PageImpl.class);
         when(repo.paginationQuery(anyObject(), anyObject(), anyObject(), anyString(), anyString(), anyString())).thenReturn(docPage);
         when(repo.queryItemsPage(anyString(), anyString(), anyString(), anyObject(), anyObject(), anyInt(), anyString())).thenReturn(docPage);
@@ -130,7 +127,7 @@ public class RecordMetadataRepositoryTest {
         ReflectionTestUtils.setField(recordMetadataRepository, "recordMetadataCollection", RECOREDMETADATACOLLECTION);
         when(repo.find(anyObject(), anyString(), anyString(), anyString(), anyObject())).thenReturn(docPage);
 
-        AbstractMap.SimpleEntry<String, List<RecordMetadata>> results = recordMetadataRepository.queryByLegalTagName(compliantTagName, 100, CURSOR);
+        AbstractMap.SimpleEntry<String, List<RecordMetadata>> results = recordMetadataRepository.queryByLegalTagName(COMPLAINTTAGNAME, 100, CURSOR);
         assertNotNull(results);
         assertEquals(results.getKey(), CURSOR);
         assertEquals(results.getValue().size(), this.getRecordMetadataDocList().size());
@@ -141,9 +138,8 @@ public class RecordMetadataRepositoryTest {
 
     @Test
     public void queryByLegalTagNameTest_shouldThrowException_WhenPageSizeLessThanZero() {
-        String compliantTagName = "compliant-test-tag";
       try {
-          recordMetadataRepository.queryByLegalTagName(compliantTagName, 0, CURSOR);
+          recordMetadataRepository.queryByLegalTagName(COMPLAINTTAGNAME, 0, CURSOR);
       }catch (IllegalArgumentException ex)
       {
           assertEquals(ex.getMessage(),"Page size must not be less than one!");
@@ -152,7 +148,6 @@ public class RecordMetadataRepositoryTest {
 
     @Test(expected = CosmosException.class)
     public void queryByLegalTagNameTestThrowsException() {
-        String compliantTagName = "compliant-test-tag";
         Page<RecordMetadataDoc> docPage = Mockito.mock(PageImpl.class);
         when(repo.paginationQuery(anyObject(), anyObject(), anyObject(), anyString(), anyString(), anyString())).thenReturn(docPage);
         when(repo.queryItemsPage(anyString(), anyString(), anyString(), anyObject(), anyObject(), anyInt(), anyString())).thenReturn(docPage);
@@ -160,13 +155,12 @@ public class RecordMetadataRepositoryTest {
         ReflectionTestUtils.setField(recordMetadataRepository, "recordMetadataCollection", RECOREDMETADATACOLLECTION);
         when(repo.find(anyObject(), anyString(), anyString(), anyString(), anyObject())).thenThrow(CosmosException.class);
 
-        recordMetadataRepository.queryByLegalTagName(compliantTagName, 10, CURSOR);
+        recordMetadataRepository.queryByLegalTagName(COMPLAINTTAGNAME, 10, CURSOR);
 
     }
 
     @Test(expected = AppException.class)
     public void queryByLegalTagNameTestThrowsAppException() {
-        String compliantTagName = "compliant-test-tag";
         Page<RecordMetadataDoc> docPage = Mockito.mock(PageImpl.class);
         when(repo.paginationQuery(anyObject(), anyObject(), anyObject(), anyString(), anyString(), anyString())).thenReturn(docPage);
         when(repo.queryItemsPage(anyString(), anyString(), anyString(), anyObject(), anyObject(), anyInt(), anyString())).thenReturn(docPage);
@@ -177,7 +171,7 @@ public class RecordMetadataRepositoryTest {
         ReflectionTestUtils.setField(recordMetadataRepository, "recordMetadataCollection", RECOREDMETADATACOLLECTION);
         when(repo.find(anyObject(), anyString(), anyString(), anyString(), anyObject())).thenThrow(CosmosException.class);
 
-        recordMetadataRepository.queryByLegalTagName(compliantTagName, 10, CURSOR);
+        recordMetadataRepository.queryByLegalTagName(COMPLAINTTAGNAME, 10, CURSOR);
 
     }
 
@@ -205,6 +199,7 @@ public class RecordMetadataRepositoryTest {
         when(repo.queryItems(anyString(), anyString(), anyString(), anyObject(), anyObject())).thenReturn(this.getRecordMetadataDocList());
         List<RecordMetadataDoc> records = recordMetadataRepository.findByMetadata_kindAndMetadata_status("TestKind", "active");
         assertNotNull(records);
+        assertTrue(records.contains(getRecordMetadataDocList()));
     }
     @Test
     public void findByMetadata_kindAndMetadata_status_shouldThrowsException_WhenKindIsNull() {
@@ -228,7 +223,6 @@ public class RecordMetadataRepositoryTest {
     }
     @Test
     public void findByMetadata_kindAndMetadata_statusPageableTest() {
-        String compliantTagName = "compliant-test-tag";
         Page<RecordMetadataDoc> docPage = Mockito.mock(PageImpl.class);
         when(repo.paginationQuery(anyObject(), anyObject(), anyObject(), anyString(), anyString(), anyString())).thenReturn(docPage);
         when(repo.queryItemsPage(anyString(), anyString(), anyString(), anyObject(), anyObject(), anyInt(), anyString())).thenReturn(docPage);
@@ -262,7 +256,6 @@ public class RecordMetadataRepositoryTest {
 
     private PageImpl getPageImpl() {
         CosmosStorePageRequest pageRequest = CosmosStorePageRequest.of(1, 10, CURSOR);
-        List<String> results = new ArrayList();
         return new PageImpl(this.getRecordMetadataDocList(), pageRequest, 1999L);
 
     }

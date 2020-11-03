@@ -152,7 +152,10 @@ public class SchemaRepositoryTest {
 
         Iterable<SchemaDoc> docs = schemaRepository.findAll(sort);
         assertNotNull(docs);
-
+        List<String> kinds = new ArrayList();
+        docs.forEach(
+                d -> kinds.add(d.getKind()));
+        assertTrue(kinds.contains(KIND));
     }
 
     @Test
