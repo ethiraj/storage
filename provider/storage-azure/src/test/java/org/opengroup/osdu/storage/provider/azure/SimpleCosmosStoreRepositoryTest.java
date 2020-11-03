@@ -1,6 +1,7 @@
 package org.opengroup.osdu.storage.provider.azure;
 
 import com.azure.cosmos.models.SqlQuerySpec;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -101,6 +102,7 @@ public class SimpleCosmosStoreRepositoryTest {
         Sort sort = Sort.by(Sort.Direction.ASC, KIND);
         Iterable<RecordMetadataDoc> list = repository.findAll(sort, PARTITION_KEY, COSMOS_DB, COLLECTION);
         assertNotNull(list);
+        assertTrue(Iterables.contains(list, this.getRecordMetadataDocList()));
 
     }
 
@@ -138,6 +140,8 @@ public class SimpleCosmosStoreRepositoryTest {
         when(operation.queryItems(anyString(), anyString(), anyString(), anyObject(), anyObject(), anyObject())).thenReturn(Collections.singletonList(this.getRecordMetadataDocList()));
         List<RecordMetadataDoc> data = repository.find(DATA_PARTITION_ID, COSMOS_DB, COLLECTION, new SqlQuerySpec());
         assertNotNull(data);
+        assertTrue(data.contains(this.getRecordMetadataDocList()));
+
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -149,9 +153,8 @@ public class SimpleCosmosStoreRepositoryTest {
 
     @Test
     public void findByIdsTest_shouldThrowsExceptionIfIdNull() {
-        List<String> list = null;
         try {
-            repository.findByIds(list, DATA_PARTITION_ID, COSMOS_DB, COLLECTION, PARTITION_KEY);
+            repository.findByIds(null, DATA_PARTITION_ID, COSMOS_DB, COLLECTION, PARTITION_KEY);
         } catch (IllegalArgumentException ex) {
             assertEquals(ex.getMessage(), ID_LIST_SHOULD_NOT_BE_NULL);
         }
@@ -248,6 +251,7 @@ public class SimpleCosmosStoreRepositoryTest {
         Mockito.when(operation.findAllItems(anyString(), anyString(), anyString(), anyObject())).thenReturn(Collections.singletonList(this.getRecordMetadataDocList()));
         Iterable<RecordMetadataDoc> docs = repository.findAll(DATA_PARTITION_ID, COSMOS_DB, COLLECTION);
         assertNotNull(docs);
+        assertTrue(Iterables.contains(docs, this.getRecordMetadataDocList()));
     }
 
     @Test
