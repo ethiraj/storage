@@ -14,18 +14,26 @@
 
 package org.opengroup.osdu.storage.provider.azure.di;
 
+import org.opengroup.osdu.azure.KeyVaultFacade;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Named;
 
+import com.azure.security.keyvault.secrets.SecretClient;
 
 @Component
 public class AzureBootstrapConfig {
 
     @Value("${azure.servicebus.topic-name}")
     private String serviceBusTopic;
+
+    @Value("${azure.keyvault.url}")
+    private String keyVaultURL;
+
+    @Value("${azure.cosmosdb.database}")
+    private String cosmosDBName;
 
     @Bean
     @Named("STORAGE_CONTAINER_NAME")
@@ -38,12 +46,6 @@ public class AzureBootstrapConfig {
     public String serviceBusTopic() {
         return serviceBusTopic;
     }
-
-    @Value("${azure.keyvault.url}")
-    private String keyVaultURL;
-
-    @Value("${azure.cosmosdb.database}")
-    private String cosmosDBName;
 
     @Bean
     @Named("KEY_VAULT_URL")
