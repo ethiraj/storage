@@ -47,8 +47,8 @@ public class MessageBusImpl implements IMessageBus {
     private JaxRsDpsLog logger;
 
 
-    @Override
-    public void publishMessage(DpsHeaders headers, PubSubInfo... messages) {
+    //@Override
+    /*public void publishMessage(DpsHeaders headers, PubSubInfo... messages) {
         final int BATCH_SIZE = 50;
         Gson gson = new Gson();
 
@@ -87,10 +87,10 @@ public class MessageBusImpl implements IMessageBus {
                 logger.error(e.getMessage(), e);
             }
         }
-    }
+    }*/
 
 
-    /*@Override
+    @Override
     public void publishMessage(DpsHeaders headers, PubSubInfo... messages)  {
         final int BATCH_SIZE = 50;
         Gson gson = new Gson();
@@ -153,5 +153,5 @@ public class MessageBusImpl implements IMessageBus {
                 logger.error(e.getMessage(), e);
             }
         }
-    }*/
+    }
 }
