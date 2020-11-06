@@ -12,27 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.storage.provider.azure.di;
+package org.opengroup.osdu.storage.provider.azure.repository.interfaces;
 
-import com.microsoft.azure.spring.data.cosmosdb.core.mapping.Document;
-import com.microsoft.azure.spring.data.cosmosdb.core.mapping.PartitionKey;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-
-import java.util.List;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Document(collection = "TenantInfo") //collection name
-@Getter
-public class TenantInfoDoc {
-    @PartitionKey
-    @Id
-    private String id;
-    private List<String> groups;
+public interface Repository<T> {
 }
-

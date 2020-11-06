@@ -14,6 +14,8 @@
 
 package org.opengroup.osdu.storage.provider.azure.di;
 
+import com.azure.security.keyvault.secrets.SecretClient;
+import org.opengroup.osdu.azure.KeyVaultFacade;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -24,20 +26,8 @@ import javax.inject.Named;
 @Component
 public class AzureBootstrapConfig {
 
-    @Value("${azure.storage.account-name}")
-    private String storageAccount;
-
-    @Value("${servicebus_topic_name}")
+    @Value("${azure.servicebus.topic-name}")
     private String serviceBusTopic;
-
-    @Value("${servicebus_namespace_name}")
-    private String serviceBusNamespace;
-
-    @Bean
-    @Named("STORAGE_ACCOUNT_NAME")
-    public String storageAccount() {
-        return storageAccount;
-    }
 
     @Bean
     @Named("STORAGE_CONTAINER_NAME")
@@ -46,15 +36,56 @@ public class AzureBootstrapConfig {
     }
 
     @Bean
-    @Named("SERVICE_BUS_NAMESPACE")
-    public String serviceBusNamespace() {
-        return serviceBusNamespace;
-    }
-
-    @Bean
     @Named("SERVICE_BUS_TOPIC")
     public String serviceBusTopic() {
         return serviceBusTopic;
+    }
+
+    @Value("${azure.keyvault.url}")
+    private String keyVaultURL;
+
+    @Value("${azure.cosmosdb.database}")
+    private String cosmosDBName;
+
+    @Bean
+    @Named("KEY_VAULT_URL")
+    public String keyVaultURL() {
+        return keyVaultURL;
+    }
+
+    @Bean
+    public String cosmosDBName() {
+        return cosmosDBName;
+    }
+
+    @Value("${redis.port:6380}")
+    public int redisPort;
+
+    @Bean
+    @Named("REDIS_PORT")
+    public int getRedisPort() {
+        return redisPort;
+    }
+
+    @Value("${redis.timeout:3600}")
+    public int redisTimeout;
+
+    @Bean
+    @Named("REDIS_TIMEOUT")
+    public int getRedisTimeout() {
+        return redisTimeout;
+    }
+
+    @Bean
+    @Named("REDIS_HOST")
+    public String redisHost(SecretClient kv) {
+        return KeyVaultFacade.getSecretWithValidation(kv, "redis-hostname");
+    }
+
+    @Bean
+    @Named("REDIS_PASSWORD")
+    public String redisPassword(SecretClient kv) {
+        return KeyVaultFacade.getSecretWithValidation(kv, "redis-password");
     }
 
 }

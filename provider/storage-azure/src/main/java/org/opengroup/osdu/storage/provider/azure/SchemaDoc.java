@@ -14,13 +14,11 @@
 
 package org.opengroup.osdu.storage.provider.azure;
 
-import com.microsoft.azure.spring.data.cosmosdb.core.mapping.Document;
-import com.microsoft.azure.spring.data.cosmosdb.core.mapping.PartitionKey;
-import com.microsoft.azure.spring.data.cosmosdb.repository.DocumentDbRepository;
-import org.opengroup.osdu.core.common.model.storage.SchemaItem;
+import com.azure.spring.data.cosmos.core.mapping.PartitionKey;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.opengroup.osdu.core.common.model.storage.SchemaItem;
 import org.springframework.data.annotation.Id;
 
 import java.util.Map;
@@ -28,14 +26,12 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "StorageSchema") //collection name
 public class SchemaDoc {
     @PartitionKey
     @Id
     private String kind;
+    private String id;
     private Map<String,Object> extension;
     private String user;
     private SchemaItem[] schemaItems;
 }
-
-interface CosmosDBSchema extends DocumentDbRepository<SchemaDoc, String> {}

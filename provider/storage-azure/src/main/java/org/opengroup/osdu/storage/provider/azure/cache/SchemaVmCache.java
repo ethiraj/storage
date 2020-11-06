@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.storage.provider.azure.simpledelivery.api.payloads;
+package org.opengroup.osdu.storage.provider.azure.cache;
 
-import lombok.Data;
+import org.opengroup.osdu.core.common.model.storage.Schema;
+import org.opengroup.osdu.core.common.cache.VmCache;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
-
-@Data
-public class GetResourcesRequestPayload {
-    private List<String> srns;
+@Component
+@ConditionalOnProperty(value = "runtime.env.local", havingValue = "true")
+public class SchemaVmCache extends VmCache<String, Schema> {
+    public SchemaVmCache() {
+        super(5 * 60, 1000);
+    }
 }
