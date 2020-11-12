@@ -161,7 +161,7 @@ public abstract class BatchServiceImpl implements BatchService {
         boolean isConversionNeeded = true;
         if (frameOfRef == null || (frameOfRef.equalsIgnoreCase(NO_FRAME_OF_REFERENCE)) ||
                 //TODO: remove when converter service is available in all clouds
-                (crsConverterClientFactory.CRS_API == null || crsConverterClientFactory.CRS_API.isEmpty())) {
+                (crsConverterClientFactory.crsApi == null || crsConverterClientFactory.crsApi.isEmpty())) {
             isConversionNeeded = false;
         }
         else if (!frameOfRef.equalsIgnoreCase(SI_FRAME_OF_REFERENCE)) {
