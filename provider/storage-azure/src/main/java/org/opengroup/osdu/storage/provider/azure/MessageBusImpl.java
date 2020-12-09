@@ -16,6 +16,7 @@ package org.opengroup.osdu.storage.provider.azure;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.microsoft.azure.eventgrid.EventGridClient;
 import com.microsoft.azure.eventgrid.TopicCredentials;
 import com.microsoft.azure.eventgrid.implementation.EventGridClientImpl;
@@ -23,16 +24,19 @@ import com.microsoft.azure.eventgrid.models.EventGridEvent;
 import com.microsoft.azure.servicebus.Message;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
+import org.opengroup.osdu.azure.partition.PartitionInfoAzure;
+import org.opengroup.osdu.azure.partition.PartitionServiceClient;
 import org.opengroup.osdu.azure.servicebus.ITopicClientFactory;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.PubSubInfo;
-import org.opengroup.osdu.storage.provider.azure.models.EventGridData;
 import org.opengroup.osdu.storage.provider.interfaces.IMessageBus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Named;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -60,6 +64,9 @@ public class MessageBusImpl implements IMessageBus {
     @Named("PUBLISH_TO_EVENTGRID")
     private boolean publishingToEventGridIsEnabled;
 
+    @Autowired
+    private PartitionServiceClient partitionService;
+
     private final static String EVENT_SUBJECT = "RecordsChanged";
     private final static String EVENT_TYPE = "RecordsChanged";
     private final static String EVENT_DATA_VERSION = "1.0";
@@ -76,11 +83,18 @@ public class MessageBusImpl implements IMessageBus {
 
         List<EventGridEvent> eventsList = getEventGridEvents(headers, messages);
 
-        TopicCredentials topicCredentials = new TopicCredentials(eventGridTopicKey);
+        PartitionInfoAzure pi = this.partitionService.getPartition(headers.getPartitionId());
+        String endpoint = "";
+        try {
+            endpoint = String.format("https://%s/", new URI(pi.getEventGridRecordsTopicEndpoint()).getHost());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        TopicCredentials topicCredentials = new TopicCredentials(pi.getEventGridRecordsTopicAccessKey());
         EventGridClient eventGridClient = new EventGridClientImpl(topicCredentials);
         try{
             logger.info("Storage publishes message to Event Grid " + headers.getCorrelationId());
-            eventGridClient.publishEvents(eventGridTopicEndpoint, eventsList);
+            eventGridClient.publishEvents(endpoint, eventsList);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -132,24 +146,19 @@ public class MessageBusImpl implements IMessageBus {
         List<EventGridEvent> eventsList = new ArrayList<>();
 
         for (int i = 0; i < messages.length; i += BATCH_SIZE) {
-            HashMap<String , String> attributes = new HashMap<>() ;
-            attributes.put(DpsHeaders.ACCOUNT_ID, headers.getPartitionIdWithFallbackToAccountId());
-            attributes.put(DpsHeaders.DATA_PARTITION_ID, headers.getPartitionIdWithFallbackToAccountId());
-            headers.addCorrelationIdIfMissing();
-            attributes.put(DpsHeaders.CORRELATION_ID, headers.getCorrelationId());
 
             PubSubInfo[] batch = Arrays.copyOfRange(messages, i, Math.min(messages.length, i + BATCH_SIZE));
 
-            EventGridData eventGridData = new EventGridData(
-                    batch,
-                    attributes,
-                    UUID.randomUUID().toString()
-            );
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("data", batch);
+            data.put(DpsHeaders.ACCOUNT_ID, headers.getPartitionIdWithFallbackToAccountId());
+            data.put(DpsHeaders.DATA_PARTITION_ID,headers.getPartitionIdWithFallbackToAccountId());
+            data.put(DpsHeaders.CORRELATION_ID, headers.getCorrelationId());
 
             eventsList.add(new EventGridEvent(
                     UUID.randomUUID().toString(),
                     EVENT_SUBJECT,
-                    eventGridData,
+                    data,
                     EVENT_TYPE,
                     DateTime.now(),
                     EVENT_DATA_VERSION
