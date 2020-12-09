@@ -19,21 +19,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.http.HttpStatus;
+import org.opengroup.osdu.core.common.crs.UnitConversionImpl;
 import org.opengroup.osdu.core.common.crs.dates.DatesConversionImpl;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
-import org.opengroup.osdu.core.common.model.storage.ConversionStatus;
 import org.opengroup.osdu.core.common.model.crs.ConversionRecord;
 import org.opengroup.osdu.core.common.model.crs.ConvertStatus;
 import org.opengroup.osdu.core.common.model.crs.RecordsAndStatuses;
+import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.model.storage.ConversionStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.opengroup.osdu.core.common.crs.UnitConversionImpl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import org.opengroup.osdu.core.common.model.http.AppException;
 
 @Service
 public class DpsConversionService {
@@ -105,12 +105,11 @@ public class DpsConversionService {
     }
 
     private boolean isMetaBlockPresent(JsonObject record) {
-        boolean isPresent = true;
-        JsonArray metaBlock = record.getAsJsonArray("meta");
-        if (metaBlock == null || metaBlock.size() == 0) {
-            isPresent = false;
+        if (record.get("meta") == null || record.get("meta").isJsonNull()) {
+            return false;
         }
-        return isPresent;
+        JsonArray metaBlock = record.getAsJsonArray("meta");
+        return metaBlock != null && metaBlock.size() != 0;
     }
 
     private String getRecordId(JsonObject record) {

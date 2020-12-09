@@ -14,31 +14,37 @@
 
 package org.opengroup.osdu.storage.conversion;
 
+import static org.opengroup.osdu.core.common.util.JsonUtils.jsonElementToString;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.opengroup.osdu.core.common.crs.CrsConversionServiceErrorMessages;
-import org.opengroup.osdu.core.common.model.crs.*;
-import org.opengroup.osdu.core.common.model.http.AppException;
+
 import org.apache.http.HttpStatus;
+import org.opengroup.osdu.core.common.crs.CrsConversionServiceErrorMessages;
 import org.opengroup.osdu.core.common.crs.ICrsConverterFactory;
 import org.opengroup.osdu.core.common.crs.ICrsConverterService;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
-import org.opengroup.osdu.core.common.util.IServiceAccountJwtClient;
+import org.opengroup.osdu.core.common.model.crs.ConvertPointsRequest;
+import org.opengroup.osdu.core.common.model.crs.ConvertPointsResponse;
+import org.opengroup.osdu.core.common.model.crs.ConvertStatus;
+import org.opengroup.osdu.core.common.model.crs.CrsConverterException;
+import org.opengroup.osdu.core.common.model.crs.CrsPropertySet;
+import org.opengroup.osdu.core.common.model.crs.Point;
+import org.opengroup.osdu.core.common.model.crs.PointConversionInfo;
+import org.opengroup.osdu.core.common.model.crs.RecordsAndStatuses;
+import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.storage.ConversionStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.model.storage.ConversionStatus;
-
-import static org.opengroup.osdu.core.common.util.JsonUtils.jsonElementToString;
 
 @Service
 public class CrsConversionService {
@@ -64,9 +70,6 @@ public class CrsConversionService {
 
     @Autowired
     private JaxRsDpsLog logger;
-
-    @Autowired
-    private IServiceAccountJwtClient jwtClient;
 
     public RecordsAndStatuses doCrsConversion(List<JsonObject> originalRecords, List<ConversionStatus.ConversionStatusBuilder> conversionStatuses) {
         RecordsAndStatuses crsConversionResult = new RecordsAndStatuses();
@@ -496,12 +499,8 @@ public class CrsConversionService {
     }
 
     private DpsHeaders customizeHeaderBeforeCallingCrsConversion(DpsHeaders dpsHeaders) {
-        String token = this.jwtClient.getIdToken(dpsHeaders.getPartitionId());
-        if (Strings.isNullOrEmpty(token)) {
-            throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, UNKNOWN_ERROR, "authorization for crs conversion failed");
-        }
         DpsHeaders headers = DpsHeaders.createFromMap(dpsHeaders.getHeaders());
-        headers.put(DpsHeaders.AUTHORIZATION, token);
+        headers.put(DpsHeaders.AUTHORIZATION, dpsHeaders.getAuthorization());
         headers.put(DpsHeaders.DATA_PARTITION_ID, dpsHeaders.getPartitionId());
         return headers;
     }
