@@ -33,9 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Named;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Base64;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -132,7 +129,6 @@ public class MessageBusImpl implements IMessageBus {
     @NotNull
     private List<EventGridEvent> getEventGridEvents(DpsHeaders headers, PubSubInfo[] messages) {
         final int BATCH_SIZE = 10;
-        Gson gson = new Gson();
         List<EventGridEvent> eventsList = new ArrayList<>();
 
         for (int i = 0; i < messages.length; i += BATCH_SIZE) {
