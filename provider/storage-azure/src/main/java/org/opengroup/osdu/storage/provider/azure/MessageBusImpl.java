@@ -53,14 +53,6 @@ public class MessageBusImpl implements IMessageBus {
     private String serviceBusTopic;
 
     @Autowired
-    @Named("EVENTGRID_TOPIC_ENDPOINT")
-    private String eventGridTopicEndpoint;
-
-    @Autowired
-    @Named("EVENTGRID_TOPIC_KEY")
-    private String eventGridTopicKey;
-
-    @Autowired
     @Named("PUBLISH_TO_EVENTGRID")
     private boolean publishingToEventGridIsEnabled;
 

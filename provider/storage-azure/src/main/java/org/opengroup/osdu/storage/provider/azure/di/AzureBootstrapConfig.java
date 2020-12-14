@@ -98,17 +98,4 @@ public class AzureBootstrapConfig {
     public String redisPassword(SecretClient kv) {
         return KeyVaultFacade.getSecretWithValidation(kv, "redis-password");
     }
-
-    @Bean
-    @Named("EVENTGRID_TOPIC_ENDPOINT")
-    public String eventGridTopic(SecretClient kv) throws URISyntaxException {
-        String endpoint = KeyVaultFacade.getSecretWithValidation(kv, "opendes-eventgrid-recordstopic");
-        return String.format("https://%s/", new URI(endpoint).getHost());
-    }
-
-    @Bean
-    @Named("EVENTGRID_TOPIC_KEY")
-    public String eventGridTopicKey(SecretClient kv) {
-         return KeyVaultFacade.getSecretWithValidation(kv, "opendes-eventgrid-recordstopic-accesskey");
-    }
 }
