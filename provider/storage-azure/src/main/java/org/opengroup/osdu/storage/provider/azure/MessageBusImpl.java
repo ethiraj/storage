@@ -21,7 +21,6 @@ import com.microsoft.azure.servicebus.Message;
 import org.joda.time.DateTime;
 import org.opengroup.osdu.azure.eventgrid.EventGridTopicStore;
 import org.opengroup.osdu.azure.eventgrid.TopicName;
-import org.opengroup.osdu.azure.partition.PartitionServiceClient;
 import org.opengroup.osdu.azure.servicebus.ITopicClientFactory;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
@@ -52,9 +51,6 @@ public class MessageBusImpl implements IMessageBus {
 
     @Autowired
     EventGridConfig eventGridConfig;
-
-    @Autowired
-    private PartitionServiceClient partitionService;
 
     private final static String EVENT_SUBJECT = "RecordsChanged";
     private final static String EVENT_TYPE = "RecordsChanged";
