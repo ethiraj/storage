@@ -16,7 +16,6 @@ package org.opengroup.osdu.storage.provider.azure;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.microsoft.azure.eventgrid.EventGridClient;
 import com.microsoft.azure.eventgrid.TopicCredentials;
 import com.microsoft.azure.eventgrid.implementation.EventGridClientImpl;
@@ -30,6 +29,7 @@ import org.opengroup.osdu.azure.servicebus.ITopicClientFactory;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.PubSubInfo;
+import org.opengroup.osdu.storage.provider.azure.di.EventGridConfig;
 import org.opengroup.osdu.storage.provider.interfaces.IMessageBus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -53,8 +53,7 @@ public class MessageBusImpl implements IMessageBus {
     private String serviceBusTopic;
 
     @Autowired
-    @Named("PUBLISH_TO_EVENTGRID")
-    private boolean publishingToEventGridIsEnabled;
+    EventGridConfig eventGridConfig;
 
     @Autowired
     private PartitionServiceClient partitionService;
@@ -66,7 +65,7 @@ public class MessageBusImpl implements IMessageBus {
     @Override
     public void publishMessage(DpsHeaders headers, PubSubInfo... messages) {
         publishToServiceBus(headers, messages);
-        if(publishingToEventGridIsEnabled){
+        if(eventGridConfig.isPublishingToEventGridEnabled()){
             publishToEventGrid(headers, messages);
         }
     }
@@ -80,7 +79,7 @@ public class MessageBusImpl implements IMessageBus {
         try {
             endpoint = String.format("https://%s/", new URI(pi.getEventGridRecordsTopicEndpoint()).getHost());
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         TopicCredentials topicCredentials = new TopicCredentials(pi.getEventGridRecordsTopicAccessKey());
         EventGridClient eventGridClient = new EventGridClientImpl(topicCredentials);
@@ -147,15 +146,17 @@ public class MessageBusImpl implements IMessageBus {
             data.put(DpsHeaders.DATA_PARTITION_ID,headers.getPartitionIdWithFallbackToAccountId());
             data.put(DpsHeaders.CORRELATION_ID, headers.getCorrelationId());
 
+            String messageId = UUID.randomUUID().toString();
             eventsList.add(new EventGridEvent(
-                    UUID.randomUUID().toString(),
+                    messageId,
                     EVENT_SUBJECT,
                     data,
                     EVENT_TYPE,
                     DateTime.now(),
                     EVENT_DATA_VERSION
             ));
-       }
+            logger.info("Event generated: " + messageId);
+        }
         return eventsList;
     }
 }

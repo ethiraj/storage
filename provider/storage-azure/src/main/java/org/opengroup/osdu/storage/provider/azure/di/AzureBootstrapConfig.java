@@ -21,8 +21,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Named;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 
 @Component
@@ -30,18 +28,6 @@ public class AzureBootstrapConfig {
 
     @Value("${azure.servicebus.topic-name}")
     private String serviceBusTopic;
-
-    @Value("${azure.keyvault.url}")
-    private String keyVaultURL;
-
-    @Value("${azure.cosmosdb.database}")
-    private String cosmosDBName;
-
-    @Value("#{new Boolean('${azure.publishToEventGrid:true}')}")
-    public boolean publishToEventGrid;
-
-    @Value("${redis.timeout:3600}")
-    private int redisTimeout;
 
     @Bean
     @Named("STORAGE_CONTAINER_NAME")
@@ -55,8 +41,11 @@ public class AzureBootstrapConfig {
         return serviceBusTopic;
     }
 
-    @Value("${redis.port:6380}")
-    public int redisPort;
+    @Value("${azure.keyvault.url}")
+    private String keyVaultURL;
+
+    @Value("${azure.cosmosdb.database}")
+    private String cosmosDBName;
 
     @Bean
     @Named("KEY_VAULT_URL")
@@ -69,17 +58,17 @@ public class AzureBootstrapConfig {
         return cosmosDBName;
     }
 
+    @Value("${redis.port:6380}")
+    public int redisPort;
+
     @Bean
     @Named("REDIS_PORT")
     public int getRedisPort() {
         return redisPort;
     }
 
-    @Bean
-    @Named("PUBLISH_TO_EVENTGRID")
-    public boolean getPublishToEventGrid() {
-        return publishToEventGrid;
-    }
+    @Value("${redis.timeout:3600}")
+    public int redisTimeout;
 
     @Bean
     @Named("REDIS_TIMEOUT")
