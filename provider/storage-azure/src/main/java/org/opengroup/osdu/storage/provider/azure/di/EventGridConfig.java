@@ -15,7 +15,9 @@
 package org.opengroup.osdu.storage.provider.azure.di;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class EventGridConfig {
 
     public boolean isPublishingToEventGridEnabled() {
