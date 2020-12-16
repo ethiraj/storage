@@ -16,14 +16,11 @@ package org.opengroup.osdu.storage.provider.azure;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.microsoft.azure.eventgrid.EventGridClient;
-import com.microsoft.azure.eventgrid.TopicCredentials;
-import com.microsoft.azure.eventgrid.implementation.EventGridClientImpl;
 import com.microsoft.azure.eventgrid.models.EventGridEvent;
 import com.microsoft.azure.servicebus.Message;
-import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
-import org.opengroup.osdu.azure.partition.PartitionInfoAzure;
+import org.opengroup.osdu.azure.eventgrid.EventGridTopicStore;
+import org.opengroup.osdu.azure.eventgrid.TopicName;
 import org.opengroup.osdu.azure.partition.PartitionServiceClient;
 import org.opengroup.osdu.azure.servicebus.ITopicClientFactory;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
@@ -35,8 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Named;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -44,6 +39,9 @@ import java.util.*;
 public class MessageBusImpl implements IMessageBus {
     @Autowired
     private ITopicClientFactory topicClientFactory;
+
+    @Autowired
+    private EventGridTopicStore eventGridTopicStore;
 
     @Autowired
     private JaxRsDpsLog logger;
@@ -71,24 +69,32 @@ public class MessageBusImpl implements IMessageBus {
     }
 
     private void publishToEventGrid(DpsHeaders headers, PubSubInfo[] messages) {
+        final int BATCH_SIZE = 10;
+        List<EventGridEvent> eventsList = new ArrayList<>();
 
-        List<EventGridEvent> eventsList = getEventGridEvents(headers, messages);
+        for (int i = 0; i < messages.length; i += BATCH_SIZE) {
 
-        PartitionInfoAzure pi = this.partitionService.getPartition(headers.getPartitionId());
-        String endpoint = "";
-        try {
-            endpoint = String.format("https://%s/", new URI(pi.getEventGridRecordsTopicEndpoint()).getHost());
-        } catch (URISyntaxException e) {
-            logger.error(e.getMessage());
+            PubSubInfo[] batch = Arrays.copyOfRange(messages, i, Math.min(messages.length, i + BATCH_SIZE));
+
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("data", batch);
+            data.put(DpsHeaders.ACCOUNT_ID, headers.getPartitionIdWithFallbackToAccountId());
+            data.put(DpsHeaders.DATA_PARTITION_ID, headers.getPartitionIdWithFallbackToAccountId());
+            data.put(DpsHeaders.CORRELATION_ID, headers.getCorrelationId());
+
+            String messageId = UUID.randomUUID().toString();
+            eventsList.add(new EventGridEvent(
+                    messageId,
+                    EVENT_SUBJECT,
+                    data,
+                    EVENT_TYPE,
+                    DateTime.now(),
+                    EVENT_DATA_VERSION
+            ));
+            logger.info("Event generated: " + messageId);
         }
-        TopicCredentials topicCredentials = new TopicCredentials(pi.getEventGridRecordsTopicAccessKey());
-        EventGridClient eventGridClient = new EventGridClientImpl(topicCredentials);
-        try{
-            logger.info("Storage publishes message to Event Grid " + headers.getCorrelationId());
-            eventGridClient.publishEvents(endpoint, eventsList);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
+
+        eventGridTopicStore.publishToEventGridTopic(headers.getPartitionId(), TopicName.RECORDS_CHANGED, eventsList);
     }
 
 
@@ -131,32 +137,4 @@ public class MessageBusImpl implements IMessageBus {
         }
     }
 
-    @NotNull
-    private List<EventGridEvent> getEventGridEvents(DpsHeaders headers, PubSubInfo[] messages) {
-        final int BATCH_SIZE = 10;
-        List<EventGridEvent> eventsList = new ArrayList<>();
-
-        for (int i = 0; i < messages.length; i += BATCH_SIZE) {
-
-            PubSubInfo[] batch = Arrays.copyOfRange(messages, i, Math.min(messages.length, i + BATCH_SIZE));
-
-            HashMap<String, Object> data = new HashMap<>();
-            data.put("data", batch);
-            data.put(DpsHeaders.ACCOUNT_ID, headers.getPartitionIdWithFallbackToAccountId());
-            data.put(DpsHeaders.DATA_PARTITION_ID,headers.getPartitionIdWithFallbackToAccountId());
-            data.put(DpsHeaders.CORRELATION_ID, headers.getCorrelationId());
-
-            String messageId = UUID.randomUUID().toString();
-            eventsList.add(new EventGridEvent(
-                    messageId,
-                    EVENT_SUBJECT,
-                    data,
-                    EVENT_TYPE,
-                    DateTime.now(),
-                    EVENT_DATA_VERSION
-            ));
-            logger.info("Event generated: " + messageId);
-        }
-        return eventsList;
-    }
 }
