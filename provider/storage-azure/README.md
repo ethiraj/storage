@@ -186,7 +186,7 @@ export DEPLOY_ENV: "empty"
 ```
 
 __Azure Service Deployment__
-
+0. The Service is utilizing a new infrastructural component - Event Grid. [This](https://community.opengroup.org/osdu/platform/deployment-and-operations/infra-azure-provisioning/-/blob/master/tools/rest/partition.http#L2) script has to run before the deployment of service version > 1.0.0. 
 
 1. Deploy the service using the Maven Plugin  _(azure_deploy)_
 
