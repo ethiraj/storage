@@ -1,4 +1,3 @@
-/*
 // Copyright © Microsoft Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,10 +47,8 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-*/
-/*
 
-@RunWith(MockitoJUnitRunner.class)*//*
+@RunWith(MockitoJUnitRunner.class)
 
 @ExtendWith(MockitoExtension.class)
 public class MessageBusImplTest {
@@ -62,11 +59,9 @@ public class MessageBusImplTest {
 
     @Mock
     private ITopicClientFactory topicClientFactory;
+    /*@Mock
+    private TopicClient topicClient;
 */
-/*
-    @Mock
-    private TopicClient topicClient;*//*
-
 
     @Mock
     private EventGridTopicStore eventGridTopicStore;
@@ -80,31 +75,26 @@ public class MessageBusImplTest {
     @InjectMocks
     private MessageBusImpl sut;
 
-  */
-/*  @Before
+    @Before
     public void init() throws ServiceBusException, InterruptedException {
-       // initMocks(this);
+        initMocks(this);
 
        // TopicClient concreteTopicClient = new TopicClient(new ConnectionStringBuilder("connectionString"));
 
-        //TopicClient mocktopicClient = mock(TopicClient.class);
+        TopicClient mocktopicClient = mock(TopicClient.class);
 
 
-     *//*
-*/
-/*   doReturn(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID).when(dpsHeaders).getPartitionIdWithFallbackToAccountId();
+
+   doReturn(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID).when(dpsHeaders).getPartitionIdWithFallbackToAccountId();
         doReturn(PARTITION_ID).when(dpsHeaders).getPartitionId();
         doReturn(CORRELATION_ID).when(dpsHeaders).getCorrelationId();
-        doReturn(mocktopicClient).when(topicClientFactory).getClient(eq(PARTITION_ID), any());*//*
-*/
-/*
+        doReturn(mocktopicClient).when(topicClientFactory).getClient(eq(PARTITION_ID), any());
     }
-*//*
+
 
     @Test
     public void should_publishToEventGrid_WhenFlagIsSet() {
-     */
-/*   // Set Up
+   // Set Up
         String[] ids = {"id1", "id2"};
         String[] kinds = {"kind1", "kind2"};
 
@@ -118,7 +108,7 @@ public class MessageBusImplTest {
         sut.publishMessage(this.dpsHeaders, pubSubInfo);
 
         // Asset
-        verify(this.eventGridTopicStore, times(1)).publishToEventGridTopic(PARTITION_ID, TopicName.RECORDS_CHANGED, any());*//*
+        verify(this.eventGridTopicStore, times(1)).publishToEventGridTopic(PARTITION_ID, TopicName.RECORDS_CHANGED, any());
 
     }
 
@@ -128,4 +118,4 @@ public class MessageBusImplTest {
         pubSubInfo.setKind(kind);
         return pubSubInfo;
     }
-}*/
+}
