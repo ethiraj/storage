@@ -31,6 +31,6 @@ public class EventGridConfig {
     @Value("#{new Boolean('${azure.publishToEventGrid:true}')}")
     private boolean publishToEventGridEnabled;
 
-    @Value("#{new Int('${azure.eventGridBatchSize:10}')}")
-    private int eventGridBatchSize;
+    @Value("#{new Integer('${azure.eventGridBatchSize:10}')}")
+    private Integer eventGridBatchSize;
 }

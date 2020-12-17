@@ -65,7 +65,7 @@ public class MessageBusImpl implements IMessageBus {
     }
 
     private void publishToEventGrid(DpsHeaders headers, PubSubInfo[] messages) {
-        final int BATCH_SIZE = eventGridConfig.getEventGridBatchSize();
+        final Integer BATCH_SIZE = eventGridConfig.getEventGridBatchSize();
         List<EventGridEvent> eventsList = new ArrayList<>();
 
         for (int i = 0; i < messages.length; i += BATCH_SIZE) {
@@ -89,6 +89,8 @@ public class MessageBusImpl implements IMessageBus {
             ));
             logger.info("Event generated: " + messageId);
 
+            // If a record change is not published (publishToEventGridTopic throws) we fail the job.
+            // This is done to make sure no notifications are missed.
             eventGridTopicStore.publishToEventGridTopic(headers.getPartitionId(), TopicName.RECORDS_CHANGED, eventsList);
         }
 
