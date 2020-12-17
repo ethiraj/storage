@@ -82,4 +82,4 @@ stages:
       skipTest: ${{ variables.SKIP_TESTS }}
       providers:
         -  name: Azure
-           environments: ['dev', 'qa', 'prd', 'cvx']
+           environments: ['dev']
