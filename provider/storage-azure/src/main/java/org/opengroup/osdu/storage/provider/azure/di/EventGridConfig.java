@@ -31,6 +31,8 @@ public class EventGridConfig {
     @Value("#{new Boolean('${azure.publishToEventGrid:true}')}")
     private boolean publishToEventGridEnabled;
 
+    // The Event Grid Event can be a maximum of 1MB. The batch size manipulation will impact the costing.
+    // https://docs.microsoft.com/en-us/azure/event-grid/event-schema#:~:text=Event%20sources%20send%20events%20to,is%20limited%20to%201%20MB.
     @Value("#{new Integer('${azure.eventGridBatchSize:10}')}")
     private Integer eventGridBatchSize;
 }
