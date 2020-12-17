@@ -116,6 +116,12 @@
             <groupId>org.opengroup.osdu</groupId>
             <artifactId>storage-core</artifactId>
             <version>${osdu.storage-core.version}</version>
+           <!-- <exclusions>
+                <exclusion>
+                    <groupId> org.powermock</groupId>
+                    <artifactId>powermock-api-mockito</artifactId>
+                </exclusion>
+            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -133,12 +139,12 @@
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+      <!--  <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.6.0</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
@@ -159,12 +165,12 @@
             <artifactId>azure-eventgrid</artifactId>
             <version>1.2.0</version>
         </dependency>
-        <dependency>
+       <!-- <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>3.3.3</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
