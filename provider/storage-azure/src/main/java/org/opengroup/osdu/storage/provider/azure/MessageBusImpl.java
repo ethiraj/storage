@@ -65,7 +65,7 @@ public class MessageBusImpl implements IMessageBus {
     }
 
     private void publishToEventGrid(DpsHeaders headers, PubSubInfo[] messages) {
-        final int BATCH_SIZE = 10;
+        final int BATCH_SIZE = eventGridConfig.getEventGridBatchSize();
         List<EventGridEvent> eventsList = new ArrayList<>();
 
         for (int i = 0; i < messages.length; i += BATCH_SIZE) {
@@ -88,9 +88,10 @@ public class MessageBusImpl implements IMessageBus {
                     EVENT_DATA_VERSION
             ));
             logger.info("Event generated: " + messageId);
+
+            eventGridTopicStore.publishToEventGridTopic(headers.getPartitionId(), TopicName.RECORDS_CHANGED, eventsList);
         }
 
-        eventGridTopicStore.publishToEventGridTopic(headers.getPartitionId(), TopicName.RECORDS_CHANGED, eventsList);
     }
 
 

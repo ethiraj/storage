@@ -1,4 +1,3 @@
-/*
 // Copyright © Microsoft Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,50 +15,35 @@
 package org.opengroup.osdu.storage.provider.azure;
 
 import com.microsoft.azure.servicebus.TopicClient;
-import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
 import com.microsoft.azure.servicebus.primitives.ServiceBusException;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
-import org.mockito.*;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.azure.eventgrid.EventGridTopicStore;
-import org.opengroup.osdu.azure.eventgrid.TopicName;
 import org.opengroup.osdu.azure.servicebus.ITopicClientFactory;
+import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.model.storage.DatastoreQueryResult;
 import org.opengroup.osdu.core.common.model.storage.PubSubInfo;
-import org.opengroup.osdu.core.common.model.storage.SchemaItem;
 import org.opengroup.osdu.storage.provider.azure.di.EventGridConfig;
-import org.opengroup.osdu.storage.provider.azure.repository.QueryRepository;
-import org.opengroup.osdu.storage.provider.azure.repository.SchemaRepository;
-import org.springframework.data.domain.Sort;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MessageBusImplTest {
-    
+
     private static final String DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID = "data-partition-account-id";
     private static final String CORRELATION_ID = "correlation-id";
     private static final String PARTITION_ID = "partition-id";
 
     @Mock
     private ITopicClientFactory topicClientFactory;
-    */
-/*@Mock
-    private TopicClient topicClient;
-*//*
 
+    @Mock
+    private TopicClient topicClient;
 
     @Mock
     private EventGridTopicStore eventGridTopicStore;
@@ -70,47 +54,42 @@ public class MessageBusImplTest {
     @Mock
     private DpsHeaders dpsHeaders;
 
+    @Mock
+    private JaxRsDpsLog logger;
+
     @InjectMocks
     private MessageBusImpl sut;
 
     @Before
-    public void init()  {
-        MockitoAnnotations.initMocks(this);
+    public void init() throws ServiceBusException, InterruptedException {
+        initMocks(this);
 
-       // TopicClient concreteTopicClient = new TopicClient(new ConnectionStringBuilder("connectionString"));
-
-        //TopicClient mocktopicClient = mock(TopicClient.class);
-
-
-
-        */
-/*doReturn(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID).when(dpsHeaders).getPartitionIdWithFallbackToAccountId();
+        doReturn(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID).when(dpsHeaders).getPartitionIdWithFallbackToAccountId();
         doReturn(PARTITION_ID).when(dpsHeaders).getPartitionId();
         doReturn(CORRELATION_ID).when(dpsHeaders).getCorrelationId();
-        doReturn(mocktopicClient).when(topicClientFactory).getClient(eq(PARTITION_ID), any());*//*
-
+        doReturn(topicClient).when(topicClientFactory).getClient(eq(PARTITION_ID), any());
     }
-
 
     @Test
     public void should_publishToEventGrid_WhenFlagIsSet() {
-   // Set Up
-        String[] ids = {"id1", "id2"};
-        String[] kinds = {"kind1", "kind2"};
+        // Set Up
+        String[] ids = {"id1", "id2", "id3", "id3", "id4", "id5", "id6", "id7", "id8", "id9", "id10", "id11"};
+        String[] kinds = {"kind1", "kind2", "kind3", "kind4", "kind5", "kind6", "kind7", "kind8", "kind9", "kind10", "kind11"};
 
-        PubSubInfo[] pubSubInfo = new PubSubInfo[2];
+        PubSubInfo[] pubSubInfo = new PubSubInfo[12];
         for (int i = 0; i < ids.length; ++i) {
             pubSubInfo[i] = getPubsInfo(ids[0], kinds[0]);
         }
         when(this.eventGridConfig.isPublishingToEventGridEnabled()).thenReturn(true);
+        when(this.eventGridConfig.getEventGridBatchSize()).thenReturn(5);
 
         // Act
         sut.publishMessage(this.dpsHeaders, pubSubInfo);
 
         // Asset
-        verify(this.eventGridTopicStore, times(1)).publishToEventGridTopic(PARTITION_ID, TopicName.RECORDS_CHANGED, any());
-
+        verify(this.eventGridTopicStore, times(3)).publishToEventGridTopic(any(), any(), anyList());
     }
+
 
     private PubSubInfo getPubsInfo(String id, String kind) {
         PubSubInfo pubSubInfo = new PubSubInfo();
@@ -119,4 +98,3 @@ public class MessageBusImplTest {
         return pubSubInfo;
     }
 }
-*/

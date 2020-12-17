@@ -24,6 +24,13 @@ public class EventGridConfig {
         return publishToEventGridEnabled;
     }
 
+    public int getEventGridBatchSize() {
+        return eventGridBatchSize;
+    }
+
     @Value("#{new Boolean('${azure.publishToEventGrid:true}')}")
     private boolean publishToEventGridEnabled;
+
+    @Value("#{new Int('${azure.eventGridBatchSize:10}')}")
+    private int eventGridBatchSize;
 }
