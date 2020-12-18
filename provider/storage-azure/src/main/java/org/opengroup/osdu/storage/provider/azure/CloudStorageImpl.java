@@ -97,7 +97,7 @@ public class CloudStorageImpl implements ICloudStorage {
                 result.get();
                 numberOfTasksCompleted++;
             }
-            MDC.put("number-of-records-updated",String.valueOf(numberOfTasksCompleted));
+            MDC.put("number-of-records-updated-or-created",String.valueOf(numberOfTasksCompleted));
         } catch (InterruptedException | ExecutionException e) {
             throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Error during record ingestion",
                     "An unexpected error on writing the record has occurred", e);
