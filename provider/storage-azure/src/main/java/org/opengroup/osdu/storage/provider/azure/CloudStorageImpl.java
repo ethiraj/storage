@@ -46,6 +46,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import org.slf4j.MDC;
+
 import static org.apache.commons.codec.binary.Base64.encodeBase64;
 
 @Repository
@@ -90,9 +92,12 @@ public class CloudStorageImpl implements ICloudStorage {
         }
 
         try {
+            int numberOfTasksCompleted=0;
             for (Future<Boolean> result : this.threadPool.invokeAll(tasks)) {
                 result.get();
+                numberOfTasksCompleted++;
             }
+            MDC.put("number-of-records-updated",String.valueOf(numberOfTasksCompleted));
         } catch (InterruptedException | ExecutionException e) {
             throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Error during record ingestion",
                     "An unexpected error on writing the record has occurred", e);
