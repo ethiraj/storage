@@ -88,12 +88,11 @@ public class MessageBusImpl implements IMessageBus {
                     EVENT_DATA_VERSION
             ));
             logger.info("Event generated: " + messageId);
-
-            // If a record change is not published (publishToEventGridTopic throws) we fail the job.
-            // This is done to make sure no notifications are missed.
-            eventGridTopicStore.publishToEventGridTopic(headers.getPartitionId(), TopicName.RECORDS_CHANGED, eventsList);
         }
 
+        // If a record change is not published (publishToEventGridTopic throws) we fail the job.
+        // This is done to make sure no notifications are missed.
+        eventGridTopicStore.publishToEventGridTopic(headers.getPartitionId(), TopicName.RECORDS_CHANGED, eventsList);
     }
 
 

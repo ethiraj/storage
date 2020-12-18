@@ -14,13 +14,13 @@
 
 package org.opengroup.osdu.storage.provider.azure;
 
+import com.microsoft.azure.eventgrid.models.EventGridEvent;
 import com.microsoft.azure.servicebus.TopicClient;
 import com.microsoft.azure.servicebus.primitives.ServiceBusException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.azure.eventgrid.EventGridTopicStore;
 import org.opengroup.osdu.azure.servicebus.ITopicClientFactory;
@@ -29,6 +29,9 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.PubSubInfo;
 import org.opengroup.osdu.storage.provider.azure.di.EventGridConfig;
 
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -47,6 +50,9 @@ public class MessageBusImplTest {
 
     @Mock
     private EventGridTopicStore eventGridTopicStore;
+
+    @Captor
+    ArgumentCaptor<List<EventGridEvent>> argCaptor;
 
     @Mock
     private EventGridConfig eventGridConfig;
@@ -87,7 +93,10 @@ public class MessageBusImplTest {
         sut.publishMessage(this.dpsHeaders, pubSubInfo);
 
         // Asset
-        verify(this.eventGridTopicStore, times(3)).publishToEventGridTopic(any(), any(), anyList());
+        verify(this.eventGridTopicStore, times(1)).publishToEventGridTopic(any(), any(), anyList());
+        // The number of events that are being published is verified here.
+        verify(this.eventGridTopicStore).publishToEventGridTopic(any(), any(), argCaptor.capture());
+        assertEquals(3, argCaptor.getValue().size());
     }
 
 
