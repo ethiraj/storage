@@ -20,18 +20,25 @@ import com.microsoft.azure.servicebus.primitives.ServiceBusException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.azure.eventgrid.EventGridTopicStore;
+import org.opengroup.osdu.azure.eventgrid.TopicName;
 import org.opengroup.osdu.azure.servicebus.ITopicClientFactory;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.PubSubInfo;
 import org.opengroup.osdu.storage.provider.azure.di.EventGridConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -50,9 +57,6 @@ public class MessageBusImplTest {
 
     @Mock
     private EventGridTopicStore eventGridTopicStore;
-
-    @Captor
-    ArgumentCaptor<List<EventGridEvent>> argCaptor;
 
     @Mock
     private EventGridConfig eventGridConfig;
@@ -86,6 +90,13 @@ public class MessageBusImplTest {
         for (int i = 0; i < ids.length; ++i) {
             pubSubInfo[i] = getPubsInfo(ids[0], kinds[0]);
         }
+
+        ArgumentCaptor<String> partitionNameCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<TopicName> topicNameArgumentCaptor = ArgumentCaptor.forClass(TopicName.class);
+        ArgumentCaptor<List<EventGridEvent>> listEventGridEventArgumentCaptor = ArgumentCaptor.forClass(List.class);
+        doNothing().when(this.eventGridTopicStore).publishToEventGridTopic(
+                partitionNameCaptor.capture(), topicNameArgumentCaptor.capture(), listEventGridEventArgumentCaptor.capture()
+        );
         when(this.eventGridConfig.isPublishingToEventGridEnabled()).thenReturn(true);
         when(this.eventGridConfig.getEventGridBatchSize()).thenReturn(5);
 
@@ -95,8 +106,9 @@ public class MessageBusImplTest {
         // Asset
         verify(this.eventGridTopicStore, times(1)).publishToEventGridTopic(any(), any(), anyList());
         // The number of events that are being published is verified here.
-        verify(this.eventGridTopicStore).publishToEventGridTopic(any(), any(), argCaptor.capture());
-        assertEquals(3, argCaptor.getValue().size());
+        assertEquals(3, listEventGridEventArgumentCaptor.getValue().size());
+        assertEquals(topicNameArgumentCaptor.getValue(), TopicName.RECORDS_CHANGED);
+        assertEquals(partitionNameCaptor.getValue(), PARTITION_ID);
     }
 
 
