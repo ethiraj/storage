@@ -33,10 +33,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Repository
 public class RecordMetadataRepository extends SimpleCosmosStoreRepository<RecordMetadataDoc> implements IRecordsMetadataRepository<String> {
@@ -46,6 +48,9 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
 
     @Autowired
     private AzureBootstrapConfig azureBootstrapConfig;
+
+    @Autowired
+    private int minWritesToParallelize;
 
     @Autowired
     private CosmosContainerConfig cosmosContainerConfig;
@@ -66,14 +71,24 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
     @Override
     public List<RecordMetadata> createOrUpdate(List<RecordMetadata> recordsMetadata) {
         Assert.notNull(recordsMetadata, "recordsMetadata must not be null");
+        List<CompletableFuture<RecordMetadataDoc>> futures = new ArrayList<>();
         if (recordsMetadata != null) {
             for (RecordMetadata recordMetadata : recordsMetadata) {
                 RecordMetadataDoc doc = new RecordMetadataDoc();
                 doc.setId(recordMetadata.getId());
                 doc.setMetadata(recordMetadata);
-                this.save(doc);
+                // check if there is enough records to parallelize the work
+                if(recordsMetadata.size() >= minWritesToParallelize){
+                    futures.add(this.save(doc, headers.getPartitionId()));
+                }
+                // just write in serial if batch size isn't big enough
+                else{
+                    this.save(doc,headers.getPartitionId());
+                }
             }
         }
+        // join the results if done in parallel
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).join();
         return recordsMetadata;
     }
 
@@ -170,8 +185,9 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
         return this.getOne(id, headers.getPartitionId(), cosmosDBName, recordMetadataCollection, id);
     }
 
-    public RecordMetadataDoc save(RecordMetadataDoc entity) {
-        return this.save(entity, headers.getPartitionId(),cosmosDBName,recordMetadataCollection,entity.getId());
+    @Async
+    public CompletableFuture<RecordMetadataDoc> save(RecordMetadataDoc entity, String partitionId) {
+        return CompletableFuture.supplyAsync(()->this.save(entity, partitionId,cosmosDBName,recordMetadataCollection,entity.getId()));
     }
 
     @Override

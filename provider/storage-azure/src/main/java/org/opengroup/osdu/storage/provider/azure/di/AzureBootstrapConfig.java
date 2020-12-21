@@ -88,4 +88,10 @@ public class AzureBootstrapConfig {
         return KeyVaultFacade.getSecretWithValidation(kv, "redis-password");
     }
 
+    @Bean
+    @Named("MIN_WRITES_TO_PARALLELIZE")
+    public int minWritesToParallelize(){
+        return Integer.parseInt(System.getProperty("MIN_WRITES_TO_PARALLELIZE", "10"));
+    }
+
 }
