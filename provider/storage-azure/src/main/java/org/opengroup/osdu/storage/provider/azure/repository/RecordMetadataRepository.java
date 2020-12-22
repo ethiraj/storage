@@ -39,6 +39,9 @@ import org.springframework.util.Assert;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Repository
 public class RecordMetadataRepository extends SimpleCosmosStoreRepository<RecordMetadataDoc> implements IRecordsMetadataRepository<String> {
@@ -64,8 +67,11 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
     @Autowired
     private JaxRsDpsLog logger;
 
+    private ExecutorService executorService;
+
     public RecordMetadataRepository() {
         super(RecordMetadataDoc.class);
+        this.executorService = Executors.newFixedThreadPool(10);
     }
 
     @Override
@@ -186,8 +192,8 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
     }
 
     @Async
-    public CompletableFuture<RecordMetadataDoc> save(RecordMetadataDoc entity, String partitionId) {
-        return CompletableFuture.supplyAsync(()->this.save(entity, partitionId,cosmosDBName,recordMetadataCollection,entity.getId()));
+    private CompletableFuture<RecordMetadataDoc> save(RecordMetadataDoc entity, String partitionId) {
+        return CompletableFuture.supplyAsync(()->this.save(entity, partitionId,cosmosDBName,recordMetadataCollection,entity.getId()), executorService);
     }
 
     @Override
