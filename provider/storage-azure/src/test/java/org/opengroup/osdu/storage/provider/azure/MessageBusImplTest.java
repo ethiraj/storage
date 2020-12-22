@@ -17,11 +17,11 @@ package org.opengroup.osdu.storage.provider.azure;
 import com.microsoft.azure.eventgrid.models.EventGridEvent;
 import com.microsoft.azure.servicebus.TopicClient;
 import com.microsoft.azure.servicebus.primitives.ServiceBusException;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,9 +34,12 @@ import org.opengroup.osdu.core.common.model.storage.PubSubInfo;
 import org.opengroup.osdu.storage.provider.azure.di.EventGridConfig;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -83,12 +86,12 @@ public class MessageBusImplTest {
     @Test
     public void should_publishToEventGrid_WhenFlagIsSet() {
         // Set Up
-        String[] ids = {"id1", "id2", "id3", "id3", "id4", "id5", "id6", "id7", "id8", "id9", "id10", "id11"};
+        String[] ids = {"id1", "id2", "id3", "id4", "id5", "id6", "id7", "id8", "id9", "id10", "id11"};
         String[] kinds = {"kind1", "kind2", "kind3", "kind4", "kind5", "kind6", "kind7", "kind8", "kind9", "kind10", "kind11"};
 
-        PubSubInfo[] pubSubInfo = new PubSubInfo[12];
+        PubSubInfo[] pubSubInfo = new PubSubInfo[11];
         for (int i = 0; i < ids.length; ++i) {
-            pubSubInfo[i] = getPubsInfo(ids[0], kinds[0]);
+            pubSubInfo[i] = getPubsInfo(ids[i], kinds[i]);
         }
 
         ArgumentCaptor<String> partitionNameCaptor = ArgumentCaptor.forClass(String.class);
@@ -105,12 +108,28 @@ public class MessageBusImplTest {
 
         // Asset
         verify(this.eventGridTopicStore, times(1)).publishToEventGridTopic(any(), any(), anyList());
+
         // The number of events that are being published is verified here.
         assertEquals(3, listEventGridEventArgumentCaptor.getValue().size());
         assertEquals(topicNameArgumentCaptor.getValue(), TopicName.RECORDS_CHANGED);
         assertEquals(partitionNameCaptor.getValue(), PARTITION_ID);
+
+        // Validate all records are preserved.
+        List<String> observedIds = getListOfId(listEventGridEventArgumentCaptor.getValue());
+        assertTrue(observedIds.containsAll(Arrays.asList(ids)) && Arrays.asList(ids).containsAll(observedIds));
     }
 
+    private List<String> getListOfId(List<EventGridEvent> value) {
+        List<String> ids = new ArrayList<>();
+        for (EventGridEvent event: value) {
+            HashMap<String, Object > map = (HashMap<String, Object>) event.data();
+            PubSubInfo[] pubSubInfos = (PubSubInfo[]) map.get("data");
+            for (PubSubInfo p: pubSubInfos) {
+                ids.add(p.getId());
+            }
+        }
+        return ids;
+    }
 
     private PubSubInfo getPubsInfo(String id, String kind) {
         PubSubInfo pubSubInfo = new PubSubInfo();
