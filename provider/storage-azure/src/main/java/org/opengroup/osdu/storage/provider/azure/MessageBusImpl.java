@@ -71,7 +71,6 @@ public class MessageBusImpl implements IMessageBus {
             jo.addProperty(DpsHeaders.CORRELATION_ID, headers.getCorrelationId());
             JsonObject jomsg = new JsonObject();
             jomsg.add("message", jo);
-            logger.info("Message passed to Indexer-queue: "+jo.getAsString());
 
             message.setBody(jomsg.toString().getBytes(StandardCharsets.UTF_8));
             message.setContentType("application/json");
