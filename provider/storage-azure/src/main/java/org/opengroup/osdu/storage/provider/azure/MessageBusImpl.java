@@ -64,12 +64,11 @@ public class MessageBusImpl implements IMessageBus {
         }
     }
 
-    private void publishToEventGrid(DpsHeaders headers, PubSubInfo[] messages) {
+    private void publishToEventGrid(DpsHeaders headers, PubSubInfo[] messages) { //1000
         final Integer BATCH_SIZE = eventGridConfig.getEventGridBatchSize();
-        List<EventGridEvent> eventsList = new ArrayList<>();
 
         for (int i = 0; i < messages.length; i += BATCH_SIZE) {
-
+            List<EventGridEvent> eventsList = new ArrayList<>();
             PubSubInfo[] batch = Arrays.copyOfRange(messages, i, Math.min(messages.length, i + BATCH_SIZE));
 
             HashMap<String, Object> data = new HashMap<>();
@@ -88,11 +87,15 @@ public class MessageBusImpl implements IMessageBus {
                     EVENT_DATA_VERSION
             ));
             logger.info("Event generated: " + messageId);
-        }
 
-        // If a record change is not published (publishToEventGridTopic throws) we fail the job.
-        // This is done to make sure no notifications are missed.
-        eventGridTopicStore.publishToEventGridTopic(headers.getPartitionId(), TopicName.RECORDS_CHANGED, eventsList);
+            // If a record change is not published (publishToEventGridTopic throws) we fail the job.
+            // This is done to make sure no notifications are missed.
+
+            // Event Grid has a capability to publish multiple events in an array. This will have perf implications,
+            // hence publishing one event at a time. If we are confidant about the perf capabilities of consumer services,
+            // we can use arrays.
+            eventGridTopicStore.publishToEventGridTopic(headers.getPartitionId(), TopicName.RECORDS_CHANGED, eventsList);
+        }
     }
 
 
