@@ -22,6 +22,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpStatus;
 
 import org.opengroup.osdu.azure.blobstorage.IBlobContainerClientFactory;
+import org.opengroup.osdu.azure.logging.MDCAwareExecutorService;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.entitlements.Acl;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -92,7 +93,8 @@ public class CloudStorageImpl implements ICloudStorage {
         }
 
         try {
-            for (Future<Boolean> result : this.threadPool.invokeAll(tasks)) {
+            MDCAwareExecutorService executorService = new MDCAwareExecutorService(this.threadPool);
+            for (Future<Boolean> result : executorService.invokeAll(tasks)) {
                 result.get();
             }
             MDC.put("record-count",String.valueOf(tasks.size()));
@@ -171,6 +173,8 @@ public class CloudStorageImpl implements ICloudStorage {
 
     private boolean writeBlobThread(RecordProcessing rp, BlobContainerClient blobContainerClient)
     {
+        // This will not get the correct id, earlier it would have printed null.
+        System.out.println(MDC.getCopyOfContextMap().get("correlation-id"));
         Gson gson = new GsonBuilder().serializeNulls().create();
         RecordMetadata rmd = rp.getRecordMetadata();
         String path = buildPath(rmd);
