@@ -18,6 +18,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * Note: these exclusions are the result of duplicate dependencies being introduced in the
@@ -32,6 +33,7 @@ import org.springframework.context.annotation.FilterType;
         }
 )
 @SpringBootApplication
+@EnableAsync(proxyTargetClass=true)
 public class StorageApplication {
     public static void main(String[] args) {
         SpringApplication.run(StorageApplication.class, args);

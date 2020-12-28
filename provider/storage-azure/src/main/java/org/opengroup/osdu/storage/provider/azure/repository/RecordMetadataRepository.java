@@ -67,11 +67,8 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
     @Autowired
     private JaxRsDpsLog logger;
 
-    private ExecutorService executorService;
-
     public RecordMetadataRepository() {
         super(RecordMetadataDoc.class);
-        this.executorService = Executors.newFixedThreadPool(10);
     }
 
     @Override
@@ -191,9 +188,9 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
         return this.getOne(id, headers.getPartitionId(), cosmosDBName, recordMetadataCollection, id);
     }
 
-    @Async
-    private CompletableFuture<RecordMetadataDoc> save(RecordMetadataDoc entity, String partitionId) {
-        return CompletableFuture.supplyAsync(()->this.save(entity, partitionId,cosmosDBName,recordMetadataCollection,entity.getId()), executorService);
+    @Async("asyncProcessExecutor")
+    public CompletableFuture<RecordMetadataDoc> save(RecordMetadataDoc entity, String partitionId) {
+        return CompletableFuture.supplyAsync(()->this.save(entity, partitionId,cosmosDBName,recordMetadataCollection,entity.getId()));
     }
 
     @Override

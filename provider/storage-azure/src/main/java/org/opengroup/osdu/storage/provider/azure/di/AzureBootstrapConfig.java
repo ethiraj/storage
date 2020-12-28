@@ -16,8 +16,11 @@ package org.opengroup.osdu.storage.provider.azure.di;
 
 import com.azure.security.keyvault.secrets.SecretClient;
 import org.opengroup.osdu.azure.KeyVaultFacade;
+import org.opengroup.osdu.storage.di.ThreadPoolFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Named;
@@ -92,6 +95,19 @@ public class AzureBootstrapConfig {
     @Named("MIN_WRITES_TO_PARALLELIZE")
     public int minWritesToParallelize(){
         return Integer.parseInt(System.getProperty("MIN_WRITES_TO_PARALLELIZE", "10"));
+    }
+
+    @Bean
+    @Named("asyncProcessExecutor")
+    public TaskExecutor workExecutor(){
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setThreadNamePrefix("Async-");
+        // TODO: fine tune these values
+        threadPoolTaskExecutor.setCorePoolSize(10);
+        threadPoolTaskExecutor.setMaxPoolSize(100);
+        threadPoolTaskExecutor.setQueueCapacity(500);
+        threadPoolTaskExecutor.afterPropertiesSet();
+        return threadPoolTaskExecutor;
     }
 
 }
