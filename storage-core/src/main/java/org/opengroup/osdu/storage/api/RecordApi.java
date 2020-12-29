@@ -70,13 +70,13 @@ public class RecordApi {
 	@PreAuthorize("@authorizationFilter.hasRole('" + StorageRole.CREATOR + "', '" + StorageRole.ADMIN + "')")
 	public ResponseEntity<CreateUpdateRecordsResponse> createOrUpdateRecords(
 			@RequestParam(required = false) boolean skipdupes,
-			@RequestBody @Valid @NotEmpty @Size(max = 500, message = ValidationDoc.RECORDS_MAX) List<Record> records) {
-		System.out.println("Create or date records hit");
+			@RequestBody @Valid @NotEmpty @Size(max = 500, message = ValidationDoc.RECORDS_MAX) List<Record> records) throws InterruptedException {
+		System.out.println("Create or update records hit");
+		Thread.sleep(3000);
 		TransferInfo transfer = this.ingestionService.createUpdateRecords(skipdupes, records,
 				this.headers.getUserEmail());
 		CreateUpdateRecordsResponse transferResponse = new CreateUpdateRecordsResponse(transfer, records);
-		// switching to the wrong response type to see if the deployed code is updated when the ADO pipeline runs
-		return new ResponseEntity<CreateUpdateRecordsResponse>(transferResponse, HttpStatus.BAD_GATEWAY);
+		return new ResponseEntity<CreateUpdateRecordsResponse>(transferResponse, HttpStatus.CREATED);
 	}
 
 	@GetMapping("/versions/{id}")
