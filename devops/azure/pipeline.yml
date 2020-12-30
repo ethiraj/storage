@@ -59,7 +59,7 @@ stages:
       mavenGoal: 'package'
       mavenPublishJUnitResults: true
       serviceCoreMavenOptions: '-pl storage-core --settings .mvn/community-maven.settings.xml -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-        mavenOptions: '-pl provider/storage-azure --settings .mvn/community-maven.settings.xml -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+      mavenOptions: '-pl provider/storage-azure --settings .mvn/community-maven.settings.xml -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
       copyFileContents: |
         pom.xml
         provider/storage-azure/maven/settings.xml
