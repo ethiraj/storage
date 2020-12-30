@@ -56,10 +56,9 @@ variables:
 stages:
   - template: /devops/build-stage.yml@TemplateRepo
     parameters:
-      mavenGoal: 'package'
+      mavenGoal: 'install'
       mavenPublishJUnitResults: true
-      serviceCoreMavenOptions: '-P storage-core --settings .mvn/community-maven.settings.xml -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-      mavenOptions: '-P storage-azure --settings .mvn/community-maven.settings.xml -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+      mavenOptions: '-pl provider/storage-azure --settings .mvn/community-maven.settings.xml -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -am'
       copyFileContents: |
         pom.xml
         provider/storage-azure/maven/settings.xml
