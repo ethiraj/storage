@@ -77,7 +77,6 @@ public class SchemaServiceImpl implements SchemaService {
 
 	@Override
 	public void createSchema(Schema inputSchema) {
-		this.validateKindFromTenant(inputSchema.getKind());
 		this.validateCircularReference(inputSchema, null);
 
 		Schema schema = this.validateSchema(inputSchema);
@@ -106,8 +105,6 @@ public class SchemaServiceImpl implements SchemaService {
 	@Override
 	public void deleteSchema(String kind) {
 
-		this.validateKindFromTenant(kind);
-
 		Schema schema = this.schemaRepository.get(kind);
 
 		if (schema == null) {
@@ -124,8 +121,6 @@ public class SchemaServiceImpl implements SchemaService {
 
 	@Override
 	public Schema getSchema(String kind) {
-
-		this.validateKindFromTenant(kind);
 
 		Schema schema = this.fetchSchema(kind);
 
@@ -231,16 +226,6 @@ public class SchemaServiceImpl implements SchemaService {
 					this.validateCircularReference(innerSchema, schemaList);
 				}
 			}
-		}
-	}
-
-	private void validateKindFromTenant(String kind) {
-		String tenantName = this.tenant.getName();
-
-		if (!KindValidator.isKindFromTenantValid(kind, tenantName)) {
-			String msg = String.format("The kind '%s' does not belong to the account '%s'", kind, tenantName);
-
-			throw new AppException(HttpStatus.SC_FORBIDDEN, "Invalid kind", msg);
 		}
 	}
 

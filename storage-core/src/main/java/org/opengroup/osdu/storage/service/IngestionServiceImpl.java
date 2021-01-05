@@ -69,7 +69,6 @@ public class IngestionServiceImpl implements IngestionService {
 
 	@Override
 	public TransferInfo createUpdateRecords(boolean skipDupes, List<Record> inputRecords, String user) {
-		this.validateKindFormat(inputRecords);
 		this.validateRecordIds(inputRecords);
 		this.validateAcl(inputRecords);
 
@@ -95,20 +94,6 @@ public class IngestionServiceImpl implements IngestionService {
 		}
 		if (!this.entitlementsAndCacheService.isValidAcl(this.headers, acls)) {
 			throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid ACL", "Acl not match with tenant or domain");
-		}
-	}
-
-	private void validateKindFormat(List<Record> inputRecords) {
-		String tenantName = tenant.getName();
-
-		for (Record record : inputRecords) {
-			if (!KindValidator.isKindFromTenantValid(record.getKind(), tenantName)) {
-				String msg = String.format(
-						"The kind '%s' does not follow the required naming convention: the first kind component must be '%s'",
-						record.getKind(), tenantName);
-
-				throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid kind", msg);
-			}
 		}
 	}
 
