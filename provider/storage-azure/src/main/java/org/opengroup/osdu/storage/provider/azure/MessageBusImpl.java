@@ -66,9 +66,9 @@ public class MessageBusImpl implements IMessageBus {
 
     private void publishToEventGrid(DpsHeaders headers, PubSubInfo[] messages) { //1000
         final Integer BATCH_SIZE = eventGridConfig.getEventGridBatchSize();
-
+        List<EventGridEvent> eventsList = new ArrayList<>();
         for (int i = 0; i < messages.length; i += BATCH_SIZE) {
-            List<EventGridEvent> eventsList = new ArrayList<>();
+
             PubSubInfo[] batch = Arrays.copyOfRange(messages, i, Math.min(messages.length, i + BATCH_SIZE));
 
             HashMap<String, Object> data = new HashMap<>();
@@ -96,6 +96,8 @@ public class MessageBusImpl implements IMessageBus {
             // we can use arrays.
             eventGridTopicStore.publishToEventGridTopic(headers.getPartitionId(), TopicName.RECORDS_CHANGED, eventsList);
         }
+
+        eventGridTopicStore.publishToEventGridTopic(headers.getPartitionId(), TopicName.RECORDS_CHANGED, eventsList);
     }
 
 
