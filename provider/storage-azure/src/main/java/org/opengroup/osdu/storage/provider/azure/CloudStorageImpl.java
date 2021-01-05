@@ -22,6 +22,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpStatus;
 
 import org.opengroup.osdu.azure.blobstorage.IBlobContainerClientFactory;
+import org.opengroup.osdu.azure.cosmosdb.CosmosBulkExecutorImpl;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.entitlements.Acl;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -76,6 +77,7 @@ public class CloudStorageImpl implements ICloudStorage {
     @Autowired
     @Named("STORAGE_CONTAINER_NAME")
     private String containerName;
+
 
 
     @Override

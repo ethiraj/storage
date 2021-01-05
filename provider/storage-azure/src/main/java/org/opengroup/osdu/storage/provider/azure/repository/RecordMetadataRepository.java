@@ -18,7 +18,11 @@ package org.opengroup.osdu.storage.provider.azure.repository;
 import com.azure.cosmos.CosmosException;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.SqlQuerySpec;
+import com.microsoft.azure.documentdb.bulkexecutor.BulkImportResponse;
 import org.apache.http.HttpStatus;
+import org.opengroup.osdu.azure.cosmosdb.CosmosBulkExecutorImpl;
+import org.opengroup.osdu.azure.cosmosdb.CosmosStore;
+import org.opengroup.osdu.azure.cosmosdb.CosmosStoreBulkOperations;
 import org.opengroup.osdu.azure.query.CosmosStorePageRequest;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -59,21 +63,28 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
     @Autowired
     private JaxRsDpsLog logger;
 
+    @Autowired
+    private CosmosStoreBulkOperations cosmosBulkStore;
+
     public RecordMetadataRepository() {
         super(RecordMetadataDoc.class);
     }
 
     @Override
     public List<RecordMetadata> createOrUpdate(List<RecordMetadata> recordsMetadata) {
+
         Assert.notNull(recordsMetadata, "recordsMetadata must not be null");
-        if (recordsMetadata != null) {
-            for (RecordMetadata recordMetadata : recordsMetadata) {
-                RecordMetadataDoc doc = new RecordMetadataDoc();
-                doc.setId(recordMetadata.getId());
-                doc.setMetadata(recordMetadata);
-                this.save(doc);
-            }
-        }
+        BulkImportResponse response = cosmosBulkStore.bulkUpsert(headers.getPartitionId(), "osdu-db", "StorageRecord", recordsMetadata);
+        List<Exception> errors = response.getErrors();
+        List<Object> badDocs = response.getBadInputDocuments();
+//        if (recordsMetadata != null) {
+//            for (RecordMetadata recordMetadata : recordsMetadata) {
+//                RecordMetadataDoc doc = new RecordMetadataDoc();
+//                doc.setId(recordMetadata.getId());
+//                doc.setMetadata(recordMetadata);
+//                this.save(doc);
+//            }
+//        }
         return recordsMetadata;
     }
 
