@@ -14,26 +14,22 @@
 
 package org.opengroup.osdu.storage.query;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import org.opengroup.osdu.storage.util.*;
+import com.sun.jersey.api.client.ClientResponse;
+import org.apache.http.HttpStatus;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.Ignore;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.http.HttpStatus;
-import org.junit.Test;
-import org.opengroup.osdu.storage.util.DummyRecordsHelper;
-import org.opengroup.osdu.storage.util.HeaderUtils;
-import org.opengroup.osdu.storage.util.LegalTagUtils;
-import org.opengroup.osdu.storage.util.RecordUtil;
-import org.opengroup.osdu.storage.util.TenantUtils;
-import org.opengroup.osdu.storage.util.TestBase;
-import org.opengroup.osdu.storage.util.TestUtils;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.sun.jersey.api.client.ClientResponse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public abstract class PostFetchRecordsIntegrationTests extends TestBase {
     protected static final long NOW = System.currentTimeMillis();
@@ -146,6 +142,7 @@ public abstract class PostFetchRecordsIntegrationTests extends TestBase {
     }
 
     @Test
+    @Ignore // Ignoring the test for now, once we have CRS converter we should enable this test
     public void should_returnConvertedRecords_whenConversionRequiredAndNoError() throws Exception {
         String recordId = RECORD_ID_PREFIX + UUID.randomUUID().toString();
         String jsonInput = RecordUtil.createJsonRecordWithReference(2, recordId, KIND, LEGAL_TAG, PERSISTABLE_REFERENCE, "CRS");
@@ -181,6 +178,7 @@ public abstract class PostFetchRecordsIntegrationTests extends TestBase {
 
     }
 
+    @Ignore // Ignoring the test for now, once we have CRS converter we should enable this test
     @Test
     public void should_returnConvertedRecords_whenConversionRequiredAndNoErrorWithMultiplePairOfCoordinates() throws Exception {
         String recordId = RECORD_ID_PREFIX + UUID.randomUUID().toString();
@@ -216,6 +214,7 @@ public abstract class PostFetchRecordsIntegrationTests extends TestBase {
 
     }
 
+    @Ignore // Ignoring the test for now, once we have CRS converter we should enable this test
     @Test
     public void should_returnOriginalRecordsAndConversionStatusAsNoMeta_whenConversionRequiredAndNoMetaBlockInRecord() throws Exception{
         String recordId = RECORD_ID_PREFIX + UUID.randomUUID().toString();
@@ -291,6 +290,7 @@ public abstract class PostFetchRecordsIntegrationTests extends TestBase {
     }
 
     @Test
+    @Ignore // Ignoring the test for now, once we have CRS converter we should enable this test
     public void should_returnRecordsAndConversionStatus_whenConversionRequiredAndNestedPropertyProvidedInMetaBlock() throws Exception {
         String recordId = RECORD_ID_PREFIX + UUID.randomUUID().toString();
         String jsonInput = RecordUtil.createJsonRecordWithNestedProperty(1, recordId, KIND, LEGAL_TAG, PERSISTABLE_REFERENCE, "CRS");
@@ -322,7 +322,7 @@ public abstract class PostFetchRecordsIntegrationTests extends TestBase {
         ClientResponse deleteResponse = TestUtils.send("records/" + recordId + 0, "DELETE", HeaderUtils.getHeaders(TenantUtils.getTenantName(), testUtils.getToken()), "", "");
         assertEquals(204, deleteResponse.getStatus());
     }
-
+    @Ignore // Ignoring the test for now, once we have CRS converter we should enable this test
     @Test
     public void should_returnRecordsAndConversionStatus_whenConversionRequiredAndNestedPropertyProvidedInMetaBlock1() throws Exception {
         String recordId = RECORD_ID_PREFIX + UUID.randomUUID().toString();

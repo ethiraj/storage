@@ -73,6 +73,8 @@ spec:
             secretKeyRef:
               name: active-directory
               key: application-appid
+        - name: azure_activedirectory_session_stateless
+          value: "true"
         - name: appinsights_key
           valueFrom:
             secretKeyRef:
@@ -99,7 +101,7 @@ spec:
           value: http://legal/api/legal/v1
         - name: partition_service_endpoint
           value: http://partition/api/partition/v1
-        - name: crs_service_endpoint
-          value: http://crs-conversion-service/api/crs/converter/v2
         - name: azure_istioauth_enabled
           value: "true"
+        - name: azure_activedirectory_AppIdUri
+          value: "api://$(aad_client_id)"

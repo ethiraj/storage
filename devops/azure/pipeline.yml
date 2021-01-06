@@ -35,9 +35,6 @@ resources:
   - repository: TemplateRepo
     type: git
     name: infra-azure-provisioning
-  - repository: security-templates
-    type: git
-    name: security-infrastructure
 
 variables:
   - group: 'Azure - OSDU'
@@ -84,4 +81,4 @@ stages:
       skipTest: ${{ variables.SKIP_TESTS }}
       providers:
         -  name: Azure
-           environments: ['dev', 'qa', 'prd', 'cvx']
+           environments: ['demo']
