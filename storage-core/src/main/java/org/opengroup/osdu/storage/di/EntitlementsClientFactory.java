@@ -1,4 +1,3 @@
-/*
 // Copyright 2017-2019, Schlumberger
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,12 +37,11 @@ public class EntitlementsClientFactory extends AbstractFactoryBean<IEntitlements
 
 	@Override
 	protected IEntitlementsFactory createInstance() throws Exception {
-		return new Object;*/
-/*EntitlementsFactory(EntitlementsAPIConfig
+		return new EntitlementsFactory(EntitlementsAPIConfig
 				.builder()
 				.rootUrl(AUTHORIZE_API)
 				.apiKey(AUTHORIZE_API_KEY)
-				.build(), httpResponseBodyMapper);*//*
+				.build(), httpResponseBodyMapper);
 
 	}
 
@@ -51,4 +49,4 @@ public class EntitlementsClientFactory extends AbstractFactoryBean<IEntitlements
 	public Class<?> getObjectType() {
 		return IEntitlementsFactory.class;
 	}
-}*/
+}
