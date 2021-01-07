@@ -42,7 +42,6 @@ public class EntitlementsClientFactory extends AbstractFactoryBean<IEntitlements
 				.rootUrl(AUTHORIZE_API)
 				.apiKey(AUTHORIZE_API_KEY)
 				.build(), httpResponseBodyMapper);
-
 	}
 
 	@Override
