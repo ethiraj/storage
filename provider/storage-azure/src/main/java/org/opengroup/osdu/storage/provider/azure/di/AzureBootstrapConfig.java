@@ -87,4 +87,10 @@ public class AzureBootstrapConfig {
     public String redisPassword(SecretClient kv) {
         return KeyVaultFacade.getSecretWithValidation(kv, "redis-password");
     }
+
+    @Bean
+    @Named("STORAGE_RECORD_COSMOS_COLLECTION_NAME")
+    public String storageRecordCosmosCollectionName() {
+        return "StorageRecord";
+    }
 }

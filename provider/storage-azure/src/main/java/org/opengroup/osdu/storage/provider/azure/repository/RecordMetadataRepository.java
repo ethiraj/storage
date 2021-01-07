@@ -28,6 +28,7 @@ import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.LegalCompliance;
+import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.core.common.model.storage.RecordMetadata;
 import org.opengroup.osdu.storage.provider.azure.RecordMetadataDoc;
 import org.opengroup.osdu.storage.provider.azure.di.AzureBootstrapConfig;
@@ -66,25 +67,25 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
     @Autowired
     private CosmosStoreBulkOperations cosmosBulkStore;
 
+    @Autowired
+    private String storageRecordCosmosCollectionName;
+
     public RecordMetadataRepository() {
         super(RecordMetadataDoc.class);
     }
 
     @Override
     public List<RecordMetadata> createOrUpdate(List<RecordMetadata> recordsMetadata) {
-
         Assert.notNull(recordsMetadata, "recordsMetadata must not be null");
-        BulkImportResponse response = cosmosBulkStore.bulkUpsert(headers.getPartitionId(), "osdu-db", "StorageRecord", recordsMetadata);
-        List<Exception> errors = response.getErrors();
-        List<Object> badDocs = response.getBadInputDocuments();
-//        if (recordsMetadata != null) {
-//            for (RecordMetadata recordMetadata : recordsMetadata) {
-//                RecordMetadataDoc doc = new RecordMetadataDoc();
-//                doc.setId(recordMetadata.getId());
-//                doc.setMetadata(recordMetadata);
-//                this.save(doc);
-//            }
-//        }
+        Collection<RecordMetadataDoc> docs = new ArrayList<>();
+        for (RecordMetadata recordMetadata : recordsMetadata){
+            RecordMetadataDoc doc = new RecordMetadataDoc();
+            doc.setId(recordMetadata.getId());
+            doc.setMetadata(recordMetadata);
+            docs.add(doc);
+        }
+        BulkImportResponse response = cosmosBulkStore.bulkInsert(headers.getPartitionId(), cosmosDBName, storageRecordCosmosCollectionName, docs, true, true, 100);
+
         return recordsMetadata;
     }
 
