@@ -106,7 +106,7 @@ public class CloudStorageImpl implements ICloudStorage {
                     "An unexpected error on writing the record has occurred", e);
         }
         long endTime = System.currentTimeMillis();
-        logger.info("TIMING: Wrote " + tasks.size() + " records to blob storage in " + (endTime - startTime)/1000 + " seconds");
+        logger.info("TIMING: Wrote " + tasks.size() + " records to blob storage in " + (endTime - startTime) + " ms");
     }
 
     @Override
