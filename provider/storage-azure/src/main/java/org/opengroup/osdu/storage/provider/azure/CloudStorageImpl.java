@@ -22,7 +22,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpStatus;
 
 import org.opengroup.osdu.azure.blobstorage.IBlobContainerClientFactory;
-import org.opengroup.osdu.azure.cosmosdb.CosmosBulkExecutorImpl;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.entitlements.Acl;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -82,6 +81,10 @@ public class CloudStorageImpl implements ICloudStorage {
 
     @Override
     public void write(RecordProcessing... recordsProcessing) {
+
+        long startTime = System.currentTimeMillis();
+
+
         validateRecordAcls(recordsProcessing);
 
         List<Callable<Boolean>> tasks = new ArrayList<>();
@@ -102,6 +105,8 @@ public class CloudStorageImpl implements ICloudStorage {
             throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Error during record ingestion",
                     "An unexpected error on writing the record has occurred", e);
         }
+        long endTime = System.currentTimeMillis();
+        logger.info("TIMING: Wrote " + tasks.size() + " records to blob storage in " + (endTime - startTime)/1000 + " seconds");
     }
 
     @Override

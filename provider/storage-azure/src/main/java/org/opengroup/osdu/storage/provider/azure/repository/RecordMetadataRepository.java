@@ -77,6 +77,7 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
     @Override
     public List<RecordMetadata> createOrUpdate(List<RecordMetadata> recordsMetadata) {
         Assert.notNull(recordsMetadata, "recordsMetadata must not be null");
+
         Collection<RecordMetadataDoc> docs = new ArrayList<>();
         for (RecordMetadata recordMetadata : recordsMetadata){
             RecordMetadataDoc doc = new RecordMetadataDoc();
@@ -84,8 +85,8 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
             doc.setMetadata(recordMetadata);
             docs.add(doc);
         }
-        BulkImportResponse response = cosmosBulkStore.bulkInsert(headers.getPartitionId(), cosmosDBName, storageRecordCosmosCollectionName, docs, true, true, 100);
-
+        BulkImportResponse response = cosmosBulkStore.bulkInsert(headers.getPartitionId(), cosmosDBName, storageRecordCosmosCollectionName, docs, true, true, 1000);
+        logger.info("TIMING: WROTE " + recordsMetadata.size() + " records in " + response.getTotalTimeTaken() + " with RU " + response.getTotalRequestUnitsConsumed());
         return recordsMetadata;
     }
 
