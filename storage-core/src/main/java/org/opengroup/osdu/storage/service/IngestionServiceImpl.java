@@ -23,9 +23,9 @@ import org.opengroup.osdu.core.common.model.legal.LegalCompliance;
 import org.opengroup.osdu.core.common.model.indexer.OperationType;
 import org.opengroup.osdu.core.common.model.storage.*;
 import org.opengroup.osdu.core.common.model.http.AppException;
-import org.opengroup.osdu.core.common.model.storage.validation.KindValidator;
 import org.opengroup.osdu.core.common.legal.ILegalService;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
+import org.opengroup.osdu.core.common.model.storage.validation.ValidationDoc;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.storage.*;
 import org.opengroup.osdu.storage.logging.StorageAuditLogger;
@@ -69,6 +69,7 @@ public class IngestionServiceImpl implements IngestionService {
 
 	@Override
 	public TransferInfo createUpdateRecords(boolean skipDupes, List<Record> inputRecords, String user) {
+		this.validateKindFormat(inputRecords);
 		this.validateRecordIds(inputRecords);
 		this.validateAcl(inputRecords);
 
@@ -94,6 +95,18 @@ public class IngestionServiceImpl implements IngestionService {
 		}
 		if (!this.entitlementsAndCacheService.isValidAcl(this.headers, acls)) {
 			throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid ACL", "Acl not match with tenant or domain");
+		}
+	}
+
+	private void validateKindFormat(List<Record> inputRecords) {
+		for (Record record : inputRecords) {
+			if (!record.getKind().matches(ValidationDoc.KIND_REGEX)) {
+				String msg = String.format(
+						"Invalid kind: '%s', does not follow the required naming convention",
+						record.getKind());
+
+				throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid kind", msg);
+			}
 		}
 	}
 

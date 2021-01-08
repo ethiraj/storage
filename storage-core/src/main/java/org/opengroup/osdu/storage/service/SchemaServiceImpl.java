@@ -15,6 +15,7 @@
 package org.opengroup.osdu.storage.service;
 
 import org.opengroup.osdu.core.common.model.indexer.OperationType;
+import org.opengroup.osdu.core.common.model.storage.validation.ValidationDoc;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.storage.logging.StorageAuditLogger;
 import org.opengroup.osdu.core.common.model.storage.PubSubInfo;
@@ -77,6 +78,7 @@ public class SchemaServiceImpl implements SchemaService {
 
 	@Override
 	public void createSchema(Schema inputSchema) {
+		this.validateKindFromTenant(inputSchema.getKind());
 		this.validateCircularReference(inputSchema, null);
 
 		Schema schema = this.validateSchema(inputSchema);
@@ -105,6 +107,8 @@ public class SchemaServiceImpl implements SchemaService {
 	@Override
 	public void deleteSchema(String kind) {
 
+		this.validateKindFromTenant(kind);
+
 		Schema schema = this.schemaRepository.get(kind);
 
 		if (schema == null) {
@@ -121,6 +125,8 @@ public class SchemaServiceImpl implements SchemaService {
 
 	@Override
 	public Schema getSchema(String kind) {
+
+		this.validateKindFromTenant(kind);
 
 		Schema schema = this.fetchSchema(kind);
 
@@ -226,6 +232,15 @@ public class SchemaServiceImpl implements SchemaService {
 					this.validateCircularReference(innerSchema, schemaList);
 				}
 			}
+		}
+	}
+
+	private void validateKindFromTenant(String kind) {
+
+		if (!kind.matches(ValidationDoc.KIND_REGEX)) {
+			String msg = String.format("Invalid kind: '%s', does not follow the required naming convention", kind);
+
+			throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid kind", msg);
 		}
 	}
 
