@@ -15,16 +15,20 @@
 package org.opengroup.osdu.storage.provider.azure.di;
 
 import org.slf4j.MDC;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
 
 public class MDCAwareThreadPoolExecutorUtils {
-    public static <T> Callable<T> wrapWithMdcContext(Callable<T> task) {
+    public static <T> Callable<T> wrapWithMdcContext(Callable<T> task, RequestAttributes context) {
         //save the current MDC context
         Map<String, String> contextMap = MDC.getCopyOfContextMap();
+        //save the current request context
         return () -> {
             setMDCContext(contextMap);
+            RequestContextHolder.setRequestAttributes(context);
             try {
                 return task.call();
             } finally {
@@ -34,11 +38,12 @@ public class MDCAwareThreadPoolExecutorUtils {
         };
     }
 
-    public static Runnable wrapWithMdcContext(Runnable task) {
+    public static Runnable wrapWithMdcContext(Runnable task, RequestAttributes context) {
         //save the current MDC context
         Map<String, String> contextMap = MDC.getCopyOfContextMap();
         return () -> {
             setMDCContext(contextMap);
+            RequestContextHolder.setRequestAttributes(context);
             try {
                 task.run();
             } finally {

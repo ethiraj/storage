@@ -14,6 +14,8 @@
 
 package org.opengroup.osdu.storage.provider.azure.di;
 
+import org.springframework.web.context.request.RequestContextHolder;
+
 import javax.validation.constraints.NotNull;
 import java.util.concurrent.*;
 
@@ -25,6 +27,6 @@ public class MDCAwareThreadPoolExecutor extends ThreadPoolExecutor {
 
     @Override
     public void execute(@NotNull Runnable command) {
-        super.execute(MDCAwareThreadPoolExecutorUtils.wrapWithMdcContext(command));
+        super.execute(MDCAwareThreadPoolExecutorUtils.wrapWithMdcContext(command, RequestContextHolder.currentRequestAttributes()));
     }
 }
