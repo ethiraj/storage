@@ -142,6 +142,7 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
 
     @Override
     public Map<String, RecordMetadata> get(List<String> ids) {
+        long startTime = System.currentTimeMillis();
         Map<String, RecordMetadata> output = new HashMap<>();
         for (String id : ids) {
             RecordMetadataDoc doc = this.getOne(id);
@@ -150,6 +151,8 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
             if (rmd == null) continue;
             output.put(id, rmd);
         }
+        long endTime = System.currentTimeMillis();
+        logger.info("TIMING: batch get method took ms " + (endTime - startTime));
         return output;
     }
 
