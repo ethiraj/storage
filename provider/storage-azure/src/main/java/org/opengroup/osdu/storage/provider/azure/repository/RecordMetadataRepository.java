@@ -143,17 +143,20 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
     @Override
     public Map<String, RecordMetadata> get(List<String> ids) {
         long startTime = System.currentTimeMillis();
-        Map<String, RecordMetadata> output = new HashMap<>();
-        for (String id : ids) {
-            RecordMetadataDoc doc = this.getOne(id);
-            if (doc == null) continue;
-            RecordMetadata rmd = doc.getMetadata();
-            if (rmd == null) continue;
-            output.put(id, rmd);
+        String sqlQueryString = createCosmosBatchGetQueryById(ids);
+        SqlQuerySpec query = new SqlQuerySpec(sqlQueryString);
+        CosmosQueryRequestOptions options = new CosmosQueryRequestOptions();
+
+        List<RecordMetadataDoc> queryResults = this.queryItems(headers.getPartitionId(), cosmosDBName, recordMetadataCollection, query, options);
+
+        Map<String, RecordMetadata> results = new HashMap<>();
+        for(RecordMetadataDoc doc : queryResults){
+            if (doc.getMetadata() == null) continue;
+            results.put(doc.getId(), doc.getMetadata());
         }
         long endTime = System.currentTimeMillis();
-        logger.info("TIMING: batch get method took ms " + (endTime - startTime));
-        return output;
+        logger.info("TIMING: bulk get method queried " + ids.size() + " records in ms " + (endTime - startTime));
+        return results;
     }
 
     private AppException getInvalidCursorException() {
@@ -197,5 +200,18 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
     @Override
     public void delete(String id) {
         this.deleteById(id, headers.getPartitionId(), cosmosDBName, recordMetadataCollection, id);
+    }
+
+    private String createCosmosBatchGetQueryById(List<String> ids){
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM c WHERE c.id IN (");
+        for(String id : ids){
+            sb.append("\"" + id + "\",");
+        }
+
+        // remove trailing comma, add closing parenthesis
+        sb.deleteCharAt(sb.lastIndexOf(","));
+        sb.append(")");
+        return sb.toString();
     }
 }
