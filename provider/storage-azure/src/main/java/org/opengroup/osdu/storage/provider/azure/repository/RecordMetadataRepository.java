@@ -20,15 +20,11 @@ import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.SqlQuerySpec;
 import com.microsoft.azure.documentdb.bulkexecutor.BulkImportResponse;
 import org.apache.http.HttpStatus;
-import org.opengroup.osdu.azure.cosmosdb.CosmosBulkExecutorImpl;
-import org.opengroup.osdu.azure.cosmosdb.CosmosStore;
-import org.opengroup.osdu.azure.cosmosdb.CosmosStoreBulkOperations;
 import org.opengroup.osdu.azure.query.CosmosStorePageRequest;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.LegalCompliance;
-import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.core.common.model.storage.RecordMetadata;
 import org.opengroup.osdu.storage.provider.azure.RecordMetadataDoc;
 import org.opengroup.osdu.storage.provider.azure.di.AzureBootstrapConfig;
@@ -65,10 +61,7 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
     private JaxRsDpsLog logger;
 
     @Autowired
-    private CosmosStoreBulkOperations cosmosBulkStore;
-
-    @Autowired
-    private String storageRecordCosmosCollectionName;
+    private int minBatchSizeToUseBulkUpload;
 
     public RecordMetadataRepository() {
         super(RecordMetadataDoc.class);
@@ -79,6 +72,31 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
         Assert.notNull(recordsMetadata, "recordsMetadata must not be null");
         long startTime = System.currentTimeMillis();
 
+        if(recordsMetadata.size() >= minBatchSizeToUseBulkUpload) createOrUpdateParallel(recordsMetadata);
+        else createOrUpdateSerial(recordsMetadata);
+
+        logger.info("TIMING: createOrUpdate method took ms " + (System.currentTimeMillis() - startTime));
+        return recordsMetadata;
+    }
+
+    /**
+     * Implementation of createOrUpdate that writes the records in serial one at a time to Cosmos.
+     * @param recordsMetadata records to write to cosmos.
+     */
+    private void createOrUpdateSerial(List<RecordMetadata> recordsMetadata){
+        for (RecordMetadata recordMetadata : recordsMetadata) {
+            RecordMetadataDoc doc = new RecordMetadataDoc();
+            doc.setId(recordMetadata.getId());
+            doc.setMetadata(recordMetadata);
+            this.save(doc);
+        }
+    }
+
+    /**
+     * Implementation of createOrUpdate that uses DocumentBulkExecutor to upload all records in parallel to Cosmos.
+     * @param recordsMetadata records to write to cosmos.
+     */
+    private void createOrUpdateParallel(List<RecordMetadata> recordsMetadata){
         Collection<RecordMetadataDoc> docs = new ArrayList<>();
         for (RecordMetadata recordMetadata : recordsMetadata){
             RecordMetadataDoc doc = new RecordMetadataDoc();
@@ -86,12 +104,7 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
             doc.setMetadata(recordMetadata);
             docs.add(doc);
         }
-        BulkImportResponse response = cosmosBulkStore.bulkInsert(headers.getPartitionId(), cosmosDBName, storageRecordCosmosCollectionName, docs, true, true, 1000);
-        logger.info("TIMING: WROTE " + recordsMetadata.size() + " records in " + response.getTotalTimeTaken() + " with RU " + response.getTotalRequestUnitsConsumed());
-        long endTime = System.currentTimeMillis();
-        logger.info("TIMING: createOrUpdate method took ms " + (endTime - startTime));
-
-        return recordsMetadata;
+        BulkImportResponse response = this.bulkInsert(headers.getPartitionId(), cosmosDBName, "StorageRecord", docs);
     }
 
     @Override
