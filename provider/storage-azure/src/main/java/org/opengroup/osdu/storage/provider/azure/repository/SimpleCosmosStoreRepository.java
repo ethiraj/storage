@@ -288,6 +288,10 @@ public class SimpleCosmosStoreRepository<T> implements CosmosStoreRepository<T> 
     }
 
     protected BulkImportResponse bulkInsert(String dataPartitionId, String cosmosDBName, String collectionName, Collection<T> docs){
+        Assert.notNull(docs, "docs should not be null");
+        Assert.notNull(dataPartitionId, "dataPartitionId should not be null");
+        Assert.notNull(cosmosDBName, "cosmosDBName should not be null");
+        Assert.notNull(collectionName, "collectionName should not be null");
         BulkImportResponse response = cosmosBulkStore.bulkInsert(dataPartitionId, cosmosDBName, collectionName, docs, true, true, bulkImportMaxConcurrencyPePartitionRange);
         if(response.getNumberOfDocumentsImported() != docs.size()){
             List<String> exceptions = new ArrayList<>();

@@ -215,6 +215,11 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
         this.deleteById(id, headers.getPartitionId(), cosmosDBName, recordMetadataCollection, id);
     }
 
+    /**
+     * Method to generate query string for searching Cosmos for a list of Ids.
+     * @param ids Ids to generate query for.
+     * @return String representing Cosmos query searching for all of the ids.
+     */
     private String createCosmosBatchGetQueryById(List<String> ids){
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM c WHERE c.id IN (");
