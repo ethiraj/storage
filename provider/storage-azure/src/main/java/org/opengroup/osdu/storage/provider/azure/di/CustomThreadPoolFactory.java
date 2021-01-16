@@ -14,19 +14,25 @@
 
 package org.opengroup.osdu.storage.provider.azure.di;
 
-import org.springframework.web.context.request.RequestContextHolder;
+import org.opengroup.osdu.azure.concurrency.CustomExecutors;
+import org.springframework.beans.factory.config.AbstractFactoryBean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.NotNull;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class MDCAwareThreadPoolExecutor extends ThreadPoolExecutor {
+@Primary
+@Component
+public class CustomThreadPoolFactory extends AbstractFactoryBean<ExecutorService> {
 
-    public MDCAwareThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
+    @Override
+    public Class<?> getObjectType() {
+        return ExecutorService.class;
     }
 
     @Override
-    public void execute(@NotNull Runnable command) {
-        super.execute(MDCAwareThreadPoolExecutorUtils.wrapWithMdcContext(command, RequestContextHolder.currentRequestAttributes()));
+    protected ExecutorService createInstance() throws Exception {
+        return CustomExecutors.newFixedThreadPool(192);
     }
 }
