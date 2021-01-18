@@ -81,10 +81,7 @@ public class CloudStorageImpl implements ICloudStorage {
 
     @Override
     public void write(RecordProcessing... recordsProcessing) {
-
         long startTime = System.currentTimeMillis();
-
-
         validateRecordAcls(recordsProcessing);
 
         List<Callable<Boolean>> tasks = new ArrayList<>();
@@ -105,8 +102,7 @@ public class CloudStorageImpl implements ICloudStorage {
             throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Error during record ingestion",
                     "An unexpected error on writing the record has occurred", e);
         }
-        long endTime = System.currentTimeMillis();
-        logger.info("TIMING: Wrote " + tasks.size() + " records to blob storage in " + (endTime - startTime) + " ms");
+        logger.info("TIMING: Wrote " + tasks.size() + " records to blob storage in " + (System.currentTimeMillis() - startTime) + " ms");
     }
 
     @Override

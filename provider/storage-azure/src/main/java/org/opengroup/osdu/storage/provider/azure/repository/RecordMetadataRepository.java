@@ -167,8 +167,7 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
             if (doc.getMetadata() == null) continue;
             results.put(doc.getId(), doc.getMetadata());
         }
-        long endTime = System.currentTimeMillis();
-        logger.info("TIMING: bulk get method queried " + ids.size() + " records in ms " + (endTime - startTime));
+        logger.info("TIMING: bulk get method queried " + ids.size() + " records in ms " + (System.currentTimeMillis() - startTime));
         return results;
     }
 
