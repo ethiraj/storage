@@ -93,7 +93,8 @@ public class AzureBootstrapConfig {
      */
     @Bean
     public int minBatchSizeToUseBulkUpload() {
-        return Integer.parseInt(System.getProperty("MIN_BATCH_SIZE_TO_USE_BULK_UPLOAD", "50"));
+        if(System.getenv("MIN_BATCH_SIZE_TO_USE_BULK_UPLOAD") == null) return 50;
+        else return Integer.parseInt(System.getenv("MIN_BATCH_SIZE_TO_USE_BULK_UPLOAD"));
     }
 
     /**
@@ -101,6 +102,7 @@ public class AzureBootstrapConfig {
      */
     @Bean
     public int bulkImportMaxConcurrencyPePartitionRange(){
-        return Integer.parseInt(System.getProperty("BULK_IMPORT_MAX_CONCURRENCY_PER_PARTITION_RANGE", "20"));
+        if(System.getenv("BULK_IMPORT_MAX_CONCURRENCY_PER_PARTITION_RANGE") == null) return 20;
+        else return Integer.parseInt(System.getenv("BULK_IMPORT_MAX_CONCURRENCY_PER_PARTITION_RANGE"));
     }
 }
