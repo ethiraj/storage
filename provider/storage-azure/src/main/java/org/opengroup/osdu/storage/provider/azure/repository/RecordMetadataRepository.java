@@ -70,12 +70,10 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
     @Override
     public List<RecordMetadata> createOrUpdate(List<RecordMetadata> recordsMetadata) {
         Assert.notNull(recordsMetadata, "recordsMetadata must not be null");
-        long startTime = System.currentTimeMillis();
 
         if(recordsMetadata.size() >= minBatchSizeToUseBulkUpload) createOrUpdateParallel(recordsMetadata);
         else createOrUpdateSerial(recordsMetadata);
 
-        logger.info("TIMING: createOrUpdate method took ms " + (System.currentTimeMillis() - startTime));
         return recordsMetadata;
     }
 
@@ -155,7 +153,6 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
 
     @Override
     public Map<String, RecordMetadata> get(List<String> ids) {
-        long startTime = System.currentTimeMillis();
         String sqlQueryString = createCosmosBatchGetQueryById(ids);
         SqlQuerySpec query = new SqlQuerySpec(sqlQueryString);
         CosmosQueryRequestOptions options = new CosmosQueryRequestOptions();
@@ -167,7 +164,6 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
             if (doc.getMetadata() == null) continue;
             results.put(doc.getId(), doc.getMetadata());
         }
-        logger.info("TIMING: bulk get method queried " + ids.size() + " records in ms " + (System.currentTimeMillis() - startTime));
         return results;
     }
 
