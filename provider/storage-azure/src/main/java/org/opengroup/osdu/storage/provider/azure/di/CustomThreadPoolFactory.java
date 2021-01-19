@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Primary
 @Component
@@ -32,7 +31,7 @@ public class CustomThreadPoolFactory extends AbstractFactoryBean<ExecutorService
     }
 
     @Override
-    protected ExecutorService createInstance() throws Exception {
+    protected ExecutorService  createInstance() throws Exception {
         return CustomExecutors.newFixedThreadPool(192);
     }
 }
