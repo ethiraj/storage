@@ -102,7 +102,7 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
             doc.setMetadata(recordMetadata);
             docs.add(doc);
         }
-        BulkImportResponse response = this.bulkInsert(headers.getPartitionId(), cosmosDBName, "StorageRecord", docs);
+        BulkImportResponse response = this.bulkInsert(headers.getPartitionId(), cosmosDBName, recordMetadataCollection, docs);
     }
 
     @Override
