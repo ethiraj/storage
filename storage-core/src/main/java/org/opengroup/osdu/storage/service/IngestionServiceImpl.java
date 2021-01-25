@@ -37,6 +37,8 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.Map.Entry;
 
+import io.jsonwebtoken.lang.Collections;
+
 @Service
 public class IngestionServiceImpl implements IngestionService {
 
@@ -279,7 +281,7 @@ public class IngestionServiceImpl implements IngestionService {
 	private List<String> getRecordIds(List<Record> records, Map<String, List<String>> recordParentMap) {
 		List<String> ids = new ArrayList<>();
 		for (Record record : records) {
-			if (record.getAncestry() != null && !record.getAncestry().getParents().isEmpty()) {
+			if (record.getAncestry() != null && !Collections.isEmpty(record.getAncestry().getParents())) {
 
 				List<String> parents = new ArrayList<>();
 
