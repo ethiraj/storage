@@ -44,8 +44,10 @@ spec:
         resources:
           requests:
             cpu: "100m"
+            memory: "3Gi"
           limits:
-            cpu: "800"
+            cpu: "800m"
+            memory: "6Gi"
         readinessProbe:
           httpGet:
             path: /api/storage/v2/health
