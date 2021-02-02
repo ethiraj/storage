@@ -37,49 +37,50 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 @Component
 public class StorageFilter implements Filter {
 
-    private static final String DISABLE_AUTH_PROPERTY = "org.opengroup.osdu.storage.disableAuth";
-    private static final String OPTIONS_STRING = "OPTIONS";
-    private static final String FOR_HEADER_NAME = "frame-of-reference";
+	private static final String DISABLE_AUTH_PROPERTY = "org.opengroup.osdu.storage.disableAuth";
+	private static final String OPTIONS_STRING = "OPTIONS";
+	private static final String FOR_HEADER_NAME = "frame-of-reference";
 
-    @Autowired
-    private DpsHeaders dpsHeaders;
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+	@Autowired
+	private DpsHeaders dpsHeaders;
 
-        boolean disableAuth = Boolean.getBoolean(DISABLE_AUTH_PROPERTY);
-        if (disableAuth) {
-            return;
-        }
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
 
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
+		boolean disableAuth = Boolean.getBoolean(DISABLE_AUTH_PROPERTY);
+		if (disableAuth) {
+			return;
+		}
 
-        String fetchConversionHeader = ((HttpServletRequest) request).getHeader(FOR_HEADER_NAME);
-        if (!Strings.isNullOrEmpty(fetchConversionHeader)) {
-            this.dpsHeaders.put(FOR_HEADER_NAME, fetchConversionHeader);
-        }
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
+		String fetchConversionHeader = ((HttpServletRequest) request).getHeader(FOR_HEADER_NAME);
+		if (!Strings.isNullOrEmpty(fetchConversionHeader)) {
+			this.dpsHeaders.put(FOR_HEADER_NAME, fetchConversionHeader);
+		}
 
-        this.dpsHeaders.addCorrelationIdIfMissing();
+		HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        Map<String, List<Object>> standardHeaders = ResponseHeaders.STANDARD_RESPONSE_HEADERS;
-        for (Map.Entry<String, List<Object>> header : standardHeaders.entrySet()) {
-            httpResponse.addHeader(header.getKey(), header.getValue().toString());
-        }
-        httpResponse.addHeader(DpsHeaders.CORRELATION_ID, this.dpsHeaders.getCorrelationId());
+		this.dpsHeaders.addCorrelationIdIfMissing();
 
-        chain.doFilter(request, response);
+		Map<String, List<Object>> standardHeaders = ResponseHeaders.STANDARD_RESPONSE_HEADERS;
+		for (Map.Entry<String, List<Object>> header : standardHeaders.entrySet()) {
+			httpResponse.addHeader(header.getKey(), header.getValue().toString());
+		}
+		httpResponse.addHeader(DpsHeaders.CORRELATION_ID, this.dpsHeaders.getCorrelationId());
 
-        // This block handles the OPTIONS preflight requests performed by Swagger. We
-        // are also enforcing requests coming from other origins to be rejected.
-        if (httpRequest.getMethod().equalsIgnoreCase(OPTIONS_STRING)) {
-            httpResponse.setStatus(HttpStatus.SC_OK);
-        }
-    }
+		chain.doFilter(request, response);
 
-    @Override
-    public void destroy() {
-    }
+		// This block handles the OPTIONS preflight requests performed by Swagger. We
+		// are also enforcing requests coming from other origins to be rejected.
+		if (httpRequest.getMethod().equalsIgnoreCase(OPTIONS_STRING)) {
+			httpResponse.setStatus(HttpStatus.SC_OK);
+		}
+	}
+
+	@Override
+	public void destroy() {
+	}
 }
