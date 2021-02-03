@@ -72,14 +72,19 @@ public class CloudStorageImpl implements ICloudStorage {
     @Named("STORAGE_CONTAINER_NAME")
     private String containerName;
 
+    private int numWrite;
+    
+    private int avgSoFar;
+
     @Override
     public void write(RecordProcessing... recordsProcessing) {
         validateRecordAcls(recordsProcessing);
-
+        long startTime = System.nanoTime();
         List<Callable<Boolean>> tasks = new ArrayList<>();
         String dataPartitionId = headers.getPartitionId();
         for (RecordProcessing rp : recordsProcessing) {
             tasks.add(() -> this.writeBlobThread(rp, dataPartitionId));
+            //this.writeBlobThreadAsync(rp, dataPartitionId);
         }
 
         try {
@@ -91,6 +96,17 @@ public class CloudStorageImpl implements ICloudStorage {
             throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Error during record ingestion",
                     "An unexpected error on writing the record has occurred", e);
         }
+        long endTime = System.nanoTime();
+        avgSoFar += (endTime - startTime);
+        System.out.printf("WRITE %s TOOK %s TIME\n", numWrite++, endTime - startTime);
+        /*ArrayList<Long> times = BlobStore.getTimes();
+        long average = 0;
+        for (Long l : times){
+            average+=l;
+        }
+        System.out.println("THE TOTAL AVERAGE WAS" + (average/times.size()));
+        */
+        System.out.printf("THE AVERAGE IS %s\n", avgSoFar / numWrite);
     }
 
     @Override
@@ -169,6 +185,17 @@ public class CloudStorageImpl implements ICloudStorage {
         blobStore.writeToStorageContainer(dataPartitionId, path, content, containerName);
         return true;
     }
+
+    private boolean writeBlobThreadAsync(RecordProcessing rp, String dataPartitionId)
+    {
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        RecordMetadata rmd = rp.getRecordMetadata();
+        String path = buildPath(rmd);
+        String content = gson.toJson(rp.getRecordData());
+        blobStore.writeToStorageContainerAsync(dataPartitionId, path, content, containerName);
+        return true;
+    }
+
 
     @Override
     public Map<String, String> getHash(Collection<RecordMetadata> records) {

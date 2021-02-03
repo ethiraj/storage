@@ -108,6 +108,7 @@ public abstract class RecordsApiAcceptanceTests extends TestBase {
 		// use skip dupes to skip update
 		response = TestUtils.send("records", "PUT", HeaderUtils.getHeaders(TenantUtils.getTenantName(), testUtils.getToken()), jsonInput, "?skipdupes=true");
 		result = TestUtils.getResult(response, 201, DummyRecordsHelper.CreateRecordResponse.class);
+		System.out.println(result);
 		assertEquals(1, result.recordCount);
 		assertEquals(0, result.recordIds.length);
 		assertEquals("Expected to skip the update when the data was the same as previous update and skipdupes is true",
