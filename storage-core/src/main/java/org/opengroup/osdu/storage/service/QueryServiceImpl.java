@@ -158,7 +158,6 @@ public class QueryServiceImpl implements QueryService {
 					"The record with the given ID is not active");
 		}
 
-		String blob = this.cloudStorage.read(recordMetadata, version, true);
 		// post acl check, enforce application data restriction
 		List<RecordMetadata> recordMetadataList = new ArrayList<>();
 		recordMetadataList.add(recordMetadata);
@@ -169,6 +168,7 @@ public class QueryServiceImpl implements QueryService {
 					"The user does not have access to the record");
 		}
 
+		String blob = this.cloudStorage.read(recordMetadata, version, true);
 		// TODO REMOVE AFTER MIGRATION
 		if (Strings.isNullOrEmpty(blob)) {
 			throw new AppException(HttpStatus.SC_NOT_FOUND, "Record version not found",
