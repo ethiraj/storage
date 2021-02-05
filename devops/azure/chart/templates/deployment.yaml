@@ -44,10 +44,10 @@ spec:
         resources:
           requests:
             cpu: "100m"
-            memory: "2Gi"
-          limits:
-            cpu: "800m"
             memory: "4Gi"
+          limits:
+            cpu: "1000m"
+            memory: "6Gi"
         readinessProbe:
           httpGet:
             path: /api/storage/v2/health
@@ -107,3 +107,5 @@ spec:
           value: "true"
         - name: azure_activedirectory_AppIdUri
           value: "api://$(aad_client_id)"
+        - name: MIN_BATCH_SIZE_TO_USE_BULK_UPLOAD
+          value: "15"
