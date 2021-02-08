@@ -8,7 +8,6 @@ variables:
   AWS_MONGODB_TEST_SUBDIR: testing/storage-test-aws-mongodb
   AWS_MONGODB_SERVICE: storage
   AWS_MONGODB_ENVIRONMENT: dev
-  AWS_MONGODB_SKIP_TESTS: 'true'
 
   GCP_BUILD_SUBDIR: provider/storage-gcp
   GCP_INT_TEST_SUBDIR: testing/storage-test-gcp
