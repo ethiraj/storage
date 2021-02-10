@@ -107,3 +107,5 @@ spec:
           value: "true"
         - name: azure_activedirectory_AppIdUri
           value: "api://$(aad_client_id)"
+        - name: azure_eventGridBatchSize
+          value: 50
