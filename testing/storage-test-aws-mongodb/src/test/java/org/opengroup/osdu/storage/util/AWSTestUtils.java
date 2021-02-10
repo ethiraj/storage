@@ -27,6 +27,9 @@ public class AWSTestUtils extends TestUtils {
 	public synchronized String getToken() throws Exception {
 		if (Strings.isNullOrEmpty(token)) {
 			token = getAwsCognitoClient().getTokenForUserWithAccess();
+			if (token == null || token.length() <= 5) {
+				System.out.println("[error-logging-test] token is null or too short");
+			}
 		}
 		return "Bearer " + token;
 	}
