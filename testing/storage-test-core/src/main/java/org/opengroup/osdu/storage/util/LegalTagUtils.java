@@ -37,7 +37,7 @@ public class LegalTagUtils {
 		ClientResponse response = TestUtils.send(getLegalUrl(), "legaltags", "POST", HeaderUtils.getHeaders(TenantUtils.getTenantName(), token), body,
 				"");
 
-		System.out.printf("[error-logging-test] response code = %d, text = %s\n", response.getStatus(), response.getEntity(String.class));
+		System.out.printf("[error-logging-test] response code = %d, tenant = %s, text = %s\n", response.getStatus(), TenantUtils.getTenantName(), response.getEntity(String.class));
 		assertEquals(HttpStatus.SC_CREATED, response.getStatus());
 		Thread.sleep(100);
 		return response;
