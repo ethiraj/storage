@@ -16,33 +16,35 @@
 package org.opengroup.osdu.storage.util;
 
 import com.google.common.base.Strings;
-import org.opengroup.osdu.core.aws.cognito.AWSCognitoClient;
 
 public class AWSTestUtils extends TestUtils {
-	private static String token;
-	private static String noDataAccesstoken;
-	private static AWSCognitoClient awsCognitoClient = null;
+    private static String token;
+    private static String noDataAccesstoken;
+    private static AWSCognitoEnvClient awsCognitoClient = null;
 
-	@Override
-	public synchronized String getToken() throws Exception {
-		if (Strings.isNullOrEmpty(token)) {
+    @Override
+    public synchronized String getToken() throws Exception {
+        if (Strings.isNullOrEmpty(token)) {
+			System.out.println("[error-logging-test] getting auth for user = " + System.getenv("AWS_COGNITO_AUTH_PARAMS_USER"));
 			token = getAwsCognitoClient().getTokenForUserWithAccess();
-			System.out.println("[error-logging-test] token:" + token);
+			System.out.println("[error-logging-test] token = " + token);
 		}
-		return "Bearer " + token;
-	}
+        return "Bearer " + token;
+    }
 
-	@Override
-	public synchronized String getNoDataAccessToken() throws Exception {
-		if (Strings.isNullOrEmpty(noDataAccesstoken)) {
+    @Override
+    public synchronized String getNoDataAccessToken() throws Exception {
+        if (Strings.isNullOrEmpty(noDataAccesstoken)) {
+			System.out.println("[error-logging-test] getting auth-no-access for user = " + System.getenv("AWS_COGNITO_AUTH_PARAMS_USER_NO_ACCESS"));
 			noDataAccesstoken = getAwsCognitoClient().getTokenForUserWithNoAccess();
-		}
-		return "Bearer " + noDataAccesstoken;
-	}
+			System.out.println("[error-logging-test] no-access-token = " + noDataAccesstoken);
+        }
+        return "Bearer " + noDataAccesstoken;
+    }
 
-	private AWSCognitoClient getAwsCognitoClient() {
-		if(awsCognitoClient == null)
-			awsCognitoClient = new AWSCognitoClient();
-		return	awsCognitoClient;
-	}
+    private AWSCognitoEnvClient getAwsCognitoClient() {
+        if (awsCognitoClient == null)
+            awsCognitoClient = new AWSCognitoEnvClient();
+        return awsCognitoClient;
+    }
 }
