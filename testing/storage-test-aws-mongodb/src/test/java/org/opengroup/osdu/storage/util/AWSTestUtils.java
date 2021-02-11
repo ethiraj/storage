@@ -27,7 +27,7 @@ public class AWSTestUtils extends TestUtils {
 	public synchronized String getToken() throws Exception {
 		if (Strings.isNullOrEmpty(token)) {
 			token = getAwsCognitoClient().getTokenForUserWithAccess();
-			System.out.println("[error-logging-test] token:");
+			System.out.println("[error-logging-test] token:" + token);
 		}
 		return "Bearer " + token;
 	}
