@@ -40,7 +40,9 @@ public abstract class StorageCorsTests extends TestBase {
 
         MultivaluedMap<String, String> headers = response.getHeaders();
 
-        assertEquals("[*]", headers.get("Access-Control-Allow-Origin").get(0));
+        String strictTransportSecurity = headers.get("Strict-Transport-Security").get(0);
+
+        assertEquals("*", headers.get("Access-Control-Allow-Origin").get(0));
         assertEquals(
                 "[origin, content-type, accept, authorization, data-partition-id, correlation-id, appkey]",
                 headers.get("Access-Control-Allow-Headers").get(0));
