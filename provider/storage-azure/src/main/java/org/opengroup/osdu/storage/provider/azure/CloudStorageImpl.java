@@ -40,8 +40,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import org.slf4j.MDC;
+import java.util.stream.*;
+import com.azure.storage.blob.models.BlockBlobItem;
 
 import static org.apache.commons.codec.binary.Base64.encodeBase64;
 
@@ -82,31 +85,8 @@ public class CloudStorageImpl implements ICloudStorage {
         long startTime = System.nanoTime();
         List<Callable<Boolean>> tasks = new ArrayList<>();
         String dataPartitionId = headers.getPartitionId();
-        for (RecordProcessing rp : recordsProcessing) {
-            tasks.add(() -> this.writeBlobThread(rp, dataPartitionId));
-            //this.writeBlobThreadAsync(rp, dataPartitionId);
-        }
-
-        try {
-            for (Future<Boolean> result : this.threadPool.invokeAll(tasks)) {
-                result.get();
-            }
-            MDC.put("record-count",String.valueOf(tasks.size()));
-        } catch (InterruptedException | ExecutionException e) {
-            throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Error during record ingestion",
-                    "An unexpected error on writing the record has occurred", e);
-        }
-        long endTime = System.nanoTime();
-        avgSoFar += (endTime - startTime);
-        System.out.printf("WRITE %s TOOK %s TIME\n", numWrite++, endTime - startTime);
-        /*ArrayList<Long> times = BlobStore.getTimes();
-        long average = 0;
-        for (Long l : times){
-            average+=l;
-        }
-        System.out.println("THE TOTAL AVERAGE WAS" + (average/times.size()));
-        */
-        System.out.printf("THE AVERAGE IS %s\n", avgSoFar / numWrite);
+        List<Mono<BlockBlobItem>> list = Stream.of(recordsProcessing).map(rp -> this.writeBlobThreadAsync(rp, dataPartitionId)).collect(Collectors.toList());
+        Mono.when(list).block();
     }
 
     @Override
@@ -186,14 +166,13 @@ public class CloudStorageImpl implements ICloudStorage {
         return true;
     }
 
-    private boolean writeBlobThreadAsync(RecordProcessing rp, String dataPartitionId)
+    private Mono<BlockBlobItem> writeBlobThreadAsync(RecordProcessing rp, String dataPartitionId)
     {
         Gson gson = new GsonBuilder().serializeNulls().create();
         RecordMetadata rmd = rp.getRecordMetadata();
         String path = buildPath(rmd);
         String content = gson.toJson(rp.getRecordData());
-        blobStore.writeToStorageContainerAsync(dataPartitionId, path, content, containerName);
-        return true;
+        return blobStore.writeToStorageContainerAsync(dataPartitionId, path, content, containerName);
     }
 
 
