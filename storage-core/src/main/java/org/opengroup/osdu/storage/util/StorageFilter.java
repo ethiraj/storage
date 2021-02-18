@@ -41,7 +41,6 @@ public class StorageFilter implements Filter {
 	private static final String OPTIONS_STRING = "OPTIONS";
 	private static final String FOR_HEADER_NAME = "frame-of-reference";
 
-
 	@Autowired
 	private DpsHeaders dpsHeaders;
 
