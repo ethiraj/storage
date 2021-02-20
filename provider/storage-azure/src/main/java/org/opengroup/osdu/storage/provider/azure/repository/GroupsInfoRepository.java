@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -38,7 +40,16 @@ public class GroupsInfoRepository extends SimpleCosmosStoreRepository<TenantInfo
         super(TenantInfoDoc.class);
     }
 
+    private Map<String, Optional<TenantInfoDoc>> tenantCache = new HashMap<String, Optional<TenantInfoDoc>>();
+
     public Optional<TenantInfoDoc> findById(@NonNull String id) {
-        return this.findById(id, headers.getPartitionId(), cosmosDBName, tenantInfoCollection, id);
+        if (tenantCache.containsKey(id)) {
+            return tenantCache.get(id);
+        }
+        else {
+            Optional<TenantInfoDoc> tenantInfoDoc = this.findById(id, headers.getPartitionId(), cosmosDBName, tenantInfoCollection, id);
+            tenantCache.put(id, tenantInfoDoc);
+            return tenantInfoDoc;
+        }
     }
 }
