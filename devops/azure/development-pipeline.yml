@@ -70,6 +70,7 @@ stages:
       serviceBase: ${{ variables.serviceName }}
       testingRootFolder: 'testing'
       chartPath: ${{ variables.chartPath }}
+      cacheVersion: 'service-dependency-cache-v0.2'
   - template: /devops/deploy-stages.yml@TemplateRepo
     parameters:
       serviceName: ${{ variables.serviceName }}
