@@ -35,14 +35,14 @@ public class CreateUpdateRecordsResponse {
     addRecordIdVersions(id, version);
   }
 
-  public void addRecordIds(String recordId) {
+  private void addRecordIds(String recordId) {
     if (this.recordIds == null) {
       this.recordIds = new ArrayList<>();
     }
     this.recordIds.add(recordId);
   }
 
-  public void addRecordIdVersions(String id, Long version) {
+  private void addRecordIdVersions(String id, Long version) {
     if (this.recordIdVersions == null) {
       this.recordIdVersions = new ArrayList<>();
     }
