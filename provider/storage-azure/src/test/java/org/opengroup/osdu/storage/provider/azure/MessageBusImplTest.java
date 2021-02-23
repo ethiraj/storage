@@ -113,57 +113,27 @@ public class MessageBusImplTest {
         sut.publishMessage(this.headers, pubSubInfo);
 
         // Asset
-        verify(this.eventGridTopicStore, times(1)).publishToEventGridTopic(any(), any(), anyList());
+        verify(this.eventGridTopicStore, times(3)).publishToEventGridTopic(any(), any(), anyList());
 
         // The number of events that are being published is verified here.
-        assertEquals(3, listEventGridEventArgumentCaptor.getValue().size());
+        assertEquals(1, listEventGridEventArgumentCaptor.getValue().size());
         assertEquals(topicNameArgumentCaptor.getValue(), TopicName.RECORDS_CHANGED);
         assertEquals(partitionNameCaptor.getValue(), PARTITION_ID);
 
         // Validate all records are preserved.
-        List<String> observedIds = getListOfId(listEventGridEventArgumentCaptor.getValue());
+        List<String> observedIds = getListOfId(listEventGridEventArgumentCaptor.getAllValues());
         assertTrue(observedIds.containsAll(Arrays.asList(ids)) && Arrays.asList(ids).containsAll(observedIds));
     }
 
-    @Test
-    public void testPublishMessage() throws ServiceBusException, InterruptedException {
-        String[] ids = {"id1", "id2"};
-        String[] kinds = {"kind1", "kind2"};
-
-        PubSubInfo[] messages = new PubSubInfo[2];
-        for (int i = 0; i < ids.length; ++i) {
-            messages[i] = getPubsInfo(ids[0], kinds[0]);
-        }
-
-        ArgumentCaptor<Message> msg = ArgumentCaptor.forClass(Message.class);
-
-        sut.publishMessage(headers, messages[0], messages[1]);
-        verify(topicClient).send(msg.capture());
-        Map<String, Object> properties = msg.getValue().getProperties();
-
-        assertEquals(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID, properties.get(DpsHeaders.ACCOUNT_ID));
-        assertEquals(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID, properties.get(DpsHeaders.DATA_PARTITION_ID));
-        assertEquals(CORRELATION_ID, properties.get(DpsHeaders.CORRELATION_ID));
-
-        MessageBody messageBody = msg.getValue().getMessageBody();
-        Gson gson = new Gson();
-        String messageKey = "message";
-        String dataKey = "data";
-        JsonObject jsonObjectMessage = gson.fromJson(new String(messageBody.getBinaryData().get(0)), JsonObject.class);
-        JsonObject jsonObject = (JsonObject) jsonObjectMessage.get(messageKey);
-        assertEquals(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID, jsonObject.get(DpsHeaders.ACCOUNT_ID).getAsString());
-        assertEquals(DATA_PARTITION_WITH_FALLBACK_ACCOUNT_ID, jsonObject.get(DpsHeaders.DATA_PARTITION_ID).getAsString());
-        assertEquals(CORRELATION_ID, jsonObject.get(DpsHeaders.CORRELATION_ID).getAsString());
-        assertEquals(gson.toJsonTree(messages), jsonObject.get(dataKey));
-    }
-
-    private List<String> getListOfId(List<EventGridEvent> value) {
+    private List<String> getListOfId(List<List<EventGridEvent>> value) {
         List<String> ids = new ArrayList<>();
-        for (EventGridEvent event: value) {
-            HashMap<String, Object > map = (HashMap<String, Object>) event.data();
-            PubSubInfo[] pubSubInfos = (PubSubInfo[]) map.get("data");
-            for (PubSubInfo p: pubSubInfos) {
-                ids.add(p.getId());
+        for (List<EventGridEvent> list: value) {
+            for (EventGridEvent event : list) {
+                HashMap<String, Object> map = (HashMap<String, Object>) event.data();
+                PubSubInfo[] pubSubInfos = (PubSubInfo[]) map.get("data");
+                for (PubSubInfo p : pubSubInfos) {
+                    ids.add(p.getId());
+                }
             }
         }
         return ids;

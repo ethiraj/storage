@@ -85,8 +85,8 @@ public class IngestionServiceImplTest {
     @InjectMocks
     private IngestionServiceImpl sut;
 
-    private static final String RECORD_ID1 = "tenant1:doc:record 1";
-    private static final String RECORD_ID2 = "tenant1:doc:record 2";
+    private static final String RECORD_ID1 = "tenant1:kind:record1";
+    private static final String RECORD_ID2 = "tenant1:crazy:record2";
     private static final String KIND_1 = "tenant1:test:kind:1.0.0";
     private static final String KIND_2 = "tenant1:test:crazy:2.0.2";
     private static final String USER = "testuser@gmail.com";
@@ -137,32 +137,14 @@ public class IngestionServiceImplTest {
     }
 
     @Test
-    public void should_throwAppException400_when_kindDoesNotBelongToTenant() {
-
-        when(this.tenant.getName()).thenReturn("gasguys");
-
-        try {
-            this.sut.createUpdateRecords(false, this.records, USER);
-
-            fail("Should not succeed");
-        } catch (AppException e) {
-            assertEquals(HttpStatus.SC_BAD_REQUEST, e.getError().getCode());
-            assertEquals("Invalid kind", e.getError().getReason());
-            assertEquals(
-                    "The kind 'tenant1:test:kind:1.0.0' does not follow the required naming convention: the first kind component must be 'gasguys'",
-                    e.getError().getMessage());
-        } catch (Exception e) {
-            fail("Should not get different exception");
-        }
-    }
-
-    @Test
     public void should_throwAppException400_when_updatingSameRecordMoreThanOnceInRequest() {
 
         final String NEW_RECORD_ID = "tenant1:record:123";
 
         this.record1.setId(NEW_RECORD_ID);
+        this.record1.setKind("tenant1:wks:record:1.0.0");
         this.record2.setId(NEW_RECORD_ID);
+        this.record2.setKind("tenant1:wks:record:1.0.0");
 
         RecordMetadata existingRecordMetadata1 = new RecordMetadata();
         existingRecordMetadata1.setUser(NEW_USER);
@@ -209,7 +191,7 @@ public class IngestionServiceImplTest {
             assertEquals(HttpStatus.SC_BAD_REQUEST, e.getError().getCode());
             assertEquals("Invalid record id", e.getError().getReason());
             assertEquals(
-                    "The record 'gasguys:record:123' does not follow the naming convention: the first id component must be 'tenant1'",
+                "The record 'gasguys:record:123' does not follow the naming convention: The record id must be in the format of <tenantId>:<kindSubType>:<uniqueId>. Example: tenant1:kind:<uuid>",
                     e.getError().getMessage());
         }
     }
