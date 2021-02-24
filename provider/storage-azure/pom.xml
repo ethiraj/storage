@@ -33,7 +33,7 @@
         <azure.appservice.plan />
         <azure.appservice.appname />
         <azure.appservice.subscription />
-        <osdu.corelibazure.version>0.0.61</osdu.corelibazure.version>
+        <osdu.corelibazure.version>0.6.1-SNAPSHOT</osdu.corelibazure.version>
         <osdu.oscorecommon.version>0.3.26</osdu.oscorecommon.version>
         <osdu.storage-core.version>0.6.0-SNAPSHOT</osdu.storage-core.version>
         <junit.version>4.12</junit.version>
@@ -162,6 +162,11 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>chaos-monkey-spring-boot</artifactId>
+            <version>2.2.0</version>
         </dependency>
     </dependencies>
 

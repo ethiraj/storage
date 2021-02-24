@@ -24,6 +24,10 @@ public class EventGridConfig {
         return publishToEventGridEnabled;
     }
 
+    public String getTopicName() {
+        return eventGridTopicName;
+    }
+
     public int getEventGridBatchSize() {
         return eventGridBatchSize;
     }
@@ -35,4 +39,7 @@ public class EventGridConfig {
     // https://docs.microsoft.com/en-us/azure/event-grid/event-schema#:~:text=Event%20sources%20send%20events%20to,is%20limited%20to%201%20MB.
     @Value("#{new Integer('${azure.eventGridBatchSize:10}')}")
     private Integer eventGridBatchSize;
+
+    @Value("${azure.eventGrid.topicName}")
+    private String eventGridTopicName;
 }
