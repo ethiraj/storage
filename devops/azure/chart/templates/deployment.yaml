@@ -106,4 +106,4 @@ spec:
         - name: azure_activedirectory_AppIdUri
           value: "api://$(aad_client_id)"
         - name: eventgrid_topicname
-            value: "recordstopic"
+          value: "recordstopic"
