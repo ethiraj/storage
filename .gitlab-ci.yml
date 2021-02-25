@@ -34,14 +34,14 @@ variables:
   # IBM_BUILD_SUBDIR: provider/storage-ibm
   # IBM_INT_TEST_SUBDIR: testing/storage-test-ibm
 
-test:
-  extends:
-    - .aws
-    - .aws_variables
-  stage: compile-and-unit-test
-  script:
-    - echo $AWS_REGION
-    - echo $AWS_SANDBOX_REGION
+# test:
+#   extends:
+#     - .aws
+#     - .aws_variables
+#   stage: compile-and-unit-test
+#   script:
+#     - echo $AWS_REGION
+#     - echo $AWS_SANDBOX_REGION
 
 include:
   - project: "osdu/platform/ci-cd-pipelines"
