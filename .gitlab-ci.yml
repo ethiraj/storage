@@ -42,6 +42,18 @@ test:
   script:
     - echo $AWS_REGION
     - echo $AWS_SANDBOX_REGION
+    - echo $AWS_IMAGE_TAG_BASE
+
+test2:
+  extends:
+    - .aws
+    - .aws_base_variables
+    - .aws_variables
+  stage: build
+  script:
+    - echo $AWS_REGION
+    - echo $AWS_SANDBOX_REGION
+    - echo $AWS_IMAGE_TAG_BASE
 
 include:
   - project: "osdu/platform/ci-cd-pipelines"
