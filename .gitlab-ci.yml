@@ -38,7 +38,7 @@ test:
   extends:
     - .aws
     - .aws_variables
-  stage: compile-and-unit-test
+  stage: build
   script:
     - echo $AWS_REGION
     - echo $AWS_SANDBOX_REGION
