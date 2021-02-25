@@ -35,6 +35,7 @@ variables:
   # IBM_INT_TEST_SUBDIR: testing/storage-test-ibm
 
 test:
+  cache: {}
   extends:
     - .aws
     - .aws_variables
@@ -45,6 +46,7 @@ test:
     - echo $AWS_IMAGE_TAG_BASE
 
 test2:
+  cache: {}
   extends:
     - .aws
     - .aws_base_variables
