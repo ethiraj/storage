@@ -9,12 +9,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opengroup.osdu.azure.query.CosmosStorePageRequest;
 import org.opengroup.osdu.core.common.model.storage.DatastoreQueryResult;
 import org.opengroup.osdu.core.common.model.storage.SchemaItem;
 import org.opengroup.osdu.storage.provider.azure.repository.QueryRepository;
 import org.opengroup.osdu.storage.provider.azure.repository.SchemaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,6 +81,25 @@ public class QueryRepositoryTest {
         Assert.assertEquals(results.get(0), KIND2);
         Assert.assertEquals(results.get(1), KIND1);
         Assert.assertEquals(sortArgumentCaptor.getValue(), SORT);
+    }
+
+    @Test
+    public void testGetAllKindsCursor(){
+        String cursor = "plainText";
+        String internalContinuationToken = "internalToken";
+        ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
+        List<SchemaDoc> schemaDocs = new ArrayList<>();
+        schemaDocs.add(getSchemaDoc(KIND2));
+        schemaDocs.add(getSchemaDoc(KIND1));
+        CosmosStorePageRequest pageRequest = CosmosStorePageRequest.of(1, 10, internalContinuationToken);
+        Mockito.when(dbSchema.findAll(pageableArgumentCaptor.capture()))
+                        .thenReturn(new PageImpl<>(schemaDocs, pageRequest, 100));
+        DatastoreQueryResult datastoreQueryResult = repo.getAllKinds(null, cursor);
+        List<String> results = datastoreQueryResult.getResults();
+        Assert.assertEquals(results.size(), schemaDocs.size());
+        Assert.assertEquals(results.get(0), KIND2);
+        Assert.assertEquals(results.get(1), KIND1);
+        Assert.assertEquals(((CosmosStorePageRequest)pageableArgumentCaptor.getValue()).getRequestContinuation(), cursor);
     }
 
     private SchemaDoc getSchemaDoc(String kind) {
