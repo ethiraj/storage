@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.apache.http.HttpStatus;
@@ -81,7 +82,7 @@ public class QueryApiTest {
 
     @Test
     public void should_returnHttp200_when_gettingAllKindsSuccessfully() {
-        final String CURSOR = "any cursor";
+        final String CURSOR = Base64.getEncoder().encodeToString("any cursor".getBytes());
         final int LIMIT = 10;
 
         List<String> kinds = new ArrayList<String>();
@@ -108,7 +109,7 @@ public class QueryApiTest {
 
     @Test
     public void should_returnHttp200_when_gettingAllRecordsFromKindSuccessfully() {
-        final String CURSOR = "any cursor";
+        final String CURSOR = Base64.getEncoder().encodeToString("any cursor".getBytes());
         final String KIND = "any kind";
         final int LIMIT = 10;
 
