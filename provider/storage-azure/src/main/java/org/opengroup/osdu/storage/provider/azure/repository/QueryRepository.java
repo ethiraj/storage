@@ -51,29 +51,6 @@ public class QueryRepository implements IQueryRepository {
     @Autowired
     private JaxRsDpsLog logger;
 
-    private String deserializeCursor(String cursor) {
-        if(StringUtils.isEmpty(cursor)) {
-            return cursor;
-        }
-        try {
-            return URLDecoder.decode(cursor, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException encodingException) {
-            throw this.getInvalidCursorException();
-        }
-    }
-
-    private String serializeContinuationToken(String continuationToken) {
-        if(StringUtils.isEmpty(continuationToken)) {
-            return continuationToken;
-        }
-        try {
-            return URLEncoder.encode(continuationToken, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException encodingException) {
-            throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Failed serializing the cursor.",
-                    encodingException.getMessage(), encodingException);
-        }
-    }
-
     @Override
     public DatastoreQueryResult getAllKinds(Integer limit, String cursor) {
 
@@ -97,13 +74,13 @@ public class QueryRepository implements IQueryRepository {
         try {
             if (paginated) {
                 final Page<SchemaDoc> docPage = schema.findAll(
-                        CosmosStorePageRequest.of(0, numRecords, deserializeCursor(cursor), sort));
+                        CosmosStorePageRequest.of(0, numRecords, cursor, sort));
                 Pageable pageable = docPage.getPageable();
                 String continuation = null;
                 if (pageable instanceof CosmosStorePageRequest) {
                     continuation = ((CosmosStorePageRequest) pageable).getRequestContinuation();
                 }
-                dqr.setCursor(serializeContinuationToken(continuation));
+                dqr.setCursor(continuation);
                 docs = docPage.getContent();
             } else {
                 docs = schema.findAll(sort);
@@ -147,13 +124,13 @@ public class QueryRepository implements IQueryRepository {
         try {
             if (paginated) {
                 final Page<RecordMetadataDoc> docPage = record.findByMetadata_kindAndMetadata_status(kind, status,
-                        CosmosStorePageRequest.of(0, numRecords, deserializeCursor(cursor), sort));
+                        CosmosStorePageRequest.of(0, numRecords, cursor, sort));
                 Pageable pageable = docPage.getPageable();
                 String continuation = null;
                 if (pageable instanceof CosmosStorePageRequest) {
                     continuation = ((CosmosStorePageRequest) pageable).getRequestContinuation();
                 }
-                dqr.setCursor(serializeContinuationToken(continuation));
+                dqr.setCursor(continuation);
                 docs = docPage.getContent();
             } else {
                 docs = record.findByMetadata_kindAndMetadata_status(kind, status);

@@ -28,11 +28,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import com.google.common.collect.Lists;
+import org.mockito.Spy;
 import org.opengroup.osdu.core.common.model.storage.MultiRecordIds;
 import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
 import org.opengroup.osdu.core.common.model.storage.StorageRole;
 import org.opengroup.osdu.core.common.model.storage.DatastoreQueryResult;
 import org.opengroup.osdu.storage.service.BatchService;
+import org.opengroup.osdu.storage.util.EncodeDecode;
 import org.springframework.http.ResponseEntity;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,6 +44,9 @@ public class QueryApiTest {
 
     @Mock
     private BatchService batchService;
+
+    @Spy
+    private EncodeDecode encodeDecode;
 
     @InjectMocks
     private QueryApi sut;

@@ -2,6 +2,7 @@ package org.opengroup.osdu.storage.provider.azure;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -79,26 +80,6 @@ public class QueryRepositoryTest {
         Assert.assertEquals(results.get(0), KIND2);
         Assert.assertEquals(results.get(1), KIND1);
         Assert.assertEquals(sortArgumentCaptor.getValue(), SORT);
-    }
-
-    @Test
-    public void testGetAllKindsCursor(){
-        String encodedCursor = "plain'%22'Text";
-        String decoded = "plain'\"'Text";
-        String internalContinuationToken = "internalToken";
-        ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
-        List<SchemaDoc> schemaDocs = new ArrayList<>();
-        schemaDocs.add(getSchemaDoc(KIND2));
-        schemaDocs.add(getSchemaDoc(KIND1));
-        CosmosStorePageRequest pageRequest = CosmosStorePageRequest.of(1, 10, internalContinuationToken);
-        Mockito.when(dbSchema.findAll(pageableArgumentCaptor.capture()))
-                        .thenReturn(new PageImpl<>(schemaDocs, pageRequest, 100));
-        DatastoreQueryResult datastoreQueryResult = repo.getAllKinds(null, encodedCursor);
-        List<String> results = datastoreQueryResult.getResults();
-        Assert.assertEquals(results.size(), schemaDocs.size());
-        Assert.assertEquals(results.get(0), KIND2);
-        Assert.assertEquals(results.get(1), KIND1);
-        Assert.assertEquals(((CosmosStorePageRequest)pageableArgumentCaptor.getValue()).getRequestContinuation(), decoded);
     }
 
     private SchemaDoc getSchemaDoc(String kind) {
