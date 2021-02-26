@@ -1,8 +1,11 @@
 package org.opengroup.osdu.storage.util;
 
+import org.apache.http.HttpStatus;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengroup.osdu.core.common.model.http.AppException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 public class EncodeDecodeTest {
 
@@ -20,6 +23,17 @@ public class EncodeDecodeTest {
 
         String resultString = encodeDecode.deserializeCursor(encodeDecode.serializeCursor(inputString));
         Assert.assertEquals(inputString, resultString);
+    }
+
+    @Test
+    public void should_throwError_onNonBase64Input() {
+        String inputString = "invalid_cursor";
+        try {
+            encodeDecode.deserializeCursor(inputString);
+            Assert.fail();
+        }catch (AppException exception){
+            Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, exception.getError().getCode());
+        }
     }
 
 }
