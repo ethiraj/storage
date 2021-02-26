@@ -25,7 +25,7 @@ public class EventGridConfig {
     }
 
     public String getTopicName() {
-        return eventGridTopicName;
+        return topicName;
     }
 
     public int getEventGridBatchSize() {
@@ -41,5 +41,5 @@ public class EventGridConfig {
     private Integer eventGridBatchSize;
 
     @Value("${azure.eventGrid.topicName}")
-    private String eventGridTopicName;
+    private String topicName;
 }
