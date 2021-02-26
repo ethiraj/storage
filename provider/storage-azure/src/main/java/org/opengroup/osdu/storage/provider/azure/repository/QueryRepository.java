@@ -30,12 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,8 +68,7 @@ public class QueryRepository implements IQueryRepository {
 
         try {
             if (paginated) {
-                final Page<SchemaDoc> docPage = schema.findAll(
-                        CosmosStorePageRequest.of(0, numRecords, cursor, sort));
+                final Page<SchemaDoc> docPage = schema.findAll(CosmosStorePageRequest.of(0, numRecords, cursor, sort));
                 Pageable pageable = docPage.getPageable();
                 String continuation = null;
                 if (pageable instanceof CosmosStorePageRequest) {
