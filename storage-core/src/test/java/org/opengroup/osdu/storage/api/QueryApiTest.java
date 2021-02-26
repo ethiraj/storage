@@ -82,7 +82,8 @@ public class QueryApiTest {
 
     @Test
     public void should_returnHttp200_when_gettingAllKindsSuccessfully() {
-        final String CURSOR = Base64.getEncoder().encodeToString("any cursor".getBytes());
+        final String CURSOR = "any cursor";
+        final String ENCODED_CURSOR = Base64.getEncoder().encodeToString("any cursor".getBytes());
         final int LIMIT = 10;
 
         List<String> kinds = new ArrayList<String>();
@@ -96,7 +97,7 @@ public class QueryApiTest {
 
         when(this.batchService.getAllKinds(CURSOR, LIMIT)).thenReturn(allKinds);
 
-        ResponseEntity response = this.sut.getKinds(CURSOR, LIMIT);
+        ResponseEntity response = this.sut.getKinds(ENCODED_CURSOR, LIMIT);
 
         DatastoreQueryResult allKindsResult = (DatastoreQueryResult) response.getBody();
 
@@ -109,7 +110,9 @@ public class QueryApiTest {
 
     @Test
     public void should_returnHttp200_when_gettingAllRecordsFromKindSuccessfully() {
-        final String CURSOR = Base64.getEncoder().encodeToString("any cursor".getBytes());
+        final String CURSOR = "any cursor";
+        final String ENCODED_CURSOR = Base64.getEncoder().encodeToString("any cursor".getBytes());
+
         final String KIND = "any kind";
         final int LIMIT = 10;
 
@@ -124,7 +127,7 @@ public class QueryApiTest {
 
         when(this.batchService.getAllRecords(CURSOR, KIND, LIMIT)).thenReturn(allRecords);
 
-        ResponseEntity response = this.sut.getAllRecords(CURSOR, LIMIT, KIND);
+        ResponseEntity response = this.sut.getAllRecords(ENCODED_CURSOR, LIMIT, KIND);
 
         DatastoreQueryResult allRecordIds = (DatastoreQueryResult) response.getBody();
 
