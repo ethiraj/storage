@@ -77,7 +77,8 @@ public class QueryApi {
 			@RequestParam(required = false) String cursor,
 			@RequestParam(required = false) Integer limit,
 			@RequestParam @ValidKind String kind) {
-		return new ResponseEntity<DatastoreQueryResult>(this.batchService.getAllRecords(cursor, kind, limit),
-				HttpStatus.OK);
+		DatastoreQueryResult result = this.batchService.getAllRecords(encodeDecode.deserializeCursor(cursor), kind, limit);
+		result.setCursor(encodeDecode.serializeCursor(result.getCursor()));
+		return new ResponseEntity<DatastoreQueryResult>(result, HttpStatus.OK);
 	}
 }
