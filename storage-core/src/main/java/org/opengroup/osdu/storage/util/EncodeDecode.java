@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 @Component
 public class EncodeDecode {
@@ -17,23 +18,14 @@ public class EncodeDecode {
         if(StringUtils.isEmpty(cursor)) {
             return cursor;
         }
-        try {
-            return URLDecoder.decode(cursor, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException encodingException) {
-            throw this.getInvalidCursorException();
-        }
+        return new String(Base64.getDecoder().decode(cursor));
     }
 
     public String serializeCursor(String continuationToken) {
         if(StringUtils.isEmpty(continuationToken)) {
             return continuationToken;
         }
-        try {
-            return URLEncoder.encode(continuationToken, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException encodingException) {
-            throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Failed serializing the cursor.",
-                    encodingException.getMessage(), encodingException);
-        }
+        return Base64.getEncoder().encodeToString(continuationToken.getBytes());
     }
 
     private AppException getInvalidCursorException() {
