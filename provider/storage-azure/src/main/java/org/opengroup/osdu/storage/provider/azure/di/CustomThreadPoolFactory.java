@@ -32,6 +32,6 @@ public class CustomThreadPoolFactory extends AbstractFactoryBean<ExecutorService
 
     @Override
     protected ExecutorService  createInstance() throws Exception {
-        return CustomExecutors.newFixedThreadPool(192);
+        return CustomExecutors.newFixedThreadPool(400);
     }
 }
