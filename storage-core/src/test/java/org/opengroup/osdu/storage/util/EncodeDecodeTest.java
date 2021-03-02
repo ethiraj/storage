@@ -5,7 +5,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengroup.osdu.core.common.model.http.AppException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 public class EncodeDecodeTest {
 

@@ -18,7 +18,7 @@ public class EncodeDecode {
         try {
             return new String(Base64.getDecoder().decode(cursor));
         } catch (IllegalArgumentException e) {
-            throw this.getInvalidCursorException();
+            throw this.getInvalidCursorException(e);
         }
     }
 
@@ -29,9 +29,9 @@ public class EncodeDecode {
         return Base64.getEncoder().encodeToString(continuationToken.getBytes());
     }
 
-    private AppException getInvalidCursorException() {
+    private AppException getInvalidCursorException(Exception e) {
         return new AppException(HttpStatus.SC_BAD_REQUEST, "Cursor invalid",
-                "The requested cursor does not exist or is invalid");
+                "The requested cursor does not exist or is invalid", e);
     }
 
 }
