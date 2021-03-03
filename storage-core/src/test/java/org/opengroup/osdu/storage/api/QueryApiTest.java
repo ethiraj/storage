@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.apache.http.HttpStatus;
@@ -28,12 +29,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import com.google.common.collect.Lists;
-import org.opengroup.osdu.core.common.model.storage.Record;
-import org.opengroup.osdu.core.common.model.storage.MultiRecordIds;
-import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
-import org.opengroup.osdu.core.common.model.storage.StorageRole;
-import org.opengroup.osdu.core.common.model.storage.DatastoreQueryResult;
+import org.mockito.Spy;
+import org.opengroup.osdu.core.common.model.storage.*;
 import org.opengroup.osdu.storage.service.BatchService;
+import org.opengroup.osdu.storage.util.EncodeDecode;
 import org.springframework.http.ResponseEntity;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,6 +42,9 @@ public class QueryApiTest {
 
     @Mock
     private BatchService batchService;
+
+    @Spy
+    private EncodeDecode encodeDecode;
 
     @InjectMocks
     private QueryApi sut;
@@ -81,6 +83,7 @@ public class QueryApiTest {
     @Test
     public void should_returnHttp200_when_gettingAllKindsSuccessfully() {
         final String CURSOR = "any cursor";
+        final String ENCODED_CURSOR = Base64.getEncoder().encodeToString("any cursor".getBytes());
         final int LIMIT = 10;
 
         List<String> kinds = new ArrayList<String>();
@@ -94,7 +97,7 @@ public class QueryApiTest {
 
         when(this.batchService.getAllKinds(CURSOR, LIMIT)).thenReturn(allKinds);
 
-        ResponseEntity response = this.sut.getKinds(CURSOR, LIMIT);
+        ResponseEntity response = this.sut.getKinds(ENCODED_CURSOR, LIMIT);
 
         DatastoreQueryResult allKindsResult = (DatastoreQueryResult) response.getBody();
 
@@ -108,6 +111,8 @@ public class QueryApiTest {
     @Test
     public void should_returnHttp200_when_gettingAllRecordsFromKindSuccessfully() {
         final String CURSOR = "any cursor";
+        final String ENCODED_CURSOR = Base64.getEncoder().encodeToString("any cursor".getBytes());
+
         final String KIND = "any kind";
         final int LIMIT = 10;
 
@@ -122,7 +127,7 @@ public class QueryApiTest {
 
         when(this.batchService.getAllRecords(CURSOR, KIND, LIMIT)).thenReturn(allRecords);
 
-        ResponseEntity response = this.sut.getAllRecords(CURSOR, LIMIT, KIND);
+        ResponseEntity response = this.sut.getAllRecords(ENCODED_CURSOR, LIMIT, KIND);
 
         DatastoreQueryResult allRecordIds = (DatastoreQueryResult) response.getBody();
 
