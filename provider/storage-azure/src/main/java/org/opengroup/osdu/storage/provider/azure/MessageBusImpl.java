@@ -35,9 +35,9 @@ import java.util.*;
 
 @Component
 public class MessageBusImpl implements IMessageBus {
-    private final static String EVENT_SUBJECT = "RecordsChanged";
-    private final static String EVENT_TYPE = "RecordsChanged";
-    private final static String EVENT_DATA_VERSION = "1.0";
+    private final static String RECORDS_CHANGED_EVENT_SUBJECT = "RecordsChanged";
+    private final static String RECORDS_CHANGED_EVENT_TYPE = "RecordsChanged";
+    private final static String RECORDS_CHANGED_EVENT_DATA_VERSION = "1.0";
     @Autowired
     EventGridConfig eventGridConfig;
     @Autowired
@@ -73,11 +73,11 @@ public class MessageBusImpl implements IMessageBus {
             String messageId = UUID.randomUUID().toString();
             eventsList.add(new EventGridEvent(
                     messageId,
-                    EVENT_SUBJECT,
+                    RECORDS_CHANGED_EVENT_SUBJECT,
                     data,
-                    EVENT_TYPE,
+                    RECORDS_CHANGED_EVENT_TYPE,
                     DateTime.now(),
-                    EVENT_DATA_VERSION
+                    RECORDS_CHANGED_EVENT_DATA_VERSION
             ));
             logger.info("Event generated: " + messageId);
 

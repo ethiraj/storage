@@ -101,6 +101,7 @@ public class MessageBusImplTest {
         );
         when(this.eventGridConfig.isPublishingToEventGridEnabled()).thenReturn(true);
         when(this.eventGridConfig.getEventGridBatchSize()).thenReturn(5);
+        when(this.eventGridConfig.getTopicName()).thenReturn("recordstopic");
 
         // Act
         sut.publishMessage(this.dpsHeaders, pubSubInfo);
