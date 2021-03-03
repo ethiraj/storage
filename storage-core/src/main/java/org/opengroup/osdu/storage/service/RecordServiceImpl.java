@@ -164,25 +164,23 @@ public class RecordServiceImpl implements RecordService {
             String idWithVersion = idMap.get(id);
             RecordMetadata metadata = existingRecords.get(id);
 
-            if (metadata != null) {
-                // pre acl check, enforce application data restriction
-                boolean hasOwnerAccess = this.entitlementsAndCacheService.hasOwnerAccess(this.headers, metadata.getAcl().getOwners());
-                if (!hasOwnerAccess) {
-                    unauthorizedRecordIds.add(idWithVersion);
-                    ids.remove(idWithVersion);
-                    this.auditLogger.createOrUpdateRecordsFail(singletonList(idWithVersion));
-                }
-            }
-
             if (metadata == null) {
                 notFoundRecordIds.add(idWithVersion);
                 ids.remove(idWithVersion);
+                idMap.remove(id);
             } else {
-                metadata = this.updateMetadataWithOperations(metadata, bulkUpdateOps);
-                metadata.setModifyUser(user);
-                metadata.setModifyTime(currentTimestamp);
-                validRecordsMetadata.add(metadata);
-                validRecordsId.add(id);
+                if(!this.entitlementsAndCacheService.hasOwnerAccess(this.headers, metadata.getAcl().getOwners())) {
+                    unauthorizedRecordIds.add(idWithVersion);
+                    ids.remove(idWithVersion);
+                    idMap.remove(id);
+                    this.auditLogger.createOrUpdateRecordsFail(singletonList(idWithVersion));
+                } else {
+                    metadata = this.updateMetadataWithOperations(metadata, bulkUpdateOps);
+                    metadata.setModifyUser(user);
+                    metadata.setModifyTime(currentTimestamp);
+                    validRecordsMetadata.add(metadata);
+                    validRecordsId.add(id);
+                }
             }
         }
 
