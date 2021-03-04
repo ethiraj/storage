@@ -25,10 +25,16 @@ public class EventGridConfig {
     }
 
     public String getTopicName() {
+        if(topicName == null || topicName.isEmpty()){
+            return "recordsTopic";
+        }
         return topicName;
     }
 
     public int getEventGridBatchSize() {
+        if(eventGridBatchSize == null || eventGridBatchSize <= 0) {
+            return 1;
+        }
         return eventGridBatchSize;
     }
 
