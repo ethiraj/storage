@@ -20,32 +20,30 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class EventGridConfig {
 
+    @Value("#{new Boolean('${azure.publishToEventGrid:true}')}")
+    private boolean publishToEventGridEnabled;
+    // The Event Grid Event can be a maximum of 1MB. The batch size manipulation will impact the costing.
+    // https://docs.microsoft.com/en-us/azure/event-grid/event-schema#:~:text=Event%20sources%20send%20events%20to,is%20limited%20to%201%20MB.
+    @Value("#{new Integer('${azure.eventGridBatchSize:10}')}")
+    private Integer eventGridBatchSize;
+    @Value("${azure.eventGrid.topicName:recordstopic}")
+    private String topicName;
+
     public boolean isPublishingToEventGridEnabled() {
         return publishToEventGridEnabled;
     }
 
     public String getTopicName() {
-        if(topicName == null || topicName.isEmpty()){
+        if (topicName == null || topicName.isEmpty()) {
             return "recordsTopic";
         }
         return topicName;
     }
 
     public int getEventGridBatchSize() {
-        if(eventGridBatchSize == null || eventGridBatchSize <= 0) {
+        if (eventGridBatchSize == null || eventGridBatchSize <= 0) {
             return 1;
         }
         return eventGridBatchSize;
     }
-
-    @Value("#{new Boolean('${azure.publishToEventGrid:true}')}")
-    private boolean publishToEventGridEnabled;
-
-    // The Event Grid Event can be a maximum of 1MB. The batch size manipulation will impact the costing.
-    // https://docs.microsoft.com/en-us/azure/event-grid/event-schema#:~:text=Event%20sources%20send%20events%20to,is%20limited%20to%201%20MB.
-    @Value("#{new Integer('${azure.eventGridBatchSize:10}')}")
-    private Integer eventGridBatchSize;
-
-    @Value("${azure.eventGrid.topicName:recordstopic}")
-    private String topicName;
 }
