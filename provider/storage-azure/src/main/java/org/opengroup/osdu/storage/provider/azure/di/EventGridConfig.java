@@ -40,6 +40,6 @@ public class EventGridConfig {
     @Value("#{new Integer('${azure.eventGridBatchSize:10}')}")
     private Integer eventGridBatchSize;
 
-    @Value("${azure.eventGrid.topicName}")
+    @Value("${azure.eventGrid.topicName:recordstopic}")
     private String topicName;
 }
