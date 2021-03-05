@@ -28,17 +28,15 @@ import org.opengroup.osdu.storage.model.GetCursorValue;
 import org.opengroup.osdu.storage.util.*;
 import com.sun.jersey.api.client.ClientResponse;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 public abstract class StorageQuerySuccessfulTest extends TestBase {
 
 	protected static final String RECORD = "records";
 	protected static final String KIND_ONE = TenantUtils.getTenantName() + ":test:endtoend:1.1."
 			+ System.currentTimeMillis();
-	protected static final String KIND_ID_ONE = TenantUtils.getTenantName() + ":testendtoend:1.1."
+	protected static final String KIND_ID_ONE = TenantUtils.getTenantName() + ":endtoend:1.1."
 			+ System.currentTimeMillis();
-	protected static final String KIND_VERSION_ID = TenantUtils.getTenantName() + ":testendtoend:1.2."
+	protected static final String KIND_VERSION_ID = TenantUtils.getTenantName() + ":endtoend:1.2."
 			+ System.currentTimeMillis();
 	protected static final String LEGAL_TAG_NAME = LegalTagUtils.createRandomName(); 
 
@@ -59,8 +57,7 @@ public abstract class StorageQuerySuccessfulTest extends TestBase {
 		String cursorValue = getCursorValue.getCursor();
 		assertEquals(HttpStatus.SC_OK, recordResponse.getStatus());
 		assertEquals(cursorValue, getCursorValue.getCursor());
-		String cursorEncoded = URLEncoder.encode(cursorValue, StandardCharsets.UTF_8.toString());
-		ClientResponse recordResponseWithCursorValue = TestUtils.send("query/kinds?cursor=" + cursorEncoded + "&limit=10",
+		ClientResponse recordResponseWithCursorValue = TestUtils.send("query/kinds?cursor=" + cursorValue + "&limit=10",
 				HttpMethod.GET, HeaderUtils.getHeaders(TenantUtils.getTenantName(), testUtils.getToken()), "", "");
 		assertEquals(HttpStatus.SC_OK, recordResponseWithCursorValue.getStatus());
 	}

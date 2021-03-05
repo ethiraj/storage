@@ -15,6 +15,8 @@
 package org.opengroup.osdu.storage.service;
 
 import com.google.common.base.Strings;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.common.entitlements.IEntitlementsAndCacheService;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
@@ -29,6 +31,7 @@ import org.opengroup.osdu.core.common.model.storage.validation.ValidationDoc;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.storage.*;
 import org.opengroup.osdu.storage.logging.StorageAuditLogger;
+import org.opengroup.osdu.storage.policy.service.IPolicyService;
 import org.opengroup.osdu.storage.provider.interfaces.ICloudStorage;
 import org.opengroup.osdu.storage.provider.interfaces.IRecordsMetadataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +71,12 @@ public class IngestionServiceImpl implements IngestionService {
 
 	@Autowired
 	private IEntitlementsAndCacheService entitlementsAndCacheService;
+
+	@Autowired
+	private DataAuthorizationService dataAuthorizationService;
+
+	@Autowired(required = false)
+	private IPolicyService policyService;
 
 	@Override
 	public TransferInfo createUpdateRecords(boolean skipDupes, List<Record> inputRecords, String user) {
@@ -118,22 +127,29 @@ public class IngestionServiceImpl implements IngestionService {
 		Set<String> ids = new HashSet<>();
 		for (Record record : inputRecords) {
 			String id = record.getId();
+
+			if (Strings.isNullOrEmpty(record.getKind())) {
+				throw new AppException(HttpStatus.SC_BAD_REQUEST, "Bad request",
+							"Must have valid kind");
+			}
+
 			if (!Strings.isNullOrEmpty(id)) {
 				if (ids.contains(id)) {
 					throw new AppException(HttpStatus.SC_BAD_REQUEST, "Bad request",
 							"Cannot update the same record multiple times in the same request. Id: " + id);
 				}
 
-				if (!Record.isRecordIdValid(id, tenantName)) {
+				if (!Record.isRecordIdValid(id, tenantName, record.getKind())) {
+					String kindSubType = record.getKind().split(":")[2];
 					String msg = String.format(
-							"The record '%s' does not follow the naming convention: the first id component must be '%s'",
-							id, tenantName);
+							"The record '%s' does not follow the naming convention: The record id must be in the format of <tenantId>:<kindSubType>:<uniqueId>. Example: %s:%s:<uuid>",
+							id, tenantName, kindSubType);
 					throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid record id", msg);
 				}
 
 				ids.add(id);
 			} else {
-				record.createNewRecordId(tenantName);
+				record.createNewRecordId(tenantName, record.getKind());
 			}
 		}
 	}
@@ -147,8 +163,11 @@ public class IngestionServiceImpl implements IngestionService {
 		Map<String, RecordMetadata> existingRecords = this.recordRepository.get(ids);
 
 		this.validateParentsExist(existingRecords, recordParentMap);
-		this.validateUserHasAccessToAllRecords(existingRecords);
-		this.validateLegalConstraints(inputRecords, existingRecords, recordParentMap);
+		if(this.dataAuthorizationService.policyEnabled()) {
+		    this.validateUserAccessAndCompliancePolicyConstraints(inputRecords, existingRecords, recordParentMap);
+		} else {
+			this.validateUserAccessAndComplianceConstraints(inputRecords, existingRecords, recordParentMap);
+		}
 
 		Map<RecordMetadata, RecordData> recordUpdatesMap = new HashMap<>();
         Map<RecordMetadata, RecordData> recordUpdateWithoutVersions = new HashMap<>();
@@ -168,12 +187,6 @@ public class IngestionServiceImpl implements IngestionService {
 				recordsToProcess.add(new RecordProcessing(recordData, recordMetadata, OperationType.create));
 			} else {
 				RecordMetadata existingRecordMetadata = existingRecords.get(record.getId());
-
-				if (!this.entitlementsAndCacheService.hasOwnerAccess(this.headers, existingRecordMetadata.getAcl().getOwners())) {
-					this.logger.warning(String.format("User does not have owner access to record %s", record.getId()));
-					throw new AppException(HttpStatus.SC_FORBIDDEN, "User Unauthorized", "User is not authorized to update records.");
-				}
-
 				RecordMetadata updatedRecordMetadata = new RecordMetadata(record);
 
 				List<String> versions = new ArrayList<>();
@@ -201,6 +214,27 @@ public class IngestionServiceImpl implements IngestionService {
 		return recordsToProcess;
 	}
 
+	private void validateUserAccessAndComplianceConstraints(
+			List<Record> inputRecords, Map<String, RecordMetadata> existingRecords,  Map<String, List<String>> recordParentMap) {
+		this.validateUserHasAccessToAllRecords(existingRecords);
+		this.validateLegalConstraints(inputRecords);
+		this.validateOwnerAccessOnExistingRecords(inputRecords, existingRecords);
+		this.populateLegalInfoFromParents(inputRecords, existingRecords, recordParentMap);
+	}
+
+	private void validateOwnerAccessOnExistingRecords(List<Record> inputRecords, Map<String, RecordMetadata> existingRecords) {
+		for (Record record: inputRecords) {
+			if (!existingRecords.containsKey(record.getId())) {
+				continue;
+			}
+			RecordMetadata existingRecordMetadata = existingRecords.get(record.getId());
+			if(!this.entitlementsAndCacheService.hasOwnerAccess(headers, existingRecordMetadata.getAcl().getOwners())) {
+				this.logger.warning(String.format("User does not have owner access to record %s", record.getId()));
+				throw new AppException(HttpStatus.SC_FORBIDDEN, "User Unauthorized", "User is not authorized to update records.");
+			}
+		}
+	}
+
 	private void validateParentsExist(Map<String, RecordMetadata> existingRecords,
 			Map<String, List<String>> recordParentMap) {
 
@@ -215,15 +249,19 @@ public class IngestionServiceImpl implements IngestionService {
 		}
 	}
 
-	private void validateLegalConstraints(List<Record> inputRecords,
-			Map<String, RecordMetadata> existingRecordsMetadata,
-			Map<String, List<String>> recordParentMap) {
+	private void validateLegalConstraints(List<Record> inputRecords) {
 
 		Set<String> legalTags = this.getLegalTags(inputRecords);
 		Set<String> ordc = this.getORDC(inputRecords);
 
 		this.legalService.validateLegalTags(legalTags);
 		this.legalService.validateOtherRelevantDataCountries(ordc);
+	}
+
+	private void populateLegalInfoFromParents(List<Record> inputRecords,
+										  Map<String, RecordMetadata> existingRecordsMetadata,
+										  Map<String, List<String>> recordParentMap) {
+
 		this.legalService.populateLegalInfoFromParents(inputRecords, existingRecordsMetadata, recordParentMap);
 
 		for (Record record : inputRecords) {
@@ -326,5 +364,25 @@ public class IngestionServiceImpl implements IngestionService {
 		}
 
 		return ordc;
+	}
+
+	private void validateUserAccessAndCompliancePolicyConstraints(
+			List<Record> inputRecords, Map<String, RecordMetadata> existingRecords,  Map<String, List<String>> recordParentMap) {
+		this.populateLegalInfoFromParents(inputRecords, existingRecords, recordParentMap);
+		for (Record record : inputRecords) {
+			RecordMetadata recordMetadata;
+			OperationType operationType;
+			if (existingRecords.containsKey(record.getId())) {
+				recordMetadata = existingRecords.get(record.getId());
+				operationType = OperationType.update;
+			} else {
+				recordMetadata = new RecordMetadata(record);
+				operationType = OperationType.create;
+			}
+			if (!this.policyService.evaluateStorageDataAuthorizationPolicy(recordMetadata, operationType)) {
+				throw new AppException(HttpStatus.SC_FORBIDDEN,
+						"User Unauthorized", "User is not authorized to create or update records.", String.format("User does not have required access to record %s", record.getId()));
+			}
+		}
 	}
 }
