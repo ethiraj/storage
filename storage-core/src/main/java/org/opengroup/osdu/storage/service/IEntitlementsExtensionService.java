@@ -1,4 +1,4 @@
-// Copyright 2017-2019, Schlumberger
+// Copyright © Schlumberger
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,9 +14,11 @@
 
 package org.opengroup.osdu.storage.service;
 
-public interface RecordService {
+import org.opengroup.osdu.core.common.entitlements.IEntitlementsAndCacheService;
+import org.opengroup.osdu.core.common.model.entitlements.Groups;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 
-	void purgeRecord(String recordId);
+public interface IEntitlementsExtensionService extends IEntitlementsAndCacheService {
 
-	void deleteRecord(String recordId, String user);
+    Groups getGroups(DpsHeaders headers);
 }

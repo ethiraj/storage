@@ -1,4 +1,4 @@
-// Copyright 2017-2019, Schlumberger
+// Copyright © Schlumberger
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,11 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.storage.service;
+package org.opengroup.osdu.storage.policy.cache;
 
-public interface RecordService {
+import org.opengroup.osdu.core.common.cache.VmCache;
+import org.opengroup.osdu.core.common.model.policy.PolicyStatus;
+import org.springframework.stereotype.Component;
 
-	void purgeRecord(String recordId);
+import javax.inject.Named;
 
-	void deleteRecord(String recordId, String user);
+@Component
+public class PolicyCache extends VmCache<String, PolicyStatus> {
+
+    public PolicyCache(final @Named("POLICY_CACHE_TIMEOUT") int timeout) {
+        super(timeout * 60, 1000);
+    }
+
+    public boolean containsKey(final String key) {
+        return this.get(key) != null;
+    }
 }

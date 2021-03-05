@@ -1,4 +1,4 @@
-// Copyright 2017-2019, Schlumberger
+// Copyright © Schlumberger
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,11 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.storage.service;
+package org.opengroup.osdu.storage.policy.model;
 
-public interface RecordService {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.opengroup.osdu.core.common.model.storage.Record;
 
-	void purgeRecord(String recordId);
+import java.util.List;
 
-	void deleteRecord(String recordId, String user);
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class StoragePolicy {
+
+    private Enum operation;
+
+    private List<String> groups;
+
+    private Record record;
 }
