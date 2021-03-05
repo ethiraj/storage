@@ -26,11 +26,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class EntitlementsClientFactory extends AbstractFactoryBean<IEntitlementsFactory> {
 
-	@Value("${AUTHORIZE_API}")
-	private String AUTHORIZE_API;
+	//@Value("${AUTHORIZE_API}")
+	private String AUTHORIZE_API = "https://osdu-idcmvp.msft-osdu-test.org/entitlements/v1";
 
-	@Value("${AUTHORIZE_API_KEY:}")
-	private String AUTHORIZE_API_KEY;
+	//@Value("${AUTHORIZE_API_KEY:}")
+	private String AUTHORIZE_API_KEY ="asd";
 
 	@Autowired
 	private HttpResponseBodyMapper httpResponseBodyMapper;
