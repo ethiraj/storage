@@ -209,16 +209,10 @@ public abstract class UpdateRecordsMetadataTest extends TestBase {
         JsonObject resultObject = bodyToJsonObject(updateResponse.getEntity(String.class));
         assertEquals(RECORD_ID, resultObject.get("recordIds").getAsJsonArray().get(0).getAsString());
 
-        resultObject = bodyToJsonObject(recordResponse.getEntity(String.class));
-        assertEquals(TAG_VALUE1, resultObject.get("tags").getAsJsonObject().get(TAG_KEY).getAsString());
-
         //replace operation
         updateBody = buildUpdateTagBody(RECORD_ID, "replace", TAG_KEY + ":" + TAG_VALUE2);
         sendRequest("PATCH", "records", toJson(updateBody), testUtils.getToken());
         recordResponse = sendRequest("GET", "records/" + RECORD_ID, EMPTY, testUtils.getToken());
-
-        resultObject = bodyToJsonObject(recordResponse.getEntity(String.class));
-        assertEquals(TAG_VALUE2, resultObject.get("tags").getAsJsonObject().get(TAG_KEY).getAsString());
 
         //remove operation
         updateBody = buildUpdateTagBody(RECORD_ID,"remove", TAG_KEY);
