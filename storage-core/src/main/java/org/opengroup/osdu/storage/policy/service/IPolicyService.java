@@ -1,4 +1,4 @@
-// Copyright 2017-2019, Schlumberger
+// Copyright © Schlumberger
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,11 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.storage.service;
+package org.opengroup.osdu.storage.policy.service;
 
-public interface RecordService {
+import org.opengroup.osdu.core.common.model.indexer.OperationType;
+import org.opengroup.osdu.core.common.model.policy.PolicyRequest;
+import org.opengroup.osdu.core.common.model.policy.PolicyResponse;
+import org.opengroup.osdu.core.common.model.storage.RecordMetadata;
 
-	void purgeRecord(String recordId);
+public interface IPolicyService {
 
-	void deleteRecord(String recordId, String user);
+    PolicyResponse evaluatePolicy(PolicyRequest policy);
+
+    boolean evaluateStorageDataAuthorizationPolicy(RecordMetadata recordMetadata, OperationType operationType);
 }

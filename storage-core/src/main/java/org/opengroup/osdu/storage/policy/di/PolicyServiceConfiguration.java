@@ -1,4 +1,4 @@
-// Copyright 2017-2019, Schlumberger
+// Copyright © Schlumberger
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,11 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.storage.service;
+package org.opengroup.osdu.storage.policy.di;
 
-public interface RecordService {
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
-	void purgeRecord(String recordId);
+@Configuration
+@Getter
+@Lazy
+public class PolicyServiceConfiguration {
 
-	void deleteRecord(String recordId, String user);
+    @Value("${POLICY_ID:storage}")
+    private String policyId;
+
+    @Value("${POLICY_API}")
+    private String policyApiEndpoint;
 }
