@@ -84,8 +84,6 @@ public class StorageFilter implements Filter {
 		if (httpRequest.getMethod().equalsIgnoreCase(OPTIONS_STRING)) {
 			httpResponse.setStatus(HttpStatus.SC_OK);
 		}
-
-		chain.doFilter(request, response);
 	}
 
 	@Override
