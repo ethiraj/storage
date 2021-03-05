@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -26,13 +27,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import com.google.common.base.Strings;
 import org.apache.http.HttpStatus;
-import org.opengroup.osdu.core.common.http.ResponseHeaders;
+import org.opengroup.osdu.core.common.http.ResponseHeadersFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 
 @Component
 public class StorageFilter implements Filter {
@@ -43,6 +44,12 @@ public class StorageFilter implements Filter {
 
 	@Autowired
 	private DpsHeaders dpsHeaders;
+
+	// defaults to * for any front-end, string must be comma-delimited if more than one domain
+	@Value("${ACCESS_CONTROL_ALLOW_ORIGIN_DOMAINS:*}")
+	String ACCESS_CONTROL_ALLOW_ORIGIN_DOMAINS;
+
+	private ResponseHeadersFactory responseHeadersFactory = new ResponseHeadersFactory();
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -64,11 +71,11 @@ public class StorageFilter implements Filter {
 
 		this.dpsHeaders.addCorrelationIdIfMissing();
 
-		Map<String, List<Object>> standardHeaders = ResponseHeaders.STANDARD_RESPONSE_HEADERS;
-		for (Map.Entry<String, List<Object>> header : standardHeaders.entrySet()) {
-			httpResponse.addHeader(header.getKey(), header.getValue().toString());
+		Map<String, String> responseHeaders = responseHeadersFactory.getResponseHeaders(ACCESS_CONTROL_ALLOW_ORIGIN_DOMAINS);
+		for(Map.Entry<String, String> header : responseHeaders.entrySet()){
+			httpResponse.setHeader(header.getKey(), header.getValue());
 		}
-		httpResponse.addHeader(DpsHeaders.CORRELATION_ID, this.dpsHeaders.getCorrelationId());
+		httpResponse.setHeader(DpsHeaders.CORRELATION_ID, this.dpsHeaders.getCorrelationId());
 
 		chain.doFilter(request, response);
 
@@ -77,6 +84,8 @@ public class StorageFilter implements Filter {
 		if (httpRequest.getMethod().equalsIgnoreCase(OPTIONS_STRING)) {
 			httpResponse.setStatus(HttpStatus.SC_OK);
 		}
+
+		chain.doFilter(request, response);
 	}
 
 	@Override

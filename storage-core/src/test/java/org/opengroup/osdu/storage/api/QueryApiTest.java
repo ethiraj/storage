@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.apache.http.HttpStatus;
@@ -28,11 +29,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import com.google.common.collect.Lists;
+import org.mockito.Spy;
 import org.opengroup.osdu.core.common.model.storage.MultiRecordIds;
 import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
 import org.opengroup.osdu.core.common.model.storage.StorageRole;
 import org.opengroup.osdu.core.common.model.storage.DatastoreQueryResult;
+import org.opengroup.osdu.core.common.model.storage.*;
 import org.opengroup.osdu.storage.service.BatchService;
+import org.opengroup.osdu.storage.util.EncodeDecode;
 import org.springframework.http.ResponseEntity;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,6 +47,9 @@ public class QueryApiTest {
     @Mock
     private BatchService batchService;
 
+    @Spy
+    private EncodeDecode encodeDecode;
+
     @InjectMocks
     private QueryApi sut;
 
@@ -52,9 +59,16 @@ public class QueryApiTest {
         input.setRecords(Lists.newArrayList("id1", "id2"));
 
         MultiRecordInfo output = new MultiRecordInfo();
-        List<String> validRecords = new ArrayList<String>();
-        validRecords.add("id1");
-        validRecords.add("id2");
+        List<Record> validRecords = new ArrayList<>();
+
+        Record record1 = new Record();
+        record1.setId("id1");
+
+        Record record2 = new Record();
+        record2.setId("id2");
+
+        validRecords.add(record1);
+        validRecords.add(record2);
         output.setRecords(validRecords);
 
         when(this.batchService.getMultipleRecords(input)).thenReturn(output);
@@ -63,20 +77,18 @@ public class QueryApiTest {
 
         MultiRecordInfo records = (MultiRecordInfo) response.getBody();
 
-        List<String> returnedIds = new ArrayList<String>();
-        records.getRecords().forEach(r -> returnedIds.add(r));
-
         assertEquals(HttpStatus.SC_OK, response.getStatusCodeValue());
         assertNull(records.getInvalidRecords());
         assertNull(records.getRetryRecords());
         assertEquals(2, records.getRecords().size());
-        assertTrue(returnedIds.contains("id1"));
-        assertTrue(returnedIds.contains("id2"));
+        assertTrue(records.getRecords().get(0).toString().contains("id1"));
+        assertTrue(records.getRecords().get(1).toString().contains("id2"));
     }
 
     @Test
     public void should_returnHttp200_when_gettingAllKindsSuccessfully() {
         final String CURSOR = "any cursor";
+        final String ENCODED_CURSOR = Base64.getEncoder().encodeToString("any cursor".getBytes());
         final int LIMIT = 10;
 
         List<String> kinds = new ArrayList<String>();
@@ -90,7 +102,7 @@ public class QueryApiTest {
 
         when(this.batchService.getAllKinds(CURSOR, LIMIT)).thenReturn(allKinds);
 
-        ResponseEntity response = this.sut.getKinds(CURSOR, LIMIT);
+        ResponseEntity response = this.sut.getKinds(ENCODED_CURSOR, LIMIT);
 
         DatastoreQueryResult allKindsResult = (DatastoreQueryResult) response.getBody();
 
@@ -104,6 +116,8 @@ public class QueryApiTest {
     @Test
     public void should_returnHttp200_when_gettingAllRecordsFromKindSuccessfully() {
         final String CURSOR = "any cursor";
+        final String ENCODED_CURSOR = Base64.getEncoder().encodeToString("any cursor".getBytes());
+
         final String KIND = "any kind";
         final int LIMIT = 10;
 
@@ -118,7 +132,7 @@ public class QueryApiTest {
 
         when(this.batchService.getAllRecords(CURSOR, KIND, LIMIT)).thenReturn(allRecords);
 
-        ResponseEntity response = this.sut.getAllRecords(CURSOR, LIMIT, KIND);
+        ResponseEntity response = this.sut.getAllRecords(ENCODED_CURSOR, LIMIT, KIND);
 
         DatastoreQueryResult allRecordIds = (DatastoreQueryResult) response.getBody();
 
