@@ -75,10 +75,6 @@ public class CloudStorageImpl implements ICloudStorage {
     @Named("STORAGE_CONTAINER_NAME")
     private String containerName;
 
-    private int numWrite;
-    
-    private int avgSoFar;
-
     @Override
     public void write(RecordProcessing... recordsProcessing) {
         validateRecordAcls(recordsProcessing);
