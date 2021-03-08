@@ -83,26 +83,11 @@ public class CloudStorageImpl implements ICloudStorage {
     public void write(RecordProcessing... recordsProcessing) {
         validateRecordAcls(recordsProcessing);
         String dataPartitionId = headers.getPartitionId();
-        Date date = new Date();
-        List<Mono<BlockBlobItem>> list = Stream.of(recordsProcessing).map(rp -> this.writeBlobThreadAsync(rp, dataPartitionId)).collect(Collectors.toList());
-        Mono.when(list).block();
-        /*List<Callable<Boolean>> tasks = new ArrayList<>();
-        String dataPartitionId = headers.getPartitionId();
-        for (RecordProcessing rp : recordsProcessing) {
-            tasks.add(() -> this.writeBlobThread(rp, dataPartitionId));
-        }
-
-        try {
-            for (Future<Boolean> result : this.threadPool.invokeAll(tasks)) {
-                result.get();
-            }
-            MDC.put("record-count",String.valueOf(tasks.size()));
-        } catch (InterruptedException | ExecutionException e) {
-            throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Error during record ingestion",
-                    "An unexpected error on writing the record has occurred", e);
-        }*/
-
-        //Flux.just(recordsProcessing).flatMap(rp -> this.writeBlobThreadAsync(rp, dataPartitionId)).then().block();
+        List<Mono<BlockBlobItem>> uploadList = Stream.of(recordsProcessing)
+            .map(rp -> this.writeBlobThreadAsync(rp, dataPartitionId))
+            .collect(Collectors.toList());
+        Mono.when(uploadList).block();
+            MDC.put("record-count",String.valueOf(uploadList.size()));
     }   
 
     @Override
