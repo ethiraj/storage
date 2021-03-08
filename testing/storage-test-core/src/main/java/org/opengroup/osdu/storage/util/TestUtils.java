@@ -134,7 +134,6 @@ public abstract class TestUtils {
         if (classOfT == String.class) {
             return (T) json;
         }
-        System.out.println("THIS IS THE JSON: " + json);
         Gson gson = new Gson();
         return gson.fromJson(json, classOfT);
     }
