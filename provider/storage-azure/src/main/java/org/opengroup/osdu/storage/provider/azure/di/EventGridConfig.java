@@ -35,7 +35,7 @@ public class EventGridConfig {
 
     public String getTopicName() {
         if (topicName == null || topicName.isEmpty()) {
-            return "recordsTopic";
+            return "recordstopic";
         }
         return topicName;
     }
