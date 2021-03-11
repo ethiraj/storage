@@ -17,23 +17,30 @@ package org.opengroup.osdu.storage.provider.azure.di;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-import javax.validation.constraints.NotEmpty;
-
 @Configuration
 public class EventGridConfig {
 
-    @Value("#{new Boolean('${azure.publishToEventGrid:true}')}")
     private boolean publishToEventGridEnabled;
 
     // The Event Grid Event can be a maximum of 1MB. The batch size manipulation will impact the costing.
     // https://docs.microsoft.com/en-us/azure/event-grid/event-schema#:~:text=Event%20sources%20send%20events%20to,is%20limited%20to%201%20MB.
-    @NotEmpty
-    @Value("#{new Integer('${azure.eventGridBatchSize:10}')}")
     private Integer eventGridBatchSize;
 
-    @NotEmpty
-    @Value("${azure.eventGrid.topicName:recordstopic}")
     private String topicName;
+
+    public EventGridConfig(@Value("#{new Boolean('${azure.publishToEventGrid}')}") boolean publish,
+                           @Value("#{new Integer('${azure.eventGridBatchSize}')}") int batchSize,
+                           @Value("${azure.eventGrid.topicName}") String topicName) {
+        if (publish) {
+            if ((topicName.isEmpty() || batchSize <= 0)) {
+                throw new RuntimeException("Missing EventGrid Configuration",
+                        new Throwable("Please validate the value for event grid topic name and batch size."));
+            }
+        }
+        this.publishToEventGridEnabled = publish;
+        this.eventGridBatchSize = batchSize;
+        this.topicName = topicName;
+    }
 
     public boolean isPublishingToEventGridEnabled() {
         return publishToEventGridEnabled;
