@@ -33,8 +33,7 @@ public class EventGridConfig {
                            @Value("${azure.eventGrid.topicName}") String topicName) {
         if (publish) {
             if ((topicName.isEmpty() || batchSize <= 0)) {
-                throw new RuntimeException("Missing EventGrid Configuration",
-                        new Throwable("Please validate the value for event grid topic name and batch size."));
+                throw new RuntimeException("Missing EventGrid Configuration");
             }
         }
         this.publishToEventGridEnabled = publish;
