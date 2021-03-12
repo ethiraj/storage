@@ -208,19 +208,6 @@ public class RecordUtilImplTest {
     assertEquals(new_legaltags, updatedMetadata.getLegal().getLegaltags());
   }
 
- /* @Test
-  public void updateRecordMetaDataForPatchOperations_shouldUpdateForNonTags_withReplaceOperation() {
-    RecordMetadata recordMetadata = buildRecordMetadata();
-    PatchOperation patchOperation = buildPatchOperation(PATH_ACL_VIEWERS, PATCH_OPERATION_REPLACE,
-        ACL_VIEWER_NEW);
-
-    RecordMetadata updatedMetadata = recordUtil
-        .updateRecordMetaDataForPatchOperations(recordMetadata, singletonList(patchOperation), TEST_USER,
-            TIMESTAMP);
-
-    assertEquals(ACL_VIEWER_NEW, updatedMetadata.getAcl().getViewers()[0]);
-  }*/
-
   private PatchOperation buildPatchOperation(String path, String operation, String... value) {
     return PatchOperation.builder().path(path).op(operation).value(value).build();
   }

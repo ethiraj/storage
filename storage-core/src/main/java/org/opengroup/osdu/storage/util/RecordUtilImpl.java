@@ -45,10 +45,6 @@ public class RecordUtilImpl implements RecordUtil {
   private static final String LEGAL = "legal";
   private static final String LEGAL_TAGS = "legaltags";
 
-  //acl- delete later
-  private static final String ACL = "acl";
-  private static final String VIEWERS = "viewers";
-  private static final String OWNERS = "owners";
 
   private final TenantInfo tenant;
   private final Gson gson;
@@ -98,12 +94,6 @@ public class RecordUtilImpl implements RecordUtil {
 
     legalOperation = ops.stream()
             .filter(operation -> operation.getPath().startsWith("/legal"))
-            .collect(toList());
-    recordMetadata = updateMetadataForLegalAndAcl(recordMetadata, legalOperation);
-
-    //delete later
-    legalOperation = ops.stream()
-            .filter(operation -> operation.getPath().startsWith("/acl"))
             .collect(toList());
     recordMetadata = updateMetadataForLegalAndAcl(recordMetadata, legalOperation);
 
@@ -172,21 +162,9 @@ public class RecordUtilImpl implements RecordUtil {
   }
 
   private void setOriginalAclAndLegal(String[] pathComponents, JsonObject outer, JsonArray values) {
-        /*if (pathComponents[1].equalsIgnoreCase(LEGAL))  {
+        if (pathComponents[1].equalsIgnoreCase(LEGAL))  {
             values.addAll(gson.fromJson(outer.get(LEGAL_TAGS), JsonArray.class));
-        }*/
-    //acl-remove later
-    if (pathComponents[1].equalsIgnoreCase(ACL)) {
-
-      if (pathComponents[2].equalsIgnoreCase(VIEWERS)) {
-        values.addAll(gson.fromJson(outer.get(VIEWERS), JsonArray.class));
-      } else if (pathComponents[2].equalsIgnoreCase(OWNERS)) {
-        values.addAll(gson.fromJson(outer.get(OWNERS), JsonArray.class));
-      }
-
-    } else if (pathComponents[1].equalsIgnoreCase(LEGAL))  {
-      values.addAll(gson.fromJson(outer.get(LEGAL_TAGS), JsonArray.class));
-    }
+        }
   }
 
 
