@@ -80,7 +80,7 @@ osdu-gcp-test:
       --batch-mode
       --quiet
       -s $CI_PROJECT_DIR/.mvn/community-maven.settings.xml
-      -f $OSDU_GCP_TESTS_SUBDIR/pom.xml
+      -f $OSDU_GCP_TESTING_DIR/pom.xml
       > test-results.log
   artifacts:
     when: always
