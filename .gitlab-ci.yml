@@ -86,7 +86,7 @@ osdu-gcp-test:
     when: always
     paths:
       - test-results.log
-      - $OSDU_GCP_TESTS_SUBDIR/target/*/TEST-*.xml
+      - $OSDU_GCP_TESTING_DIR/target/*/TEST-*.xml
     reports:
       junit:
-        - $OSDU_GCP_TESTS_SUBDIR/target/*/TEST-*.xml
+        - $OSDU_GCP_TESTING_DIR/target/*/TEST-*.xml
