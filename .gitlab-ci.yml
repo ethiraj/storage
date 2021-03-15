@@ -44,14 +44,14 @@ include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/fossa.yml"
 
-  - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/gcp.yml"
+  # - project: "osdu/platform/ci-cd-pipelines"
+  #   file: "cloud-providers/gcp.yml"
 
-  - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/aws.yml"
+  # - project: "osdu/platform/ci-cd-pipelines"
+  #   file: "cloud-providers/aws.yml"
 
-  - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/ibm.yml"
+  # - project: "osdu/platform/ci-cd-pipelines"
+  #   file: "cloud-providers/ibm.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/osdu-gcp-cloudrun.yml"
@@ -59,11 +59,11 @@ include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/gitlab-ultimate.yml"
 
-  - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/azure.yml"
+  # - project: "osdu/platform/ci-cd-pipelines"
+  #   file: "cloud-providers/azure.yml"
 
-  - project: 'osdu/platform/ci-cd-pipelines'
-    file: 'cloud-providers/aws-mongodb.yml'
+  # - project: 'osdu/platform/ci-cd-pipelines'
+  #   file: 'cloud-providers/aws-mongodb.yml'
 
 # disable the eslint scanner
 # I think this is being generated from the presence of an HTML file, but there
