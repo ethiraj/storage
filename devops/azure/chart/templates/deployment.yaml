@@ -52,12 +52,12 @@ spec:
         # More info https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-application-availability
         readinessProbe:
           httpGet:
-            path: /actuator/health
-            port: 8081
+            path: /api/storage/v2/actuator/health
+            port: 80
         livenessProbe:
           httpGet:
-            path: /actuator/health
-            port: 8081
+            path: /api/storage/v2/actuator/health
+            port: 80
           initialDelaySeconds: 250
           periodSeconds: 10
         volumeMounts:
