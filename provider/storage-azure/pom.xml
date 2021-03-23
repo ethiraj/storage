@@ -47,7 +47,7 @@
             <dependency>
                 <groupId>org.opengroup.osdu</groupId>
                 <artifactId>core-lib-azure</artifactId>
-                <version>0.0.67</version>
+                <version>0.0.67-test</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -162,6 +162,11 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opengroup.osdu</groupId>
+            <artifactId>core-lib-azure</artifactId>
+            <version>0.0.67-test</version>
         </dependency>
     </dependencies>
 
