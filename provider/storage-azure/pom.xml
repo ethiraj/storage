@@ -163,11 +163,6 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.opengroup.osdu</groupId>
-            <artifactId>core-lib-azure</artifactId>
-            <version>0.0.67-test</version>
-        </dependency>
     </dependencies>
 
     <build>
