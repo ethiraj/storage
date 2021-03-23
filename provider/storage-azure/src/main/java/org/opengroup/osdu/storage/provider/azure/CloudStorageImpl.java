@@ -20,7 +20,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpStatus;
 
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
-import org.opengroup.osdu.azure.blobstorage.*;
+import org.opengroup.osdu.azure.blobstorage.AsyncBlobStore;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.entitlements.Acl;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -78,11 +78,7 @@ public class CloudStorageImpl implements ICloudStorage {
     @Autowired
     @Named("STORAGE_CONTAINER_NAME")
     private String containerName;
-
-    private int numWrite;
     
-    private int avgSoFar;
-
     @Override
     public void write(RecordProcessing... recordsProcessing) {
         validateRecordAcls(recordsProcessing);
