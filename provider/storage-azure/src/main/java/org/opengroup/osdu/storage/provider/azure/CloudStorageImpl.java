@@ -20,6 +20,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpStatus;
 
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import org.opengroup.osdu.azure.blobstorage.*;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.entitlements.Acl;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -67,6 +68,9 @@ public class CloudStorageImpl implements ICloudStorage {
 
     @Autowired
     private BlobStore blobStore;
+
+    @Autowired
+    private AsyncBlobStore asyncBlobStore;
 
     @Autowired
     private GroupsInfoRepository groupsInfoRepository;
@@ -173,7 +177,7 @@ public class CloudStorageImpl implements ICloudStorage {
         RecordMetadata rmd = rp.getRecordMetadata();
         String path = buildPath(rmd);
         String content = gson.toJson(rp.getRecordData());
-        return blobStore.writeToStorageContainerAsync(dataPartitionId, path, content, containerName);
+        return asyncBlobStore.writeToStorageContainer(dataPartitionId, path, content, containerName);
     }
 
 
