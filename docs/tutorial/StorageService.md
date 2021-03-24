@@ -556,10 +556,19 @@ Storage service can now ingest records of type [GeoJson](https://geojson.org/). 
 "data": {
   "WellName": "Data Platform Services - 51",
   "GeoShape": {
-    "type": "Point",
-    "coordinates": [
-      -105.01621,
-      39.57422
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -105.01621,
+            39.57422
+          ]
+        }
+      }
     ]
   }
 }
@@ -568,20 +577,29 @@ Storage service can now ingest records of type [GeoJson](https://geojson.org/). 
 "data": {
   "WellName": "Data Platform Services - 53",
   "GeoShape": {
-    "type": "LineString",
-    "coordinates": [
-      [
-        -101.744384,
-        39.32155
-      ],
-      [
-        -101.552124,
-        39.330048
-      ],
-      [
-        -101.403808,
-        39.330048
-      ]
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              -101.744384,
+              39.32155
+            ],
+            [
+              -101.552124,
+              39.330048
+            ],
+            [
+              -101.403808,
+              39.330048
+            ]
+          ]
+        }
+      }
     ]
   }
 }
@@ -590,30 +608,39 @@ Storage service can now ingest records of type [GeoJson](https://geojson.org/). 
 "data": {
   "WellName": "Data Platform Services - 55",
   "GeoShape": {
-    "type": "Polygon",
-    "coordinates": [
-      [
-        [
-          100,
-          0
-        ],
-        [
-          101,
-          0
-        ],
-        [
-          101,
-          1
-        ],
-        [
-          100,
-          1
-        ],
-        [
-          100,
-          0
-        ]
-      ]
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                100,
+                0
+              ],
+              [
+                101,
+                0
+              ],
+              [
+                101,
+                1
+              ],
+              [
+                100,
+                1
+              ],
+              [
+                100,
+                0
+              ]
+            ]
+          ]
+        }
+      }
     ]
   }
 }
