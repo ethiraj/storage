@@ -87,7 +87,7 @@ public class CloudStorageImpl implements ICloudStorage {
             .map(rp -> this.writeBlobThreadAsync(rp, dataPartitionId))
             .collect(Collectors.toList());
         Mono.when(uploadList).block();
-            MDC.put("record-count",String.valueOf(uploadList.size()));
+            MDC.put("record-count", String.valueOf(uploadList.size()));
     }   
 
     @Override
