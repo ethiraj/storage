@@ -74,7 +74,9 @@ public class CloudStorageImpl implements ICloudStorage {
 
     @Override
     public void write(RecordProcessing... recordsProcessing) {
-        validateRecordAcls(recordsProcessing);
+        // comment out validation for ACL check
+        // becauce the format of ACL groups, including the domain format has been validated in ingestion service layer, and this validation is validating ACL group against wrong database
+        //validateRecordAcls(recordsProcessing);
 
         List<Callable<Boolean>> tasks = new ArrayList<>();
         String dataPartitionId = headers.getPartitionId();
