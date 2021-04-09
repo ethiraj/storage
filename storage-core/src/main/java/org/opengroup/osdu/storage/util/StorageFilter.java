@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -85,7 +84,6 @@ public class StorageFilter implements Filter {
 		}
 
 		chain.doFilter(request, response);
-
 	}
 
 	@Override
