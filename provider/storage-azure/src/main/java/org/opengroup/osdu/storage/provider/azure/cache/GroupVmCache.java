@@ -1,4 +1,4 @@
-// Copyright 2017-2019, Schlumberger
+// Copyright © Microsoft Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.storage.util;
+package org.opengroup.osdu.storage.provider.azure.cache;
 
-import com.google.gson.Gson;
+import org.opengroup.osdu.core.common.model.entitlements.Groups;
+import org.opengroup.osdu.core.common.cache.VmCache;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 
-public abstract class TestBase {
+@Component
+@ConditionalOnProperty(value = "runtime.env.local", havingValue = "true")
+public class GroupVmCache extends VmCache<String, Groups> {
 
-	protected TestUtils	testUtils = null;
-	protected ConfigUtils configUtils = null;
-
-	public static final Gson GSON = new Gson();
-
-    public abstract void setup() throws Exception;
-
-    public abstract void tearDown() throws Exception;
-
+    public GroupVmCache() {
+        super(30, 1000);
+    }
 }
+

@@ -12,10 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.storage.DatastoreQueryResult;
+import org.opengroup.osdu.core.common.model.storage.RecordState;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.ibm.auth.ServiceCredentials;
 import org.opengroup.osdu.core.ibm.cloudant.IBMCloudantClientFactory;
 import org.opengroup.osdu.storage.provider.interfaces.IQueryRepository;
@@ -47,6 +50,9 @@ public class QueryRepositoryImpl implements IQueryRepository {
 	private Database dbSchema;
 	private Database dbRecords;
 	
+	@Inject
+	private TenantInfo tenant;
+	
 	@PostConstruct
     public void init() throws MalformedURLException{
 		
@@ -62,6 +68,12 @@ public class QueryRepositoryImpl implements IQueryRepository {
 	
     @Override
     public DatastoreQueryResult getAllKinds(Integer limit, String cursor) {
+		try {
+			tenant.getName();
+		} catch (Exception e) {
+			throw new AppException(HttpStatus.SC_UNAUTHORIZED, "not authorized", "not authorized");
+		}
+
         DatastoreQueryResult result = new DatastoreQueryResult();
         
         String initialId = validateCursor(cursor, dbSchema);
@@ -107,7 +119,7 @@ public class QueryRepositoryImpl implements IQueryRepository {
         }
                 
         QueryResult<RecordMetadataDoc> results = dbRecords.query(new QueryBuilder(
-        			and(eq("kind", kind), gte("_id", initialId))).
+        			and(eq("kind", kind), gte("_id", initialId), eq("status",RecordState.active.toString()))).
 				    sort(Sort.asc("_id")).
 				    fields("_id").
 				    limit(numRecords+1).
