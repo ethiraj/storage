@@ -81,7 +81,6 @@ public class DatastoreRecordsMetadataRepository implements IRecordsMetadataRepos
 
 	public static final String ANCESTRY = "ancestry";
 	public static final String ANCESTRY_PARENTS = "parents";
-	public static final String TAGS = "tags";
 
 	@Autowired
 	private IDatastoreFactory datastoreFactory;
