@@ -192,14 +192,6 @@ public class DatastoreRecordsMetadataRepository implements IRecordsMetadataRepos
 				recordMetadata.setModifyUser(entity.getString(MODIFY_USER));
 			}
 
-			if (entity.contains(TAGS)) {
-				String tags = entity.getString(TAGS);
-				if (!tags.isEmpty()) {
-					Map tagsMap = new Gson().fromJson(tags, Map.class);
-					recordMetadata.setTags(tagsMap);
-				}
-			}
-
 			if (entity.contains(MODIFY_TIME)) {
 				recordMetadata.setModifyTime(TimeUnit.SECONDS.toMillis(entity.getTimestamp(MODIFY_TIME).getSeconds())
 						+ TimeUnit.NANOSECONDS.toMillis(entity.getTimestamp(MODIFY_TIME).getNanos()));
