@@ -72,7 +72,6 @@ public class DatastoreRecordsMetadataRepository implements IRecordsMetadataRepos
 	public static final String MODIFY_USER = "modifyUser";
 	public static final String VERSION = "version";
 	public static final String STATUS = "status";
-	public static final String TAGS = "tags";
 
 	public static final String LEGAL = "legal";
 	public static final String LEGAL_TAGS = "legaltags";
@@ -81,6 +80,7 @@ public class DatastoreRecordsMetadataRepository implements IRecordsMetadataRepos
 
 	public static final String ANCESTRY = "ancestry";
 	public static final String ANCESTRY_PARENTS = "parents";
+	public static final String TAGS = "tags";
 
 	@Autowired
 	private IDatastoreFactory datastoreFactory;
@@ -179,7 +179,6 @@ public class DatastoreRecordsMetadataRepository implements IRecordsMetadataRepos
 					+ TimeUnit.NANOSECONDS.toMillis(entity.getTimestamp(CREATE_TIME).getNanos()));
 			recordMetadata.setAcl(this.buildAclObject(entity.getEntity(ACL)));
 			recordMetadata.setLegal(this.buildLegalObject(entity));
-			recordMetadata.setTags(this.buildTags(entity.getEntity(TAGS)));
 
 			if (entity.contains(ANCESTRY)) {
 				RecordAncestry ancestry = new RecordAncestry();
@@ -190,6 +189,14 @@ public class DatastoreRecordsMetadataRepository implements IRecordsMetadataRepos
 
 			if (entity.contains(MODIFY_USER)) {
 				recordMetadata.setModifyUser(entity.getString(MODIFY_USER));
+			}
+
+			if (entity.contains(TAGS)) {
+				String tags = entity.getString(TAGS);
+				if (!tags.isEmpty()) {
+					Map tagsMap = new Gson().fromJson(tags, Map.class);
+					recordMetadata.setTags(tagsMap);
+				}
 			}
 
 			if (entity.contains(MODIFY_TIME)) {
@@ -223,10 +230,6 @@ public class DatastoreRecordsMetadataRepository implements IRecordsMetadataRepos
 				.set(CREATE_USER, record.getUser())
 				.set(CREATE_TIME, Timestamp.ofTimeMicroseconds(TimeUnit.MILLISECONDS.toMicros(record.getCreateTime())))
 				.set(LEGAL, this.buildLegalEntity(record.getLegal()));
-
-		if (record.getTags() != null) {
-			entityBuilder.set(TAGS, this.buildTagEntity(record.getTags()));
-		}
 
 		if (record.getAncestry() != null && !Collections.isEmpty(record.getAncestry().getParents())) {
 			entityBuilder.set(ANCESTRY, FullEntity.newBuilder()
@@ -283,22 +286,6 @@ public class DatastoreRecordsMetadataRepository implements IRecordsMetadataRepos
 				.set(LEGAL_ORDC, this.buildEntityArray(legal.getOtherRelevantDataCountries()))
 				.set(LEGAL_COMPLIANCE, legal.getStatus().toString()).build();
 
-	}
-
-	private FullEntity<IncompleteKey> buildTagEntity(Map<String, String> tags) {
-		Builder<IncompleteKey> keyBuilder = FullEntity.newBuilder();
-		tags.entrySet().forEach(tag -> keyBuilder.set(tag.getKey(), tag.getValue()));
-		return keyBuilder.build();
-	}
-
-	private Map<String, String> buildTags(FullEntity<IncompleteKey> entity) {
-		if (entity != null) {
-			Map<String, String> tags = new HashMap<>();
-			entity.getProperties().entrySet().forEach(entityTag ->
-					tags.put(entityTag.getKey(), String.valueOf(entityTag.getValue())));
-			return tags;
-		}
-		return null;
 	}
 
 	private String[] buildObjectArray(List<Value<String>> list) {
