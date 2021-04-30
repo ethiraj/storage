@@ -14,12 +14,6 @@
 
 package org.opengroup.osdu.storage.legal;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.opengroup.osdu.storage.util.AzureTestUtils;
-
 public class TestPopulateLegalInfoFromParentRecords extends PopulateLegalInfoFromParentRecordsTests {
 
     private static final AzureTestUtils azureTestUtils = new AzureTestUtils();
