@@ -70,11 +70,6 @@
 				<scope>import</scope>
 			</dependency>
 			<dependency>
-				<groupId>com.nimbusds</groupId>
-				<artifactId>nimbus-jose-jwt</artifactId>
-				<version>${nimbusds.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
 				<version>${jackson.version}</version>
