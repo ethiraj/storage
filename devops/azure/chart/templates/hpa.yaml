@@ -31,3 +31,11 @@ spec:
         target:
           type: Utilization
           averageUtilization: 45
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        # Do not remove more than one pod in 5 minutes.
+        - type: Pods
+          value: 1
+          periodSeconds: 300
