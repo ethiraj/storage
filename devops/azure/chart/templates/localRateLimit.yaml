@@ -6,7 +6,7 @@ metadata:
 spec:
   workloadSelector:
     labels:
-      app: entitlements
+      app: {{ .Release.Name }}
   configPatches:
     - applyTo: HTTP_FILTER
       match:
