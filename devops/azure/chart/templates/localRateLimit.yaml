@@ -1,3 +1,4 @@
+{{- if .Values.envoyFilter.enabled }}
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
@@ -43,3 +44,4 @@ spec:
                   header:
                     key: x-local-rate-limit
                     value: 'true'
+{{- end }}
