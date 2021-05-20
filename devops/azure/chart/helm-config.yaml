@@ -15,3 +15,10 @@ image:
 
 policy:
   enabled: #{POLICY_ENABLED}#
+
+envoyFilter:
+  enabled: false
+  rateLimit:
+    max_tokens: 100
+    tokens_per_fill: 100
+    fill_interval: 60
