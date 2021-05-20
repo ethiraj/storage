@@ -12,7 +12,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-{{ if .Values.envoyFilter.enabled }}
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
@@ -58,4 +57,3 @@ spec:
                   header:
                     key: x-local-rate-limit
                     value: 'true'
-{{ end }}
