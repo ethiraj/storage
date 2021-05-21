@@ -26,13 +26,18 @@ import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.legal.LegalCompliance;
 import org.opengroup.osdu.core.common.model.storage.RecordMetadata;
+import org.opengroup.osdu.storage.provider.azure.DistinctKinds;
 import org.opengroup.osdu.storage.provider.azure.RecordMetadataDoc;
+import org.opengroup.osdu.storage.provider.azure.SchemaDoc;
 import org.opengroup.osdu.storage.provider.azure.di.AzureBootstrapConfig;
 import org.opengroup.osdu.storage.provider.azure.di.CosmosContainerConfig;
+import org.opengroup.osdu.storage.provider.azure.generator.FindQuerySpecGenerator;
+import org.opengroup.osdu.storage.provider.azure.query.CosmosStoreQuery;
 import org.opengroup.osdu.storage.provider.interfaces.IRecordsMetadataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
@@ -179,6 +184,7 @@ public class RecordMetadataRepository extends SimpleCosmosStoreRepository<Record
         CosmosQueryRequestOptions options = new CosmosQueryRequestOptions();
         return this.queryItems(headers.getPartitionId(), cosmosDBName, recordMetadataCollection, query, options);
     }
+
 
     public Page<RecordMetadataDoc> findByMetadata_kindAndMetadata_status(String kind, String status, Pageable pageable) {
         Assert.notNull(kind, "kind must not be null");

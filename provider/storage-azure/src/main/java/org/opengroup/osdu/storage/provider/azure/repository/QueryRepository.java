@@ -15,12 +15,15 @@
 package org.opengroup.osdu.storage.provider.azure.repository;
 
 import com.azure.cosmos.CosmosException;
+import com.azure.cosmos.models.CosmosQueryRequestOptions;
+import com.azure.cosmos.models.FeedResponse;
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.azure.query.CosmosStorePageRequest;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.storage.DatastoreQueryResult;
 import org.opengroup.osdu.core.common.model.storage.RecordState;
+import org.opengroup.osdu.storage.provider.azure.DistinctKinds;
 import org.opengroup.osdu.storage.provider.azure.RecordMetadataDoc;
 import org.opengroup.osdu.storage.provider.azure.SchemaDoc;
 import org.opengroup.osdu.storage.provider.interfaces.IQueryRepository;
@@ -41,34 +44,84 @@ public class QueryRepository implements IQueryRepository {
     private RecordMetadataRepository record;
 
     @Autowired
+    private DistinctKindsRepository distinctKindsRepository;
+
+    @Autowired
     private SchemaRepository schema;
 
     @Autowired
     private JaxRsDpsLog logger;
 
+ //   @Override
+//   public DatastoreQueryResult getAllKinds(Integer limit, String cursor) {
+//
+//        boolean paginated  = false;
+//
+//        int numRecords = PAGE_SIZE;
+//        if (limit != null) {
+//            numRecords = limit > 0 ? limit : PAGE_SIZE;
+//            paginated = true;
+//        }
+//
+//        if (cursor != null && !cursor.isEmpty()) {
+//            paginated = true;
+//        }
+//
+//        Sort sort = Sort.by(Sort.Direction.ASC, "kind");
+//        DatastoreQueryResult dqr = new DatastoreQueryResult();
+//        List<String> kinds = new ArrayList();
+//        Iterable<SchemaDoc> docs;
+//
+//        try {
+//            if (paginated) {
+//                final Page<SchemaDoc> docPage = schema.findAll(CosmosStorePageRequest.of(0, numRecords, cursor, sort));
+//                Pageable pageable = docPage.getPageable();
+//                String continuation = null;
+//                if (pageable instanceof CosmosStorePageRequest) {
+//                    continuation = ((CosmosStorePageRequest) pageable).getRequestContinuation();
+//                }
+//                dqr.setCursor(continuation);
+//                docs = docPage.getContent();
+//            } else {
+//                docs = schema.findAll(sort);
+//            }
+//            docs.forEach(
+//                    d -> kinds.add(d.getKind()));
+//            dqr.setResults(kinds);
+//        } catch (CosmosException e) {
+//            if (e.getStatusCode() == HttpStatus.SC_BAD_REQUEST && e.getMessage().contains("INVALID JSON in continuation token"))
+//                throw this.getInvalidCursorException();
+//            else
+//                throw e;
+//        } catch (Exception e) {
+//            throw e;
+//        }
+//
+//        return dqr;
+//
+//    }
+
     @Override
     public DatastoreQueryResult getAllKinds(Integer limit, String cursor) {
 
         boolean paginated  = false;
-
         int numRecords = PAGE_SIZE;
         if (limit != null) {
             numRecords = limit > 0 ? limit : PAGE_SIZE;
             paginated = true;
         }
-
         if (cursor != null && !cursor.isEmpty()) {
             paginated = true;
         }
 
-        Sort sort = Sort.by(Sort.Direction.ASC, "kind");
+        Sort sort = Sort.by(Sort.Direction.ASC, "metadata.kind");
         DatastoreQueryResult dqr = new DatastoreQueryResult();
         List<String> kinds = new ArrayList();
-        Iterable<SchemaDoc> docs;
+        Iterable<DistinctKinds> docs;
 
         try {
             if (paginated) {
-                final Page<SchemaDoc> docPage = schema.findAll(CosmosStorePageRequest.of(0, numRecords, cursor, sort));
+                final Page<DistinctKinds> docPage = distinctKindsRepository.findAllDistinctKinds(CosmosStorePageRequest.of(0, numRecords, cursor, sort));
                 Pageable pageable = docPage.getPageable();
                 String continuation = null;
                 if (pageable instanceof CosmosStorePageRequest) {
@@ -76,8 +129,10 @@ public class QueryRepository implements IQueryRepository {
                 }
                 dqr.setCursor(continuation);
                 docs = docPage.getContent();
-            } else {
-                docs = schema.findAll(sort);
+
+            }else {
+                docs = distinctKindsRepository.findAllDistinctKinds();
+
             }
             docs.forEach(
                     d -> kinds.add(d.getKind()));
@@ -92,7 +147,6 @@ public class QueryRepository implements IQueryRepository {
         }
 
         return dqr;
-
     }
 
     @Override
