@@ -1,29 +1,32 @@
 package org.opengroup.osdu.storage.provider.azure.service;
 
+import org.apache.http.HttpStatus;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.core.common.model.storage.TransferInfo;
-import org.opengroup.osdu.storage.provider.azure.util.RecordIdValidator;
 import org.opengroup.osdu.storage.service.IngestionServiceImpl;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
+import java.util.Objects;
 
 @Service
 @Primary
 public class IngestionServiceAzureImpl extends IngestionServiceImpl {
-
-    private final RecordIdValidator recordIdValidator;
-
-    public IngestionServiceAzureImpl(RecordIdValidator recordIdValidator) {
-        this.recordIdValidator = recordIdValidator;
-    }
-
     @Override
     public TransferInfo createUpdateRecords(boolean skipDupes, List<Record> inputRecords, String user) {
-        recordIdValidator.validateIds(inputRecords.stream().map(Record::getId).collect(toList()));
+        this.validateIds(inputRecords);
         return super.createUpdateRecords(skipDupes, inputRecords, user);
+    }
+
+    private void validateIds(List<Record> inputRecords) {
+        if (inputRecords.stream()
+                .map(Record::getId)
+                .filter(Objects::nonNull)
+                .anyMatch(id -> id.length() > 100)) {
+            String msg = "RecordId values which are exceeded 100 symbols temporarily not allowed";
+            throw new AppException(HttpStatus.SC_BAD_REQUEST, "Invalid id", msg);
+        }
     }
 }
