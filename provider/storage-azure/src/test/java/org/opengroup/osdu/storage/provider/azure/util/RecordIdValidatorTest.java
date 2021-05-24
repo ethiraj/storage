@@ -42,9 +42,7 @@ public class RecordIdValidatorTest {
                 AppException appException = (AppException) o;
                 AppError error = appException.getError();
 
-                return error.getCode() == 400 &&
-                        error.getMessage().equals(message) &&
-                        error.getReason().equals(reason);
+                return error.getMessage().equals(message) && error.getReason().equals(reason);
             }
 
             @Override
