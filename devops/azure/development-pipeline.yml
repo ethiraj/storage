@@ -79,6 +79,7 @@ stages:
       testCoreMavenOptions: '--settings $(System.DefaultWorkingDirectory)/drop/deploy/testing/maven/settings.xml'
       skipDeploy: ${{ variables.SKIP_DEPLOY }}
       skipTest: ${{ variables.SKIP_TESTS }}
+      mavenPublishJUnitResults: true
       providers:
         -  name: Azure
            environments: ['dev']
