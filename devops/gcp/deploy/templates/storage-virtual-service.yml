@@ -11,7 +11,7 @@ spec:
   http:
     - match:
         - uri:
-            prefix: "/api/legal"
+            prefix: "/api/storage"
       route:
         - destination:
             port:
