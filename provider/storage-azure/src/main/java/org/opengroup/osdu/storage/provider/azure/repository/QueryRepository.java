@@ -130,9 +130,8 @@ public class QueryRepository implements IQueryRepository {
                 dqr.setCursor(continuation);
                 docs = docPage.getContent();
 
-            }else {
+            } else {
                 docs = distinctKindsRepository.findAllDistinctKinds();
-
             }
             docs.forEach(
                     d -> kinds.add(d.getKind()));

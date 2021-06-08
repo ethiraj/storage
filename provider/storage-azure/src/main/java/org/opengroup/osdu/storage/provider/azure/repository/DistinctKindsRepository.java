@@ -46,14 +46,14 @@ public class DistinctKindsRepository extends SimpleCosmosStoreRepository<Distinc
         return this.queryItems(headers.getPartitionId(), cosmosDBName, recordMetadataCollection, query, options);
     }
 
-    public Page<DistinctKinds>  findAllDistinctKinds(Pageable pageable) {
+    public Page<DistinctKinds> findAllDistinctKinds(Pageable pageable) {
         SqlQuerySpec query = findAllDistinctKinds_Query();
-        return  this.find(pageable, headers.getPartitionId(), cosmosDBName, recordMetadataCollection, query);
+        return this.find(pageable, headers.getPartitionId(), cosmosDBName, recordMetadataCollection, query);
 
     }
 
     private static SqlQuerySpec findAllDistinctKinds_Query() {
-        String queryText = String.format("SELECT distinct c.metadata.kind FROM StorageRecord c");
+        String queryText = String.format("SELECT distinct c.metadata.kind FROM c");
         SqlQuerySpec query = new SqlQuerySpec(queryText);
         return query;
     }
