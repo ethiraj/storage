@@ -57,11 +57,9 @@ include:
     file: "cloud-providers/ibm.yml"
 
   - project: 'osdu/platform/ci-cd-pipelines'
-    ref:  "vladislav_shishko-master-patch-53860"
     file: 'cloud-providers/osdu-gcp-cloudrun.yml'
 
   - project: 'osdu/platform/ci-cd-pipelines'
-    ref: "vladislav_shishko-master-patch-53860"
     file: 'publishing/pages.yml'
 
   - project: "osdu/platform/ci-cd-pipelines"
