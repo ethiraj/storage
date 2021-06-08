@@ -125,7 +125,7 @@ public class S3RecordClientTest {
         // arrange
         String expectedKeyName = recordsBucketName + "/" + recordMetadata.getId();
 
-        Mockito.doNothing().when(s3).deleteObject(Mockito.eq(recordsBucketName), Mockito.eq(expectedKeyName));
+//        Mockito.doNothing().when(s3).deleteObject(Mockito.eq(recordsBucketName), Mockito.eq(expectedKeyName));
 
         // act
         client.deleteRecord(recordMetadata);

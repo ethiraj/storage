@@ -14,110 +14,50 @@
 
 package org.opengroup.osdu.storage.provider.mongodb;
 
-import lombok.RequiredArgsConstructor;
-import lombok.val;
-import org.opengroup.osdu.core.aws.dynamodb.QueryPageResult;
-import org.opengroup.osdu.core.aws.mongodb.MongoDBHelper;
 import org.opengroup.osdu.core.common.model.legal.LegalCompliance;
 import org.opengroup.osdu.core.common.model.storage.RecordMetadata;
+import org.opengroup.osdu.core.mongodb.helper.RecordHelper;
 import org.opengroup.osdu.storage.provider.interfaces.IRecordsMetadataRepository;
-import org.opengroup.osdu.storage.provider.mongodb.util.mongodb.documents.LegalTagAssociationDocMongoDB;
-import org.opengroup.osdu.storage.provider.mongodb.util.mongodb.documents.RecordMetadataDocMongoDB;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.index.Index;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.PostConstruct;
 import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Repository
 public class RecordsMetadataRepositoryImplMongoDB implements IRecordsMetadataRepository<String> {
 
-    private final MongoDBHelper queryHelper;
+    private final RecordHelper recordHelper;
 
-    @PostConstruct
-    public void init() {
-        queryHelper.ensureIndex(LegalTagAssociationDocMongoDB.class, new Index().on("legalTag", Sort.Direction.ASC));
-        //TODO: research performance difference about moving RecordMetadataDocMongoDB indexes out from top level of document
-        queryHelper.ensureIndex(RecordMetadataDocMongoDB.class, new Index().on("kind", Sort.Direction.ASC));
-        queryHelper.ensureIndex(RecordMetadataDocMongoDB.class, new Index().on("status", Sort.Direction.ASC));
-        queryHelper.ensureIndex(RecordMetadataDocMongoDB.class, new Index().on("user", Sort.Direction.ASC));
+    public RecordsMetadataRepositoryImplMongoDB(RecordHelper recordHelper) {
+        this.recordHelper = recordHelper;
     }
 
-    /**
-     * Saves or updates entities in DB
-     */
     @Override
     public List<RecordMetadata> createOrUpdate(List<RecordMetadata> recordsMetadata) {
-        if (recordsMetadata == null) return null;
-        createLegalTagAssociations(recordsMetadata);
-
-        val recordDocs = recordsMetadata.stream()
-                .map(RecordMetadataDocMongoDB::new)
-                .collect(Collectors.toList());
-
-        // TODO Performance optimizations here
-        recordDocs.forEach(queryHelper::save);
-
+        recordHelper.save(recordsMetadata);
         return recordsMetadata;
     }
 
     @Override
     public void delete(String id) {
-        RecordMetadata rmd = get(id); // needed for authorization check
-        queryHelper.deleteByPrimaryKey(RecordMetadataDocMongoDB.class, id);
-        for (String legalTag : rmd.getLegal().getLegaltags()) {
-            deleteLegalTagAssociation(id, legalTag);
-        }
-    }
-
-    private List<RecordMetadataDocMongoDB> getByIds(Set<String> ids) {
-        Query legalTagQuery = new Query(Criteria.where("id").in(ids));
-        return queryHelper.getByQuery(legalTagQuery, RecordMetadataDocMongoDB.class);
+        recordHelper.delete(id);
     }
 
     @Override
     public RecordMetadata get(String id) {
-        RecordMetadataDocMongoDB doc = queryHelper.getById(id, RecordMetadataDocMongoDB.class);
-        if (doc == null) {
-            return null;
-        } else {
-            return doc.getMetadata();
-        }
+        return recordHelper.get(id);
     }
 
     @Override
     public Map<String, RecordMetadata> get(List<String> ids) {
-        return queryHelper.multiGetByField(ids, "id", RecordMetadataDocMongoDB.class)
-                .stream()
-                .collect(Collectors.toMap(RecordMetadataDocMongoDB::getId, RecordMetadataDocMongoDB::getMetadata));
+        return recordHelper.get(ids);
     }
 
     @Override
     public AbstractMap.SimpleEntry<String, List<RecordMetadata>> queryByLegalTagName(
             String legalTagName, int limit, String cursor) {
-
-        Query legalTagQuery = new Query(Criteria.where("legalTag").is(legalTagName));
-        QueryPageResult<LegalTagAssociationDocMongoDB> result = queryHelper.queryPage(LegalTagAssociationDocMongoDB.class,
-                legalTagQuery, "recordIdLegalTag", cursor, limit);
-
-        Set<String> associatedRecordIds = new HashSet<>();
-        result.results.forEach(doc -> associatedRecordIds.add(doc.getRecordId())); // extract the Kinds from the SchemaDocs
-
-        List<RecordMetadataDocMongoDB> docList = getByIds(associatedRecordIds);
-        List<RecordMetadata> associatedRecords = docList.stream().map(RecordMetadataDocMongoDB::getMetadata).collect(Collectors.toList());
-
-        return new AbstractMap.SimpleEntry<>(result.cursor, associatedRecords);
+        return recordHelper.queryByLegalTagName(legalTagName, limit, cursor);
     }
 
     @Override
@@ -125,36 +65,4 @@ public class RecordsMetadataRepositoryImplMongoDB implements IRecordsMetadataRep
         return null;
     }
 
-    private void saveLegalTagAssociation(String recordId, Set<String> legalTags) {
-        for (String legalTag : legalTags) {
-            LegalTagAssociationDocMongoDB doc = new LegalTagAssociationDocMongoDB();
-            doc.setLegalTag(legalTag);
-            doc.setRecordId(recordId);
-            doc.setRecordIdLegalTag(String.format("%s:%s", recordId, legalTag));
-            // TODO Do this async
-            queryHelper.save(doc);
-        }
-    }
-
-    private void createLegalTagAssociations(List<RecordMetadata> recordMetadataList) {
-        val list = new LinkedList<LegalTagAssociationDocMongoDB>();
-        for (val record : recordMetadataList) {
-            for (String legalTag : record.getLegal().getLegaltags()) {
-                LegalTagAssociationDocMongoDB doc = new LegalTagAssociationDocMongoDB();
-                doc.setLegalTag(legalTag);
-                doc.setRecordId(record.getId());
-                doc.setRecordIdLegalTag(String.format("%s:%s", record.getId(), legalTag));
-                queryHelper.save(doc); // TODO remove this sometimes
-            }
-        }
-    }
-
-    private void saveMultipleDocs(List<RecordMetadataDocMongoDB> recordDocs) {
-        // TODO Do some performance optimizations here
-        recordDocs.forEach(queryHelper::save);
-    }
-
-    private void deleteLegalTagAssociation(String recordId, String legalTag) {
-        queryHelper.deleteByPrimaryKey(LegalTagAssociationDocMongoDB.class, String.format("%s:%s", recordId, legalTag));
-    }
 }

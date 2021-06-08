@@ -153,9 +153,9 @@ public class CloudStorageTest {
 
         RecordMetadata recordMetadata = new RecordMetadata();
 
-        Mockito.when(recordsMetadataRepository.get("test-record-id")).thenReturn(recordMetadata);
-        Mockito.when(userAccessService.userHasAccessToRecord(Mockito.anyObject()))
-                .thenReturn(true);
+//        Mockito.when(recordsMetadataRepository.get("test-record-id")).thenReturn(recordMetadata);
+//        Mockito.when(userAccessService.userHasAccessToRecord(Mockito.anyObject()))
+//                .thenReturn(true);
 
         Mockito.when(recordsUtil.getRecordsValuesById(Mockito.eq(map)))
                 .thenReturn(expectedResp);

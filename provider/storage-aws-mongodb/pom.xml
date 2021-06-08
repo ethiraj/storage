@@ -16,25 +16,32 @@
   limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <artifactId>os-storage</artifactId>
         <groupId>org.opengroup.osdu</groupId>
-        <version>0.8.0-SNAPSHOT</version>
+        <version>0.10.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>storage-aws-mongodb</artifactId>
     <description>Storage service on AWS using MongoDB</description>
-    <version>0.8.0-SNAPSHOT</version>
+    <version>0.10.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
         <aws.version>1.11.637</aws.version>
         <deployment.environment>dev</deployment.environment>
-        <version.number>0.8.0-SNAPSHOT</version.number>
+        <version.number>0.10.0-SNAPSHOT</version.number>
+        <os.core.common.version>0.3.26</os.core.common.version>
+        <spring.data.mongodb.version>2.1.18.RELEASE</spring.data.mongodb.version>
+        <spring.boot.test.version>2.1.18.RELEASE</spring.boot.test.version>
+        <junit.version>4.12</junit.version>
+        <mockito.version>2.24.0</mockito.version>
+        <surefire.version>3.0.0-M5</surefire.version>
     </properties>
 
     <dependencyManagement>
@@ -58,12 +65,27 @@
         <dependency>
             <groupId>org.opengroup.osdu.core.aws</groupId>
             <artifactId>os-core-lib-aws</artifactId>
-            <version>0.3.8</version>
+            <version>0.3.17</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opengroup.osdu.core.mongodb</groupId>
+            <artifactId>storage</artifactId>
+            <version>0.1.3</version>
         </dependency>
         <dependency>
             <groupId>org.opengroup.osdu</groupId>
             <artifactId>storage-core</artifactId>
             <version>${version.number}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mockito</groupId>
+                    <artifactId>mockito-all</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.powermock</groupId>
+                    <artifactId>powermock-api-mockito</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- AWS managed packages -->
         <dependency>
@@ -119,30 +141,27 @@
 
         <!-- Testing packages -->
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring.boot.test.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.10.19</version>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>2.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo</artifactId>
+            <version>2.2.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
