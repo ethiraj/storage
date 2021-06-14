@@ -40,7 +40,6 @@
         <powermock.version>2.0.2</powermock.version>
         <nimbus-jose-jwt-azure.version>8.20.1</nimbus-jose-jwt-azure.version>
     </properties>
-
     <dependencyManagement>
         <dependencies>
             <!-- Inherit managed dependencies from core-lib-azure -->
