@@ -35,5 +35,6 @@ import org.springframework.context.annotation.FilterType;
 public class StorageApplication {
     public static void main(String[] args) {
         SpringApplication.run(StorageApplication.class, args);
+        System.out.println("------------------Running the service------------------");
     }
 }
