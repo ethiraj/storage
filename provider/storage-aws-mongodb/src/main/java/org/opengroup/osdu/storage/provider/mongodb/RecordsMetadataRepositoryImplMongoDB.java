@@ -16,7 +16,7 @@ package org.opengroup.osdu.storage.provider.mongodb;
 
 import org.opengroup.osdu.core.common.model.legal.LegalCompliance;
 import org.opengroup.osdu.core.common.model.storage.RecordMetadata;
-import org.opengroup.osdu.core.mongodb.helper.RecordHelper;
+import org.opengroup.osdu.mongodb.core.storage.helper.RecordHelper;
 import org.opengroup.osdu.storage.provider.interfaces.IRecordsMetadataRepository;
 import org.springframework.stereotype.Repository;
 

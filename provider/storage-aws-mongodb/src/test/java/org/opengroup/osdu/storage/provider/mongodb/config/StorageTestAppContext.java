@@ -2,11 +2,11 @@ package org.opengroup.osdu.storage.provider.mongodb.config;
 
 import org.mockito.Mockito;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.mongodb.StorageContext;
-import org.opengroup.osdu.core.mongodb.config.MongoConfig;
-import org.opengroup.osdu.core.mongodb.helper.QueryHelper;
-import org.opengroup.osdu.core.mongodb.helper.RecordHelper;
-import org.opengroup.osdu.core.mongodb.helper.SchemaHelper;
+import org.opengroup.osdu.mongodb.core.common.config.MongoConfig;
+import org.opengroup.osdu.mongodb.core.storage.StorageContext;
+import org.opengroup.osdu.mongodb.core.storage.helper.QueryHelper;
+import org.opengroup.osdu.mongodb.core.storage.helper.RecordHelper;
+import org.opengroup.osdu.mongodb.core.storage.helper.SchemaHelper;
 import org.opengroup.osdu.storage.provider.mongodb.QueryRepositoryImplMongoDB;
 import org.opengroup.osdu.storage.provider.mongodb.RecordsMetadataRepositoryImplMongoDB;
 import org.opengroup.osdu.storage.provider.mongodb.SchemaRepositoryImplMongoDB;

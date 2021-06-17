@@ -16,7 +16,7 @@ package org.opengroup.osdu.storage.provider.mongodb;
 
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.Schema;
-import org.opengroup.osdu.core.mongodb.helper.SchemaHelper;
+import org.opengroup.osdu.mongodb.core.storage.helper.SchemaHelper;
 import org.opengroup.osdu.storage.provider.interfaces.ISchemaRepository;
 import org.springframework.stereotype.Repository;
 

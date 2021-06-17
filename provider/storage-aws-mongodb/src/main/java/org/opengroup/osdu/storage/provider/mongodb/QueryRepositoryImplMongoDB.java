@@ -16,7 +16,7 @@ package org.opengroup.osdu.storage.provider.mongodb;
 
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.DatastoreQueryResult;
-import org.opengroup.osdu.core.mongodb.helper.QueryHelper;
+import org.opengroup.osdu.mongodb.core.storage.helper.QueryHelper;
 import org.opengroup.osdu.storage.provider.interfaces.IQueryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
