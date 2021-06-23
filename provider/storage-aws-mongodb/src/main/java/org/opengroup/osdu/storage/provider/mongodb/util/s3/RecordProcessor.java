@@ -25,17 +25,19 @@ public class RecordProcessor implements Callable<RecordProcessor> {
     public CallableResult result;
     public AmazonServiceException exception;
     public String recordId;
+    private String dataPartition;
 
-    public RecordProcessor(RecordProcessing recordProcessing, S3RecordClient s3Client){
+    public RecordProcessor(RecordProcessing recordProcessing, S3RecordClient s3Client, String dataPartition){
         this.recordProcessing = recordProcessing;
         this.s3Client = s3Client;
+        this.dataPartition = dataPartition;
     }
 
     @Override
     public RecordProcessor call() {
         try {
             recordId = recordProcessing.getRecordMetadata().getId();
-            s3Client.saveRecord(recordProcessing);
+            s3Client.saveRecord(recordProcessing, dataPartition);
             result = CallableResult.Pass;
         }
         catch(AmazonServiceException exception) {

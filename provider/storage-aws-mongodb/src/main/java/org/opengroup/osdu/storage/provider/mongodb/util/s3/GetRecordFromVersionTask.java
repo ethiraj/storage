@@ -25,22 +25,25 @@ class GetRecordFromVersionTask implements Callable<GetRecordFromVersionTask> {
     public String recordContents;
     public Exception exception;
     public CallableResult result;
+    private String dataPartition;
 
     private final static String EMPTY_S3_MSG = "S3 returned empty record contents";
 
     public GetRecordFromVersionTask(S3RecordClient s3RecordClient,
-                         String recordId,
-                         String versionPath){
+                                    String recordId,
+                                    String versionPath,
+                                    String dataPartition){
         this.s3RecordClient = s3RecordClient;
         this.recordId = recordId;
         this.versionPath = versionPath;
+        this.dataPartition = dataPartition;
     }
 
     @Override
     public GetRecordFromVersionTask call() {
         result = CallableResult.Pass;
         try {
-            this.recordContents = s3RecordClient.getRecord(this.versionPath);
+            this.recordContents = s3RecordClient.getRecord(this.versionPath, this.dataPartition);
 
             if (this.recordContents == null || this.recordContents == ""){
                 // s3 wasn't ready to deliver contents
