@@ -33,7 +33,7 @@
         <azure.appservice.plan />
         <azure.appservice.appname />
         <azure.appservice.subscription />
-        <osdu.corelibazure.version>0.10.0-SNAPSHOT-AB-stale</osdu.corelibazure.version>
+        <osdu.corelibazure.version>0.11.0-SNAPSHOT-AB-26.6.21</osdu.corelibazure.version>
         <osdu.storage-core.version>0.10.0-SNAPSHOT</osdu.storage-core.version>
         <junit.version>4.12</junit.version>
         <mockito.version>1.10.19</mockito.version>
