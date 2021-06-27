@@ -15,9 +15,11 @@
 package org.opengroup.osdu.storage.provider.azure.di;
 
 import lombok.Getter;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.storage.provider.azure.util.MDCContextMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Named;
@@ -39,7 +41,12 @@ public class AzureBootstrapConfig {
         return "opendes";
     }
 
-
+    @Bean
+    @Primary
+    public DpsHeaders DpsHeaders(){
+        return new DpsHeaders();
+    }
+    
     @Bean
     @Named("KEY_VAULT_URL")
     public String keyVaultURL() {

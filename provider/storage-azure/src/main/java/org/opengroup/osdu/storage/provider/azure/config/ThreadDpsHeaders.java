@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-@Primary
 @Scope(value = "ThreadScope", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ThreadDpsHeaders extends DpsHeaders {
 
