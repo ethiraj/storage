@@ -203,7 +203,7 @@ For deployment available public `/info` endpoint, which provides build and git r
     "version": "0.10.0-SNAPSHOT",
     "buildTime": "2021-07-09T14:29:51.584Z",
     "branch": "feature/GONRG-2681_Build_info",
-    "commitId": "0f483ff9cd6121dc2059db188da6bc5a33d51b72",
+    "commitId": "7777",
     "commitMessage": "Added copyright to version info properties file"
 }
 ```
