@@ -27,6 +27,6 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 public class VersionInfoProperties {
 
-  private String buildPropertiesPath;
-  private String gitPropertiesPath;
+  private String buildPropertiesPath = "META-INF/build-info.properties";
+  private String gitPropertiesPath = "BOOT-INF/classes/git.properties";
 }
