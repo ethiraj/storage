@@ -16,7 +16,7 @@ public class VersionInfoUtils {
   }
 
   public class VersionInfo {
-    public String groudId;
+    public String groupId;
     public String artifactId;
     public String version;
     public String buildTime;

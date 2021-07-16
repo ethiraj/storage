@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.sun.jersey.api.client.ClientResponse;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
@@ -28,7 +26,7 @@ public abstract class GetQueryInfoIntegrationTest extends TestBase {
 
     VersionInfoUtils.VersionInfo responseObject = VERSION_INFO_UTILS.getVersionInfoFromResponse(response);
 
-    assertNotNull(responseObject.groudId);
+    assertNotNull(responseObject.groupId);
     assertNotNull(responseObject.artifactId);
     assertNotNull(responseObject.version);
     assertNotNull(responseObject.buildTime);
