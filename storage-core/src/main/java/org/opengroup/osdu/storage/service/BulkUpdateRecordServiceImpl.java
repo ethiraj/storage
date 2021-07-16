@@ -106,9 +106,11 @@ public class BulkUpdateRecordServiceImpl implements BulkUpdateRecordService {
             if (metadata == null) {
                 notFoundRecordIds.add(idWithVersion);
                 ids.remove(idWithVersion);
+                idMap.remove(id);
             } else {
                 if (unauthorizedRecordIds.contains(idWithVersion)) {
                     ids.remove(idWithVersion);
+                    idMap.remove(id);
                 } else {
                     metadata = recordUtil.updateRecordMetaDataForPatchOperations(metadata, bulkUpdateOps, user, currentTimestamp);
                     validRecordsMetadata.add(metadata);
