@@ -49,10 +49,10 @@ public class LegalComplianceChangeUpdate{
     private IRecordsMetadataRepository recordsRepo;
     @Autowired
     private StorageAuditLogger auditLogger;
-//    @Autowired
-//   private ThreadDpsHeaders headers; //to be used when azure.feature.legaltag-compliance-update.enabled is set
     @Autowired
-   private DpsHeaders headers;
+    private ThreadDpsHeaders headers; //to be used when azure.feature.legaltag-compliance-update.enabled is set
+   // @Autowired
+   //private DpsHeaders headers;
     @Autowired
     private MDCContextMap mdcContextMap;
     @Autowired
@@ -69,7 +69,7 @@ public class LegalComplianceChangeUpdate{
 
             message.setMessageId(legalTagsChangedRequest.getId());
             //uncomment when azure.feature.legaltag-compliance-update.enabled is enabled
-            //headers.setThreadContext(legalTagsChangedData.getDataPartitionId(), legalTagsChangedData.getCorrelationId(), legalTagsChangedData.getUser());
+            headers.setThreadContext(legalTagsChangedData.getDataPartitionId(), legalTagsChangedData.getCorrelationId(), legalTagsChangedData.getUser());
             MDC.setContextMap(mdcContextMap.getContextMap(headers.getCorrelationId(), headers.getCorrelationId()));
 
             complianceMessagePullReceiver.receiveMessage(tags, headers);
