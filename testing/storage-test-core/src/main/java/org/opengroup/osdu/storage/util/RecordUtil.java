@@ -26,6 +26,18 @@ public class RecordUtil {
         return records.toString();
     }
 
+	public static String createDefaultJsonRecordWithParentId(String id, String kind, String legalTag, String parentId) {
+		JsonObject record = getDefaultRecordWithDefaultData(id, kind, legalTag);
+		JsonObject ancestryObject = new JsonObject();
+		JsonArray parents = new JsonArray();
+		parents.add(parentId);
+		ancestryObject.add("parents", parents);
+		record.add("ancestry", ancestryObject);
+		JsonArray records = new JsonArray();
+		records.add(record);
+		return records.toString();
+	}
+
     public static String createDefaultJsonRecords(int recordsCount, String id, String kind, String legalTag) {
         JsonArray records = new JsonArray();
         for (int i = 0; i < recordsCount; i++) {
@@ -48,6 +60,21 @@ public class RecordUtil {
 		records.add(record);
 
 		return records.toString();
+	}
+
+	public static String createJsonRecordWithEntV2OnlyAcl(String id, String kind, String legalTag, String data) {
+		JsonObject dataJson = new JsonObject();
+		dataJson.addProperty("custom", data);
+		dataJson.addProperty("score-int", 58377304471659395L);
+		dataJson.addProperty("score-double", 58377304.471659395);
+
+		JsonObject record = getRecordWithInputDataAndAcl(id, kind, legalTag, dataJson);
+
+		JsonArray records = new JsonArray();
+		records.add(record);
+
+		return records.toString();
+
 	}
 
 	public static String createJsonRecordWithReference(int recordsCount, String id, String kind, String legalTag, String fromCrs, String conversionType) {
@@ -203,6 +230,165 @@ public class RecordUtil {
 		return records.toString();
 	}
 
+	public static String createJsonRecordWithNestedArrayOfProperties(int recordsNumber, String id, String kind, String legalTag, String fromRef, String conversionType) {
+		JsonArray records = new JsonArray();
+
+		for (int i = 12; i < 12 + recordsNumber; i++) {
+
+			JsonArray nestedArray = new JsonArray();
+			JsonObject item1 = new JsonObject();
+			item1.addProperty("measuredDepth", 10.0);
+			item1.addProperty("otherField", "testValue1");
+			JsonObject item2 = new JsonObject();
+			item2.addProperty("measuredDepth", 20.0);
+			item2.addProperty("otherField", "testValue2");
+			nestedArray.add(item1);
+			nestedArray.add(item2);
+
+			JsonObject record = createJsonObjectRecordWithNestedArray(nestedArray, id + i, kind, legalTag, conversionType, fromRef, "markers[].measuredDepth");
+
+			records.add(record);
+		}
+
+		return records.toString();
+	}
+
+	public static String createJsonRecordWithNestedArrayOfPropertiesAndInvalidValues(int recordsNumber, String id, String kind, String legalTag, String fromRef, String conversionType) {
+		JsonArray records = new JsonArray();
+
+		for (int i = 12; i < 12 + recordsNumber; i++) {
+
+			JsonArray nestedArray = new JsonArray();
+			JsonObject item1 = new JsonObject();
+			item1.addProperty("measuredDepth", 10.0);
+			item1.addProperty("otherField", "testValue1");
+			JsonObject item2 = new JsonObject();
+			item2.addProperty("measuredDepth", "invalidValue");
+			item2.addProperty("otherField", "testValue2");
+			nestedArray.add(item1);
+			nestedArray.add(item2);
+
+			JsonObject record = createJsonObjectRecordWithNestedArray(nestedArray, id + i, kind, legalTag, conversionType, fromRef, "markers[].measuredDepth");
+
+			records.add(record);
+		}
+
+		return records.toString();
+	}
+
+	public static String createJsonRecordWithInhomogeneousNestedArrayOfProperties(int recordsNumber, String id, String kind, String legalTag, String fromRef, String conversionType) {
+		JsonArray records = new JsonArray();
+
+		for (int i = 13; i < 13 + recordsNumber; i++) {
+
+			JsonArray nestedArray = new JsonArray();
+			JsonObject item1 = new JsonObject();
+			item1.addProperty("measuredDepth", 10.0);
+			item1.addProperty("otherField", "testValue1");
+			JsonObject item2 = new JsonObject();
+			item2.addProperty("measuredDepth", 20.0);
+			item2.addProperty("otherField", "testValue2");
+			nestedArray.add(item1);
+			nestedArray.add(item2);
+
+			JsonObject record = createJsonObjectRecordWithNestedArray(nestedArray, id + i, kind, legalTag, conversionType, fromRef, "markers[1].measuredDepth");
+
+			records.add(record);
+		}
+
+		return records.toString();
+	}
+
+	public static String createJsonRecordWithInhomogeneousNestedArrayOfPropertiesAndInvalidValues(int recordsNumber, String id, String kind, String legalTag, String fromRef, String conversionType) {
+		JsonArray records = new JsonArray();
+
+		for (int i = 13; i < 13 + recordsNumber; i++) {
+
+			JsonArray nestedArray = new JsonArray();
+			JsonObject item1 = new JsonObject();
+			item1.addProperty("measuredDepth", 10.0);
+			item1.addProperty("otherField", "testValue1");
+			JsonObject item2 = new JsonObject();
+			item2.addProperty("measuredDepth", "invalidValue");
+			item2.addProperty("otherField", "testValue2");
+			nestedArray.add(item1);
+			nestedArray.add(item2);
+
+			JsonObject record = createJsonObjectRecordWithNestedArray(nestedArray, id + i, kind, legalTag, conversionType, fromRef, "markers[1].measuredDepth");
+
+			records.add(record);
+		}
+
+		return records.toString();
+	}
+
+	public static String createJsonRecordWithInhomogeneousNestedArrayOfPropertiesAndIndexOutOfBoundary(int recordsNumber, String id, String kind, String legalTag, String fromRef, String conversionType) {
+		JsonArray records = new JsonArray();
+
+		for (int i = 13; i < 13 + recordsNumber; i++) {
+
+			JsonArray nestedArray = new JsonArray();
+			JsonObject item1 = new JsonObject();
+			item1.addProperty("measuredDepth", 10.0);
+			item1.addProperty("otherField", "testValue1");
+			JsonObject item2 = new JsonObject();
+			item2.addProperty("measuredDepth", "20.0");
+			item2.addProperty("otherField", "testValue2");
+			nestedArray.add(item1);
+			nestedArray.add(item2);
+
+			JsonObject record = createJsonObjectRecordWithNestedArray(nestedArray, id + i, kind, legalTag, conversionType, fromRef, "markers[2].measuredDepth");
+
+			records.add(record);
+		}
+
+		return records.toString();
+	}
+
+	private static JsonObject createJsonObjectRecordWithNestedArray(JsonArray nestedArray, String id, String kind, String legalTag, String conversionType, String fromRef, String propertyName) {
+		JsonObject data = new JsonObject();
+		data.addProperty("message", "integration-test-record");
+		data.add("markers", nestedArray);
+
+		JsonArray propertyNames = new JsonArray();
+		propertyNames.add(propertyName);
+
+		JsonObject meta = new JsonObject();
+		meta.addProperty("kind", conversionType);
+		meta.addProperty("persistableReference", fromRef);
+		meta.add("propertyNames", propertyNames);
+
+		JsonArray metaBlocks = new JsonArray();
+		metaBlocks.add(meta);
+
+		JsonObject record = getRecordWithInputData(id, kind, legalTag, data);
+		record.add("meta", metaBlocks);
+
+		return record;
+	}
+
+	private static JsonObject createJsonObjectRecordWithNestedArray(JsonArray nestedArray, String id, String kind, String legalTag, String conversionType, String fromRef) {
+		JsonObject data = new JsonObject();
+		data.addProperty("message", "integration-test-record");
+		data.add("markers", nestedArray);
+
+		JsonArray propertyNames = new JsonArray();
+		propertyNames.add("markers[].measuredDepth");
+
+		JsonObject meta = new JsonObject();
+		meta.addProperty("kind", conversionType);
+		meta.addProperty("persistableReference", fromRef);
+		meta.add("propertyNames", propertyNames);
+
+		JsonArray metaBlocks = new JsonArray();
+		metaBlocks.add(meta);
+
+		JsonObject record = getRecordWithInputData(id, kind, legalTag, data);
+		record.add("meta", metaBlocks);
+
+		return record;
+	}
+
 	public static String createJsonRecordWithMultiplePairOfCoordinates(int recordsNumber, String id, String kind, String legalTag, String fromCrs, String conversionType) {
 
 		JsonArray records = new JsonArray();
@@ -240,9 +426,19 @@ public class RecordUtil {
 	}
 
 	private static JsonObject getDefaultRecord(String id, String kind, String legalTag) {
-		JsonObject acl = new JsonObject();
 		JsonArray acls = new JsonArray();
 		acls.add(TestUtils.getAcl());
+		return getDefaultRecordFromAcl(id, kind, legalTag, acls);
+	}
+
+	private static JsonObject getDefaultRecordWithEntV2OnlyAcl(String id, String kind, String legalTag) {
+		JsonArray acls = new JsonArray();
+		acls.add(TestUtils.getEntV2OnlyAcl());
+		return getDefaultRecordFromAcl(id, kind, legalTag, acls);
+	}
+
+	private static JsonObject getDefaultRecordFromAcl(String id, String kind, String legalTag, JsonArray acls) {
+		JsonObject acl = new JsonObject();
 		acl.add("viewers", acls);
 		acl.add("owners", acls);
 
@@ -275,6 +471,12 @@ public class RecordUtil {
 
 	private static JsonObject getRecordWithInputData(String id, String kind, String legalTag, JsonObject data) {
 		JsonObject record = getDefaultRecord(id, kind, legalTag);
+		record.add("data", data);
+		return record;
+	}
+
+	private static JsonObject getRecordWithInputDataAndAcl(String id, String kind, String legalTag, JsonObject data) {
+		JsonObject record = getDefaultRecordWithEntV2OnlyAcl(id, kind, legalTag);
 		record.add("data", data);
 		return record;
 	}
