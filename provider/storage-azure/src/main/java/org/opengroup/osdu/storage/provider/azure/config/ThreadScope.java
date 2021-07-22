@@ -58,8 +58,8 @@ public class ThreadScope implements Scope, DisposableBean {
                     headers.put(entry.getKey(), entry.getValue());
                 }
                 context.setBean(name, headers);
-                MDC.setContextMap(header);
 
+                MDC.setContextMap(header);
                 return headers;
             } else {
                 result = factory.getObject();
