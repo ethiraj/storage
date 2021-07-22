@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.gson.Gson;
 import com.sun.jersey.api.client.ClientResponse;
-import org.opengroup.osdu.storage.util.DummyRecordsHelper.ConvertedRecordsMock;
 
 public class VersionInfoUtils {
 
