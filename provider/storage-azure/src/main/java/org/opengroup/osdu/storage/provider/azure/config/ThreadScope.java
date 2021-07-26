@@ -43,32 +43,36 @@ public class ThreadScope implements Scope, DisposableBean {
      */
     public Object get(String name, ObjectFactory<?> factory) {
         ThreadScopeContext context = ThreadScopeContextHolder.getContext();
-        RequestAttributes att = RequestContextHolder.getRequestAttributes();
-        Object result = context.getBean(name);
-        if (null == result) {
-            if (att != null) {
-                DpsHeaders headers = new DpsHeaders();
-                HttpServletRequest request = ((ServletRequestAttributes) att).getRequest();
-
-                Map<String, String> header = Collections
-                        .list(request.getHeaderNames())
-                        .stream()
-                        .collect(Collectors.toMap(h -> h, request::getHeader));
-                for (Map.Entry<String, String> entry : header.entrySet()) {
-                    headers.put(entry.getKey(), entry.getValue());
-                }
-                context.setBean(name, headers);
-                MDC.setContextMap(header);
-
-                return headers;
-            } else {
-                result = factory.getObject();
-                context.setBean(name, result);
-                return result;
-            }
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        Map<String, String> contextMap = MDC.getCopyOfContextMap();
+        if (null != requestAttributes && contextMap.size() == 0) {
+            context.clear();
         }
-        return result;
+        Object result = context.getBean(name);
+        if (null == result && null != requestAttributes) {
+            DpsHeaders headers = new DpsHeaders();
+            HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+
+            Map<String, String> header = Collections
+                    .list(request.getHeaderNames())
+                    .stream()
+                    .collect(Collectors.toMap(h -> h, request::getHeader));
+            for (Map.Entry<String, String> entry : header.entrySet()) {
+                headers.put(entry.getKey(), entry.getValue());
+            }
+            context.setBean(name, headers);
+            MDC.setContextMap(header);
+
+            return headers;
+        } else if (null == result) {
+            result = factory.getObject();
+            context.setBean(name, result);
+            return result;
+        } else {
+            return result;
+        }
     }
+
 
     /**
      * Removes bean from scope.

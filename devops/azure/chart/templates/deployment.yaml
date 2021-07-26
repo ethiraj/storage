@@ -124,7 +124,7 @@ spec:
         - name: azure_activedirectory_AppIdUri
           value: "api://$(aad_client_id)"
         - name: max_concurrent_calls
-          value: "3"
+          value: "1"
         - name: executor_n_threads
           value: "32"
         - name: max_lock_renew_duration_seconds
