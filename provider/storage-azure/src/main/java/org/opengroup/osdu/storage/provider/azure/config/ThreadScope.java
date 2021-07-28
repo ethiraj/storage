@@ -33,13 +33,30 @@ import java.util.stream.Collectors;
 /**
  * Thread scope which allows putting data in thread scope and clearing up afterwards.
  */
-
 public class ThreadScope implements Scope, DisposableBean {
     @Autowired
     HttpServletRequest request;
-
     /**
-     * Get bean for given name in the "ThreadScope".
+     * Get bean for the given name in the "ThreadScope"
+     * This is called for creating beans of DpsHeaders and ThreadDpsHeaders type in "ThreadScope"
+     *
+     * The two types are distinguished on the basis of Request Attributes in Request Context Holder.
+     *
+     * If Request Attributes is not null, it is api request thread.
+     *
+     * For a new Api request thread MDC context is cleared and then this function is called
+     * before extracting and setting headers.
+     * For api request, with MDC context map of size zero, we clear the thread context, to ensure
+     * ThreadLocal variable values are not reused, by new threads.
+     *
+     * Next for new, api request, the function returns new bean of DPSHeader type, after adding it to the context.
+     *
+     * If the Request Attributes is null, it is a subscriber thread, here if the bean does not already
+     * exists in object factory, we create a new bean of type ThreadDpsHeader and return , after adding it to the context.
+     *
+     * For both cases, if it is not a new api request or if it is not a new subscriber thread request,
+     * we return the existing object from the object factory.
+     *
      */
     public Object get(String name, ObjectFactory<?> factory) {
         ThreadScopeContext context = ThreadScopeContextHolder.getContext();
