@@ -28,6 +28,34 @@ variables:
   OSDU_GCP_ENV_VARS: GOOGLE_AUDIENCES=$GOOGLE_AUDIENCE,AUTHORIZE_API=$OSDU_GCP_ENTITLEMENTS_V2_URL,LEGALTAG_API=$OSDU_GCP_LEGALTAG_API,STORAGE_HOSTNAME=$OSDU_GCP_STORAGE_HOSTNAME,CRS_API=$OSDU_GCP_CRS_API,DEFAULT_DATA_COUNTRY=$OSDU_GCP_DEFAULT_DATA_COUNTRY,REDIS_STORAGE_HOST=$REDIS_STORAGE_HOST,REDIS_GROUP_HOST=$REDIS_GROUP_HOST,PARTITION_API=$OSDU_GCP_PARTITION_API,POLICY_API=$OSDU_GCP_POLICY_API,POLICY_ID=storage --vpc-connector=$OSDU_GCP_VPC_CONNECTOR
   OSDU_GCP_TEST_SUBDIR: testing/$OSDU_GCP_SERVICE-test-$OSDU_GCP_VENDOR
   OSDU_GCP_HELM_PACKAGE_CHARTS: "devops/gcp/deploy devops/gcp/configmap"
+  # --- osdu specific variables for GKE
+  OSDU_GCP_HELM_CONFIG_SERVICE_VARS: "--set data.authorize_api=$OSDU_GCP_AUTHORIZE_API --set data.partition_api=https://os-partition-attcrcktoa-uc.a.run.app/api/partition/v1/ --set data.log_level=INFO --set data.legaltag_api=https://community.osdu-gcp.go3-nrg.projects.epam.com/api/legal/v1 --set data.google_audiences=$GOOGLE_AUDIENCE --set data.redis_group_host=$REDIS_GROUP_HOST --set data.redis_storage_host=$REDIS_STORAGE_HOST --set data.crs_api=https://crs-converter-attcrcktoa-uc.a.run.app/api/crs/v2/"
+  OSDU_GCP_HELM_DEPLOYMENT_SERVICE_VARS: "--set data.image=$CI_REGISTRY_IMAGE/osdu-gcp:$CI_COMMIT_SHORT_SHA --set data.serviceAccountName=workload-identity-legal --set data.limits_cpu=1.5 --set data.limits_memory=512M"
+  OSDU_GCP_HELM_CONFIG_SERVICE: storage-config
+  OSDU_GCP_HELM_DEPLOYMENT_SERVICE: storage-deploy
+
+#"--set data.authorize_api=$OSDU_GCP_AUTHORIZE_API
+#--set data.partition_api=https://os-partition-attcrcktoa-uc.a.run.app/api/partition/v1/
+#--set data.log_level=INFO
+#--set data.legaltag_api=https://community.osdu-gcp.go3-nrg.projects.epam.com/api/legal/v1
+#--set data.google_audiences=$GOOGLE_AUDIENCE
+#--set data.redis_group_host=$REDIS_GROUP_HOST
+#--set data.redis_storage_host=$REDIS_STORAGE_HOST
+#--set data.crs_api=https://os-crs-converter-jvmvia5dea-uc.a.run.app/api/crs/v2/"
+
+#LOG_LEVEL: INFO
+#GOOGLE_AUDIENCES: 689762842995-pv217jo3k8j803kk6gqf52qb5amos3a9.apps.googleusercontent.com
+#AUTHORIZE_API: https://community.osdu-gcp.go3-nrg.projects.epam.com/api/entitlements/v2/
+#LEGALTAG_API: https://community.osdu-gcp.go3-nrg.projects.epam.com/api/legal/v1
+#STORAGE_HOSTNAME: os-storage-attcrcktoa-uc.a.run.app
+#CRS_API: https://crs-converter-attcrcktoa-uc.a.run.app/api/crs/v2/
+#DEFAULT_DATA_COUNTRY: US
+#REDIS_STORAGE_HOST: 10.16.59.203
+#REDIS_GROUP_HOST: 10.234.198.27
+#PARTITION_API: https://os-partition-attcrcktoa-uc.a.run.app/api/partition/v1/
+#POLICY_API: https://community.osdu-gcp.go3-nrg.projects.epam.com/api/policy/v1/
+#POLICY_ID: storage
+# crs_api: "https://os-crs-converter-jvmvia5dea-uc.a.run.app/api/crs/v2/"
 
   AZURE_SERVICE: storage
   AZURE_BUILD_SUBDIR: provider/storage-azure
@@ -57,7 +85,8 @@ include:
     file: "cloud-providers/ibm.yml"
 
   - project: 'osdu/platform/ci-cd-pipelines'
-    file: 'cloud-providers/osdu-gcp-cloudrun.yml'
+    #file: 'cloud-providers/osdu-gcp-cloudrun.yml'
+    file: "cloud-providers/osdu-gcp-gke.yml"
 
   - project: 'osdu/platform/ci-cd-pipelines'
     file: 'publishing/pages.yml'
