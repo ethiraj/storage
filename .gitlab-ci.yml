@@ -30,9 +30,10 @@ variables:
   OSDU_GCP_HELM_PACKAGE_CHARTS: "devops/gcp/deploy devops/gcp/configmap"
   # --- osdu specific variables for GKE
   OSDU_GCP_HELM_CONFIG_SERVICE_VARS: "--set data.authorize_api=$OSDU_GCP_AUTHORIZE_API --set data.partition_api=https://os-partition-attcrcktoa-uc.a.run.app/api/partition/v1/ --set data.log_level=INFO --set data.legaltag_api=https://community.osdu-gcp.go3-nrg.projects.epam.com/api/legal/v1 --set data.google_audiences=$GOOGLE_AUDIENCE --set data.redis_group_host=$REDIS_GROUP_HOST --set data.redis_storage_host=$REDIS_STORAGE_HOST --set data.crs_api=https://crs-converter-attcrcktoa-uc.a.run.app/api/crs/v2/"
-  OSDU_GCP_HELM_DEPLOYMENT_SERVICE_VARS: "--set data.image=$CI_REGISTRY_IMAGE/osdu-gcp:$CI_COMMIT_SHORT_SHA --set data.serviceAccountName=workload-identity-legal --set data.limits_cpu=1.5 --set data.limits_memory=512M"
+  OSDU_GCP_HELM_DEPLOYMENT_SERVICE_VARS: "--set data.image=$CI_REGISTRY_IMAGE/osdu-gcp:$CI_COMMIT_SHORT_SHA --set data.serviceAccountName=workload-identity-storage --set data.limits_cpu=1.5 --set data.limits_memory=512M"
   OSDU_GCP_HELM_CONFIG_SERVICE: storage-config
   OSDU_GCP_HELM_DEPLOYMENT_SERVICE: storage-deploy
+
 
 #"--set data.authorize_api=$OSDU_GCP_AUTHORIZE_API
 #--set data.partition_api=https://os-partition-attcrcktoa-uc.a.run.app/api/partition/v1/
