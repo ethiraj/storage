@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnMissingBean(ConnectedOuterServicesBuilder.class)
+@ConditionalOnMissingBean(type = "ConnectedOuterServicesBuilder")
 public class CloudConnectedOuterServicesBuilder implements ConnectedOuterServicesBuilder {
 
   private List<RedisCache> redisCaches;
