@@ -77,8 +77,6 @@ include:
   - project: 'osdu/platform/ci-cd-pipelines'
     file: 'cloud-providers/aws-mongodb.yml'
 
-
-
 # disable the eslint scanner
 # I think this is being generated from the presence of an HTML file, but there
 # is no javascript to scan, so the job isn't helpful and just gets in the way
