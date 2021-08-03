@@ -122,4 +122,3 @@ osdu-gcp-test:
     PUBSUB_TOKEN: $GCP_PUBSUB_TOKEN
     STORAGE_URL: https://community.osdu-gcp.go3-nrg.projects.epam.com/api/storage/v2/
     TENANT_NAME: osdu
-
