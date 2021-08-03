@@ -30,36 +30,9 @@ variables:
   OSDU_GCP_HELM_PACKAGE_CHARTS: "devops/gcp/deploy devops/gcp/configmap"
   # --- osdu specific variables for GKE
   OSDU_GCP_HELM_CONFIG_SERVICE_VARS: "--set data.authorize_api=http://entitlements/api/entitlements/v2/ --set data.partition_api=http://partition/api/partition/v1/ --set data.log_level=INFO --set data.legaltag_api=http://legal/api/legal/v1/ --set data.google_audiences=$GOOGLE_AUDIENCE --set data.redis_group_host=$REDIS_GROUP_HOST --set data.redis_storage_host=$REDIS_STORAGE_HOST --set data.crs_api=https://crs-converter-attcrcktoa-uc.a.run.app/api/crs/v2/ --set data.storage_hostname=storage"
-  ##OSDU_GCP_HELM_CONFIG_SERVICE_VARS: "--set data.authorize_api=https://community.osdu-gcp.go3-nrg.projects.epam.com/api/entitlements/v2/ --set data.partition_api=http://partition/api/partition/v1/ --set data.log_level=INFO --set data.legaltag_api=https://community.osdu-gcp.go3-nrg.projects.epam.com/api/legal/v1 --set data.google_audiences=$GOOGLE_AUDIENCE --set data.redis_group_host=$REDIS_GROUP_HOST --set data.redis_storage_host=$REDIS_STORAGE_HOST --set data.crs_api=https://crs-converter-attcrcktoa-uc.a.run.app/api/crs/v2/ --set data.storage_hostname=storage"
   OSDU_GCP_HELM_DEPLOYMENT_SERVICE_VARS: "--set data.image=$CI_REGISTRY_IMAGE/osdu-gcp:$CI_COMMIT_SHORT_SHA --set data.serviceAccountName=workload-identity-storage --set data.limits_cpu=1.5 --set data.limits_memory=2048M"
   OSDU_GCP_HELM_CONFIG_SERVICE: storage-config
   OSDU_GCP_HELM_DEPLOYMENT_SERVICE: storage-deploy
-
-#"--set data.authorize_api=$OSDU_GCP_AUTHORIZE_API
-#"--set data.authorize_api=http://entitlements/api/entitlements/v2/
-
-
-#--set data.partition_api=https://os-partition-attcrcktoa-uc.a.run.app/api/partition/v1/
-#--set data.log_level=INFO
-#--set data.legaltag_api=http://legal/api/legal/v1
-#--set data.google_audiences=$GOOGLE_AUDIENCE
-#--set data.redis_group_host=$REDIS_GROUP_HOST
-#--set data.redis_storage_host=$REDIS_STORAGE_HOST
-#--set data.crs_api=https://os-crs-converter-jvmvia5dea-uc.a.run.app/api/crs/v2/"
-
-#LOG_LEVEL: INFO
-#GOOGLE_AUDIENCES: 689762842995-pv217jo3k8j803kk6gqf52qb5amos3a9.apps.googleusercontent.com
-#AUTHORIZE_API: https://community.osdu-gcp.go3-nrg.projects.epam.com/api/entitlements/v2/
-#LEGALTAG_API: https://community.osdu-gcp.go3-nrg.projects.epam.com/api/legal/v1
-#STORAGE_HOSTNAME: os-storage-attcrcktoa-uc.a.run.app
-#CRS_API: https://crs-converter-attcrcktoa-uc.a.run.app/api/crs/v2/
-#DEFAULT_DATA_COUNTRY: US
-#REDIS_STORAGE_HOST: 10.16.59.203
-#REDIS_GROUP_HOST: 10.234.198.27
-#PARTITION_API: https://os-partition-attcrcktoa-uc.a.run.app/api/partition/v1/
-#POLICY_API: https://community.osdu-gcp.go3-nrg.projects.epam.com/api/policy/v1/
-#POLICY_ID: storage
-# crs_api: "https://os-crs-converter-jvmvia5dea-uc.a.run.app/api/crs/v2/"
 
   AZURE_SERVICE: storage
   AZURE_BUILD_SUBDIR: provider/storage-azure
@@ -112,13 +85,3 @@ include:
 eslint-sast:
   rules:
     - when: never
-
-#osdu-gcp-test:
-#  variables:
-#    INTEGRATION_TEST_AUDIENCE: 689762842995-pv217jo3k8j803kk6gqf52qb5amos3a9.apps.googleusercontent.com
-#    DEPLOY_ENV: empty
-#    DOMAIN: osdu-gcp.go3-nrg.projects.epam.com
-#    LEGAL_URL: https://community.osdu-gcp.go3-nrg.projects.epam.com/api/legal/v1/
-#    PUBSUB_TOKEN: $GCP_PUBSUB_TOKEN
-#    STORAGE_URL: https://community.osdu-gcp.go3-nrg.projects.epam.com/api/storage/v2/
-#    TENANT_NAME: osdu
