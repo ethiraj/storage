@@ -696,7 +696,7 @@ The following software have components provided under the terms of this license:
 - Asynchronous Http Client Netty Utils (from https://repo1.maven.org/maven2/org/asynchttpclient/async-http-client-netty-utils)
 - AutoValue Annotations (from https://github.com/google/auto/tree/master/value)
 - Azure Spring Boot Starter for Azure AD Spring Security Integration (from https://github.com/Azure/azure-sdk-for-java)
-- BSON (from http://bsonspec.org)
+- BSON (from https://bsonspec.org)
 - Bean Validation API (from http://beanvalidation.org)
 - Bean Validation API (from http://beanvalidation.org)
 - Brave (from https://repo1.maven.org/maven2/io/zipkin/brave/brave)
