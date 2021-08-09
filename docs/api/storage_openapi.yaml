@@ -997,41 +997,41 @@ definitions:
     description: "Result of the record batch update request."
   VersionInfo:
     type: "object"
-      properties:
-        groupId:
-          type: "string"
-          description: "Maven artifact group ID."
-        actifactId:
-          type: "string"
-          description: "Maven artifact ID."
-        version:
-          type: "string"
-          description: "Maven artifact version"
-        buildTime:
-          type: "string"
-          description: "Maven artifact build time"
-        branch:
-          type: "string"
-          description: "Current git branch"
-        commitId:
-          type: "string"
-          description: "Latest commit hash"
-        commitMessage:
-          type: "string"
-          description: "Latest commit message"
-        connectedOuterServices:
-          type: "array"
-          description: "Connected outer services information"
-          items:
-            $ref: "#/definitions/ConnectedOuterService"
-      description: "Version info."
+    properties:
+      groupId:
+        type: "string"
+        description: "Maven artifact group ID."
+      actifactId:
+        type: "string"
+        description: "Maven artifact ID."
+      version:
+        type: "string"
+        description: "Maven artifact version"
+      buildTime:
+        type: "string"
+        description: "Maven artifact build time"
+      branch:
+        type: "string"
+        description: "Current git branch"
+      commitId:
+        type: "string"
+        description: "Latest commit hash"
+      commitMessage:
+        type: "string"
+        description: "Latest commit message"
+      connectedOuterServices:
+        type: "array"
+        description: "Connected outer services information"
+        items:
+          $ref: "#/definitions/ConnectedOuterService"
+    description: "Version info."
   ConnectedOuterService:
     type: "object"
-      properties:
-        name:
-          type: "string"
-          description: "Connected outer service name."
-        version:
-          type: "string"
-          description: "Connected outer service version."
-      description: "Connected outer service information."
+    properties:
+      name:
+        type: "string"
+        description: "Connected outer service name."
+      version:
+        type: "string"
+        description: "Connected outer service version."
+    description: "Connected outer service information."
