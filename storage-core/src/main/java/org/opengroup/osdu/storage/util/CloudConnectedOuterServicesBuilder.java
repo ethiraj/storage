@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 @ConditionalOnMissingBean(type = "ConnectedOuterServicesBuilder")
 public class CloudConnectedOuterServicesBuilder implements ConnectedOuterServicesBuilder {
 
+  private static final String REDIS_PREFIX = "Redis-";
+
   private List<RedisCache> redisCaches;
 
   public CloudConnectedOuterServicesBuilder(List<RedisCache> redisCaches) {
@@ -27,7 +29,7 @@ public class CloudConnectedOuterServicesBuilder implements ConnectedOuterService
   private ConnectedOuterService fetchRedisInfo(RedisCache cache) {
     String redisVersion = StringUtils.substringBetween(cache.info(), ":", "\r");
     return ConnectedOuterService.builder()
-        .name(StringUtils.substringAfterLast(cache.getClass().getName(), "."))
+        .name(REDIS_PREFIX + StringUtils.substringAfterLast(cache.getClass().getName(), "."))
         .version(redisVersion)
         .build();
   }
